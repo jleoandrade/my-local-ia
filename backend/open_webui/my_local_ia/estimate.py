@@ -9,7 +9,7 @@ MoE models only read their active experts, a fraction of the total size.
 import math
 from typing import Literal, Optional
 
-from open_webui.rmg.hardware import Hardware
+from open_webui.my_local_ia.hardware import Hardware
 from pydantic import BaseModel
 
 TEXT_CATEGORIES = ('chat', 'vis', 'code')
@@ -21,28 +21,28 @@ TIGHT_VRAM_PENALTY = 0.7
 FIT_SCORE = {'img': 40, 'vid': 40, 'stt': 85, 'tts': 85, 'emb': 85}
 SPILL_SCORE = 10
 
-Level = Literal['liso', 'usavel', 'pesado', 'nao_roda']
-LEVEL_LABELS = {'liso': 'Roda liso', 'usavel': 'Usável', 'pesado': 'Pesado', 'nao_roda': 'Não roda'}
+# smooth: comfortable to use; usable: works, with waits; heavy: very slow; wont_run: does not load.
+# The interface translates these into the user's language.
+Level = Literal['smooth', 'usable', 'heavy', 'wont_run']
 
 
 class Estimate(BaseModel):
     size_gb: float
-    placement: Literal['vram', 'vram+ram', 'ram', 'nao_carrega']
+    placement: Literal['vram', 'vram+ram', 'ram', 'wont_load']
     tps: Optional[float] = None  # tokens per second; None for models that don't write text
     score: int
     level: Level
-    level_label: str
     tight_vram: bool = False
 
 
 def level_for(score: int) -> Level:
     if score >= 60:
-        return 'liso'
+        return 'smooth'
     if score >= 20:
-        return 'usavel'
+        return 'usable'
     if score > 0:
-        return 'pesado'
-    return 'nao_roda'
+        return 'heavy'
+    return 'wont_run'
 
 
 def placement_for(size_gb: float, hw: Hardware) -> str:
@@ -50,7 +50,7 @@ def placement_for(size_gb: float, hw: Hardware) -> str:
         return 'vram'
     if size_gb <= hw.vram_gb + hw.ram_for_models_gb:
         return 'vram+ram' if hw.has_gpu else 'ram'
-    return 'nao_carrega'
+    return 'wont_load'
 
 
 def tokens_per_second(size_gb: float, active_ratio: float, hw: Hardware) -> float:
@@ -60,7 +60,7 @@ def tokens_per_second(size_gb: float, active_ratio: float, hw: Hardware) -> floa
     gpu_bw = hw.gpu_bandwidth_gbs * hw.gpu_efficiency
     ram_bw = hw.ram_bandwidth_gbs
     placement = placement_for(size_gb, hw)
-    if placement == 'nao_carrega':
+    if placement == 'wont_load':
         return 0.0
     if placement == 'vram':
         tps = gpu_bw / per_token
@@ -77,9 +77,9 @@ def estimate(size_gb: float, active_ratio: float, category: str, hw: Hardware) -
     tight = placement == 'vram' and size_gb > TIGHT_VRAM_SHARE * hw.vram_gb
 
     if category not in TEXT_CATEGORIES:
-        score = {'vram': FIT_SCORE.get(category, 40), 'nao_carrega': 0}.get(placement, SPILL_SCORE)
+        score = {'vram': FIT_SCORE.get(category, 40), 'wont_load': 0}.get(placement, SPILL_SCORE)
         level = level_for(score)
-        return Estimate(size_gb=size_gb, placement=placement, score=score, level=level, level_label=LEVEL_LABELS[level])
+        return Estimate(size_gb=size_gb, placement=placement, score=score, level=level)
 
     tps = tokens_per_second(size_gb, active_ratio, hw)
     score = min(95, round(100 * (1 - math.exp(-tps / 35)))) if tps > 0 else 0
@@ -94,6 +94,5 @@ def estimate(size_gb: float, active_ratio: float, category: str, hw: Hardware) -
         tps=round(tps, 1),
         score=score,
         level=level,
-        level_label=LEVEL_LABELS[level],
         tight_vram=tight,
     )

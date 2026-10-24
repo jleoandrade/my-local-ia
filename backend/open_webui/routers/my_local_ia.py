@@ -1,11 +1,18 @@
 import logging
+import unicodedata
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from open_webui.constants import ERROR_MESSAGES
-from open_webui.rmg.catalog import RmgModelModel, RmgModels, detect_hardware, get_hardware, set_overrides
-from open_webui.rmg.estimate import Estimate, estimate
-from open_webui.rmg.hardware import Hardware
+from open_webui.my_local_ia.catalog import (
+    CatalogEntries,
+    CatalogEntryModel,
+    detect_hardware,
+    get_hardware,
+    set_overrides,
+)
+from open_webui.my_local_ia.estimate import Estimate, estimate
+from open_webui.my_local_ia.hardware import Hardware
 from open_webui.utils.auth import get_admin_user, get_verified_user
 from pydantic import BaseModel
 
@@ -56,11 +63,16 @@ async def update_hardware_overrides(form_data: HardwareOverridesForm, user=Depen
 ############################
 
 
-class CatalogModelResponse(RmgModelModel):
+def fold(text: str) -> str:
+    """Lowercase without accents, so 'raciocinio' finds 'raciocínio'."""
+    return ''.join(c for c in unicodedata.normalize('NFD', text.lower()) if not unicodedata.combining(c))
+
+
+class CatalogModelResponse(CatalogEntryModel):
     estimate: Estimate
 
 
-def with_estimate(model: RmgModelModel, hw: Hardware) -> CatalogModelResponse:
+def with_estimate(model: CatalogEntryModel, hw: Hardware) -> CatalogModelResponse:
     return CatalogModelResponse(
         **model.model_dump(),
         estimate=estimate(model.size_gb, model.active_ratio, model.category, hw),
@@ -77,14 +89,15 @@ async def get_catalog(
 ):
     """The catalog with estimates for this server, best first."""
     hw = await get_hardware()
-    query = (q or '').strip().lower()
+    query = fold((q or '').strip())
     items = []
-    for model in await RmgModels.get_all():
+    for model in await CatalogEntries.get_all():
         if category and model.category != category:
             continue
         if reasoning is not None and model.reasoning != reasoning:
             continue
-        if query and query not in f'{model.name} {model.description or ""} {model.use_for or ""}'.lower():
+        texts = [model.name, *(model.description or {}).values(), *(model.use_for or {}).values()]
+        if query and query not in fold(' '.join(texts)):
             continue
         item = with_estimate(model, hw)
         if level and item.estimate.level != level:
@@ -96,7 +109,7 @@ async def get_catalog(
 
 @router.get('/models/{model_id}', response_model=CatalogModelResponse)
 async def get_catalog_model(model_id: str, user=Depends(get_verified_user)):
-    model = await RmgModels.get_by_id(model_id)
+    model = await CatalogEntries.get_by_id(model_id)
     if model is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND)
     return with_estimate(model, await get_hardware())

@@ -185,8 +185,8 @@ from open_webui.routers import (
     users,
     utils,
 )
-from open_webui.routers import rmg
-from open_webui.rmg.catalog import startup as rmg_startup
+from open_webui.routers import my_local_ia
+from open_webui.my_local_ia.catalog import startup as my_local_ia_startup
 from open_webui.routers.retrieval import (
     get_ef,
     get_embedding_function,
@@ -414,9 +414,9 @@ async def lifespan(app: FastAPI):
     await install_tool_and_function_dependencies()
 
     try:
-        await rmg_startup()
+        await my_local_ia_startup()
     except Exception as e:
-        log.exception(f'Roda na minha GPU: startup failed: {e}')
+        log.exception(f'my-local-ia: startup failed: {e}')
 
     app.state.redis = get_redis_client(async_mode=True)
     from open_webui.socket.apps import connections as app_connections
@@ -924,7 +924,7 @@ app.include_router(utils.router, prefix='/api/v1/utils', tags=['utils'])
 app.include_router(terminals.router, prefix='/api/v1/terminals', tags=['terminals'])
 app.include_router(automations.router, prefix='/api/v1/automations', tags=['automations'])
 app.include_router(calendar.router, prefix='/api/v1/calendars', tags=['calendars'])
-app.include_router(rmg.router, prefix='/api/v1/rmg', tags=['rmg'])
+app.include_router(my_local_ia.router, prefix='/api/v1/my-local-ia', tags=['my-local-ia'])
 
 # SCIM 2.0 API for identity management
 if ENABLE_SCIM:

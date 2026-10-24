@@ -2,10 +2,10 @@ import json
 from pathlib import Path
 
 import pytest
-from open_webui import rmg
-from open_webui.rmg import hardware
-from open_webui.rmg.estimate import estimate
-from open_webui.rmg.hardware import (
+from open_webui import my_local_ia
+from open_webui.my_local_ia import hardware
+from open_webui.my_local_ia.estimate import estimate
+from open_webui.my_local_ia.hardware import (
     Hardware,
     apply_overrides,
     gpu_bandwidth,
@@ -18,7 +18,7 @@ from open_webui.rmg.hardware import (
 RTX3060 = Hardware(vram_gb=12, gpu_bandwidth_gbs=360, ram_for_models_gb=56, ram_bandwidth_gbs=21)
 CPU_ONLY = Hardware(vram_gb=0, gpu_bandwidth_gbs=0, ram_for_models_gb=28, ram_bandwidth_gbs=20)
 # Read directly so these tests don't need the database (catalog.py imports it).
-CATALOG_FILE = Path(rmg.__file__).parent / 'catalog.json'
+CATALOG_FILE = Path(my_local_ia.__file__).parent / 'catalog.json'
 
 
 ####################
@@ -32,7 +32,7 @@ def test_parse_nvidia_smi_single_gpu():
     assert gpus[0].name == 'NVIDIA GeForce RTX 3060'
     assert gpus[0].vram_gb == 12.0
     assert gpus[0].bandwidth_gbs == 360
-    assert gpus[0].bandwidth_source == 'tabela'
+    assert gpus[0].bandwidth_source == 'table'
 
 
 def test_parse_nvidia_smi_skips_bad_lines():
@@ -52,11 +52,11 @@ def test_parse_nvidia_smi_skips_bad_lines():
     ],
 )
 def test_gpu_bandwidth_table(name, vram, expected):
-    assert gpu_bandwidth(name, vram) == (expected, 'tabela')
+    assert gpu_bandwidth(name, vram) == (expected, 'table')
 
 
 def test_gpu_bandwidth_unknown_uses_default():
-    assert gpu_bandwidth('Some Future GPU 9000', 16) == (hardware.DEFAULT_GPU_BANDWIDTH, 'padrão')
+    assert gpu_bandwidth('Some Future GPU 9000', 16) == (hardware.DEFAULT_GPU_BANDWIDTH, 'default')
 
 
 def test_parse_meminfo_keeps_reserve():
@@ -79,7 +79,7 @@ def test_detect_without_gpu(monkeypatch):
     monkeypatch.setattr(hardware, 'detect_gpus', lambda: [])
     hw = hardware.detect(measure_ram=False)
     assert hw.has_gpu is False
-    assert hw.sources['ram_bandwidth_gbs'] == 'padrão'
+    assert hw.sources['ram_bandwidth_gbs'] == 'default'
 
 
 def test_detect_multi_gpu_uses_slowest(monkeypatch):
@@ -111,21 +111,21 @@ def test_dense_model_in_vram():
     e = estimate(7.7, 1.0, 'chat', RTX3060)  # Qwen 3 14B
     assert e.placement == 'vram'
     assert e.tps == pytest.approx(32.7, abs=0.1)
-    assert e.level == 'liso'
+    assert e.level == 'smooth'
 
 
 def test_tight_vram_is_capped_at_usable():
     e = estimate(11.3, 0.171, 'chat', RTX3060)  # GPT-OSS 20B: fast, but fills the card
     assert e.tight_vram
     assert e.tps > 60
-    assert e.level == 'usavel'
+    assert e.level == 'usable'
 
 
 def test_spill_to_ram_is_slow():
     e = estimate(16.9, 1.0, 'chat', RTX3060)  # Qwen 3 32B
     assert e.placement == 'vram+ram'
     assert 2 < e.tps < 6
-    assert e.level == 'pesado'
+    assert e.level == 'heavy'
 
 
 def test_moe_spilling_stays_usable():
@@ -136,9 +136,9 @@ def test_moe_spilling_stays_usable():
 
 def test_too_big_does_not_load():
     e = estimate(120.9, 0.094, 'chat', RTX3060)
-    assert e.placement == 'nao_carrega'
+    assert e.placement == 'wont_load'
     assert e.tps == 0
-    assert e.level == 'nao_roda'
+    assert e.level == 'wont_run'
 
 
 def test_cpu_only():
@@ -146,13 +146,13 @@ def test_cpu_only():
     assert small.placement == 'ram'
     assert small.tps == pytest.approx(10.0)
     big = estimate(36.4, 1.0, 'chat', CPU_ONLY)
-    assert big.level == 'nao_roda'
+    assert big.level == 'wont_run'
 
 
 def test_non_text_models_rated_by_fit():
-    assert estimate(1.6, 1.0, 'stt', RTX3060).level == 'liso'
-    assert estimate(14.1, 1.0, 'vid', RTX3060).level == 'pesado'
-    assert estimate(5.0, 1.0, 'img', RTX3060).level == 'usavel'
+    assert estimate(1.6, 1.0, 'stt', RTX3060).level == 'smooth'
+    assert estimate(14.1, 1.0, 'vid', RTX3060).level == 'heavy'
+    assert estimate(5.0, 1.0, 'img', RTX3060).level == 'usable'
     assert estimate(1.6, 1.0, 'stt', RTX3060).tps is None
 
 
@@ -183,3 +183,15 @@ def test_estimates_match_original_site():
         tps = estimate(m['size_gb'], m['active_ratio'], m['category'], RTX3060).tps
         close += 0.6 <= tps / ref <= 1.6
     assert close / total > 0.95
+
+
+def test_catalog_texts_are_translated_and_hardware_neutral():
+    models = json.loads(CATALOG_FILE.read_text(encoding='utf-8'))['models']
+    for m in models:
+        for field in ('description', 'use_for'):
+            assert set(m[field]) == {'en', 'pt-BR', 'es'}, (m['id'], field)
+            assert all(text.strip() for text in m[field].values()), (m['id'], field)
+        # Speed and fit come from the estimate, so the texts must not assume one machine.
+        for text in m['description'].values():
+            for phrase in ('12 GB', 'RTX', 'tok/s', 'nesta placa', 'aqui'):
+                assert phrase not in text, (m['id'], phrase)

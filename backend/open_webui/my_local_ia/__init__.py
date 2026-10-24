@@ -1,4 +1,4 @@
-"""Roda na minha GPU? — hardware-aware model catalog for Open WebUI.
+"""my-local-ia: hardware-aware model catalog for Open WebUI.
 
 hardware.py detects the GPU, RAM and memory bandwidth of this server,
 estimate.py turns that into speed estimates and ratings per model, and

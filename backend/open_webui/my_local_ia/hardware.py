@@ -2,8 +2,8 @@
 
 Everything here is best effort: a missing tool or unreadable file leaves the
 field empty and marks where the value came from, so the admin can fill it in.
-Sources: 'detectado' (read from the system), 'tabela' (looked up by GPU name),
-'medido' (benchmarked), 'padrão' (fallback) and 'manual' (admin override).
+Sources: 'detected' (read from the system), 'table' (looked up by GPU name),
+'measured' (benchmarked), 'default' (fallback) and 'manual' (admin override).
 """
 
 import logging
@@ -148,8 +148,8 @@ def gpu_bandwidth(name: str, vram_gb: float) -> tuple[float, str]:
             value = GPU_BANDWIDTH[key]
             if isinstance(value, list):
                 value = next(bw for max_vram, bw in value if vram_gb <= max_vram)
-            return float(value), 'tabela'
-    return DEFAULT_GPU_BANDWIDTH, 'padrão'
+            return float(value), 'table'
+    return DEFAULT_GPU_BANDWIDTH, 'default'
 
 
 def parse_nvidia_smi(output: str) -> list[Gpu]:
@@ -244,20 +244,20 @@ def detect(measure_ram: bool = True) -> Hardware:
         # Layers are split across GPUs and read one after the other, so the slowest card sets the pace.
         slowest = min(gpus, key=lambda g: g.bandwidth_gbs)
         hw.gpu_bandwidth_gbs = slowest.bandwidth_gbs
-        hw.sources.update(vram_gb='detectado', gpu_bandwidth_gbs=slowest.bandwidth_source)
+        hw.sources.update(vram_gb='detected', gpu_bandwidth_gbs=slowest.bandwidth_source)
     else:
-        hw.sources.update(vram_gb='detectado', gpu_bandwidth_gbs='detectado')
-    hw.sources['gpu_efficiency'] = 'padrão'
+        hw.sources.update(vram_gb='detected', gpu_bandwidth_gbs='detected')
+    hw.sources['gpu_efficiency'] = 'default'
 
     hw.ram_total_gb, hw.ram_for_models_gb = parse_meminfo(_read('/proc/meminfo'))
-    hw.sources['ram_for_models_gb'] = 'detectado' if hw.ram_total_gb else 'padrão'
+    hw.sources['ram_for_models_gb'] = 'detected' if hw.ram_total_gb else 'default'
 
     measured = measure_ram_bandwidth() if measure_ram else None
     if measured:
         hw.ram_bandwidth_gbs = measured
-        hw.sources['ram_bandwidth_gbs'] = 'medido'
+        hw.sources['ram_bandwidth_gbs'] = 'measured'
     else:
-        hw.sources['ram_bandwidth_gbs'] = 'padrão'
+        hw.sources['ram_bandwidth_gbs'] = 'default'
 
     hw.cpu_name = parse_cpuinfo(_read('/proc/cpuinfo'))
     hw.cpu_threads = os.cpu_count()
