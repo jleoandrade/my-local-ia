@@ -338,6 +338,17 @@ docker start my-local-ia
   2. Open your profile → **Packages** → `my-local-ia` → **Package settings** → **Change visibility** → **Public**.
   3. Run **Update** again and choose my-local-ia. Meanwhile, the official version keeps working.
 
+### "The build failed" (image built on the server)
+
+The installed version keeps working: the container is only swapped after the new image is ready. The log shows the exact step (look for the last lines with `ERROR` or `error`).
+
+| What the log shows                                                  | Cause                                    | Fix                                                                                                                             |
+| ------------------------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `JavaScript heap out of memory` or `Killed` during `npm run build`  | Not enough memory to build the interface | Close other programs or give the VM more RAM; on Windows, raise the WSL memory (file `%UserProfile%\.wslconfig`, `memory=12GB`) |
+| `no space left on device`                                           | The disk filled up during the build      | Free about 25 GB (see section 10) and run again; `docker builder prune -f` removes old caches                                   |
+| `Could not resolve host` / `fatal: unable to access` / `curl: (22)` | No internet or wrong address/branch      | Check the repository address and the branch; open the address in a browser                                                      |
+| Error in `pip install` or `npm ci`                                  | Temporary network failure                | Run again: the steps that already worked are cached                                                                             |
+
 ---
 
 ## 10. Disk space

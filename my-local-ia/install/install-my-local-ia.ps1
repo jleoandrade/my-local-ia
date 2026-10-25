@@ -44,6 +44,9 @@ $BackupDir = Join-Path $ConfDir 'backups'
 $OfficialImageGpu = 'ghcr.io/open-webui/open-webui:cuda'
 $OfficialImageCpu = 'ghcr.io/open-webui/open-webui:main'
 $CustomImageName = 'my-local-ia'
+$LocalImageName = 'my-local-ia'   # built on this computer as my-local-ia:local-<cuda|main>
+$SourceDir = Join-Path $ConfDir 'src'
+$MinBuildFreeGb = 25
 $HealthTimeout = 900
 $MinFreeGb = 30
 $KeepBackups = 5
@@ -69,6 +72,8 @@ $Script:Conf = [ordered]@{
     LangCode   = ''
     ImageKind  = ''
     GithubUser = ''
+    RepoUrl    = ''
+    RepoBranch = ''
     Image      = ''
     Port       = ''
     OllamaUrl  = ''
@@ -193,6 +198,16 @@ $Messages = @{
         q_update_version = 'Which version do you want?'
         q_version = 'Which version do you want to install?'
         q_version_custom = 'my-local-ia (custom build from your GitHub repository)'
+        q_version_local = 'my-local-ia built here on this computer from the source code (20–60 minutes)'
+        q_repo_url = 'Address of the my-local-ia repository on GitHub'
+        q_repo_branch = 'Branch'
+        step_build = 'Building the my-local-ia image on this computer'
+        build_q = 'Build {0} now? It takes 20–60 minutes and about {1} GB of disk.'
+        build_disk_low = 'Only {0} GB free on C:; the build needs about {1} GB. Free space first or it may fail halfway.'
+        build_source = 'Source code: {0} ({1}), commit {2}'
+        build_ok = 'Image built: {0}'
+        build_fail = 'The build failed. The installed version was not touched. The log shows the step that failed.'
+        build_clean_q = 'Remove the build cache and old my-local-ia images to free disk?'
         q_version_official = 'Official Open WebUI (recommended for now)'
         ram = 'RAM: {0} GB'
         reboot_needed = 'Restart Windows now. Then run this script again and choose Install: it continues from where it stopped.'
@@ -373,6 +388,16 @@ $Messages = @{
         q_update_version = 'Qual versão você quer?'
         q_version = 'Qual versão você quer instalar?'
         q_version_custom = 'my-local-ia (versão personalizada do seu repositório no GitHub)'
+        q_version_local = 'my-local-ia compilado aqui neste computador a partir do código-fonte (20–60 minutos)'
+        q_repo_url = 'Endereço do repositório do my-local-ia no GitHub'
+        q_repo_branch = 'Branch'
+        step_build = 'Compilando a imagem do my-local-ia neste computador'
+        build_q = 'Compilar {0} agora? Leva de 20 a 60 minutos e uns {1} GB de disco.'
+        build_disk_low = 'Só há {0} GB livres no C:; a compilação precisa de uns {1} GB. Libere espaço antes, senão ela pode falhar no meio.'
+        build_source = 'Código-fonte: {0} ({1}), commit {2}'
+        build_ok = 'Imagem compilada: {0}'
+        build_fail = 'A compilação falhou. A versão instalada não foi alterada. O log mostra a etapa que falhou.'
+        build_clean_q = 'Apagar o cache de compilação e imagens antigas do my-local-ia para liberar disco?'
         q_version_official = 'Open WebUI oficial (recomendado por enquanto)'
         ram = 'RAM: {0} GB'
         reboot_needed = 'Reinicie o Windows agora. Depois rode este script de novo e escolha Instalar: ele continua de onde parou.'
@@ -553,6 +578,16 @@ $Messages = @{
         q_update_version = '¿Qué versión quieres?'
         q_version = '¿Qué versión quieres instalar?'
         q_version_custom = 'my-local-ia (versión personalizada de tu repositorio en GitHub)'
+        q_version_local = 'my-local-ia compilado aquí en este equipo desde el código fuente (20–60 minutos)'
+        q_repo_url = 'Dirección del repositorio de my-local-ia en GitHub'
+        q_repo_branch = 'Rama'
+        step_build = 'Compilando la imagen de my-local-ia en este equipo'
+        build_q = '¿Compilar {0} ahora? Tarda de 20 a 60 minutos y ocupa unos {1} GB de disco.'
+        build_disk_low = 'Solo hay {0} GB libres en C:; la compilación necesita unos {1} GB. Libera espacio antes o puede fallar a mitad.'
+        build_source = 'Código fuente: {0} ({1}), commit {2}'
+        build_ok = 'Imagen compilada: {0}'
+        build_fail = 'La compilación falló. La versión instalada no se tocó. El registro muestra el paso que falló.'
+        build_clean_q = '¿Borrar la caché de compilación y las imágenes antiguas de my-local-ia para liberar disco?'
         q_version_official = 'Open WebUI oficial (recomendado por ahora)'
         ram = 'RAM: {0} GB'
         reboot_needed = 'Reinicia Windows ahora. Después ejecuta este script de nuevo y elige Instalar: continúa donde se quedó.'
@@ -826,6 +861,24 @@ function Ask-GithubUser {
     } while ($Script:Conf.GithubUser -notmatch '^[A-Za-z0-9-]+$')
 }
 
+function Local-Image {
+    $tag = 'local-main'
+    if ($Script:Conf.UseGpu -eq 'yes') { $tag = 'local-cuda' }
+    "${LocalImageName}:$tag"
+}
+
+function Ask-Repo {
+    Ask-GithubUser
+    $default = $Script:Conf.RepoUrl
+    if (-not $default) { $default = "https://github.com/$($Script:Conf.GithubUser)/my-local-ia" }
+    do {
+        $Script:Conf.RepoUrl = (Ask (Msg 'q_repo_url') $default) -replace '\.git$', '' -replace '/+$', ''
+    } while ($Script:Conf.RepoUrl -notmatch '^https://github\.com/[^/]+/[^/]+$')
+    $branch = $Script:Conf.RepoBranch
+    if (-not $branch) { $branch = 'main' }
+    $Script:Conf.RepoBranch = Ask (Msg 'q_repo_branch') $branch
+}
+
 ############################################
 # Checks (read-only)
 ############################################
@@ -991,14 +1044,11 @@ function Test-PortInUse([int]$Port) {
 
 function Ask-Questions {
     if ($Script:GpuList.Count -gt 0) { $Script:Conf.UseGpu = 'yes' } else { $Script:Conf.UseGpu = 'no' }
-    $choice = Choose (Msg 'q_version') @((Msg 'q_version_official'), (Msg 'q_version_custom'))
-    if ($choice -eq 2) {
-        $Script:Conf.ImageKind = 'custom'
-        Ask-GithubUser
-        $Script:Conf.Image = Custom-Image
-    } else {
-        $Script:Conf.ImageKind = 'official'
-        $Script:Conf.Image = Official-Image
+    $choice = Choose (Msg 'q_version') @((Msg 'q_version_official'), (Msg 'q_version_custom'), (Msg 'q_version_local'))
+    switch ($choice) {
+        2 { $Script:Conf.ImageKind = 'custom'; Ask-GithubUser; $Script:Conf.Image = Custom-Image }
+        3 { $Script:Conf.ImageKind = 'local'; Ask-Repo; $Script:Conf.Image = Local-Image }
+        default { $Script:Conf.ImageKind = 'official'; $Script:Conf.Image = Official-Image }
     }
 
     $savedPort = $Script:Conf.Port
@@ -1282,6 +1332,81 @@ function Require-Installed {
     }
 }
 
+# Builds the image from the GitHub repository with the same Dockerfile the GitHub workflow uses.
+# The source comes as a zip (not git clone) so its scripts keep LF line endings inside the image.
+function Build-LocalImage {
+    $free = [math]::Floor((Get-PSDrive -Name C).Free / 1GB)
+    if ($free -lt $MinBuildFreeGb) {
+        Warn (Msg 'build_disk_low' $free $MinBuildFreeGb)
+        Confirm-OrStop (Msg 'continue_q') 'N'
+    }
+    Confirm-OrStop (Msg 'build_q' $Script:Conf.Image $MinBuildFreeGb)
+
+    $repo = $Script:Conf.RepoUrl
+    $branch = $Script:Conf.RepoBranch
+    $zip = Join-Path $ConfDir 'source.zip'
+    if (-not (Run curl.exe -fL --retry 3 -o $zip "$repo/archive/refs/heads/$branch.zip")) { Stop-WithError (Msg 'build_fail') }
+    Say "    > $SourceDir" 'DarkGray'
+    if (-not $Script:IsDryRun) {
+        if (Test-Path $SourceDir) { Remove-Item -Recurse -Force $SourceDir }
+        New-Item -ItemType Directory -Force -Path $SourceDir | Out-Null
+    }
+    if (-not (Run tar.exe -xf $zip -C $SourceDir)) { Stop-WithError (Msg 'build_fail') }
+    $context = $SourceDir
+    if (-not $Script:IsDryRun) {
+        Remove-Item -Force $zip
+        $context = (Get-ChildItem -Directory $SourceDir | Select-Object -First 1).FullName
+    }
+
+    $sha = 'local'
+    $api = $repo -replace '^https://github\.com/', 'https://api.github.com/repos/'
+    try {
+        $commit = (Capture curl.exe -s --max-time 15 "$api/commits/$branch") | ConvertFrom-Json
+        if ($commit.sha) { $sha = $commit.sha.Substring(0, 7) }
+    } catch { }
+    Info (Msg 'build_source' $repo $branch $sha)
+
+    # The frontend build needs a bigger Node heap than the default: half of Docker's memory, 4-12 GB.
+    $heap = 4096
+    $memory = Capture docker info --format '{{.MemTotal}}'
+    if ($memory -match '^\d+$') { $heap = [math]::Min(12288, [math]::Max(4096, [math]::Floor([double]$memory / 1MB / 2))) }
+    $cuda = 'false'
+    $variant = 'main'
+    if ($Script:Conf.UseGpu -eq 'yes') { $cuda = 'true'; $variant = 'cuda' }
+    $dockerfile = Join-Path $ConfDir 'Dockerfile.build'
+    Say "    > $dockerfile (NODE_OPTIONS=--max-old-space-size=$heap)" 'DarkGray'
+    if (-not $Script:IsDryRun) {
+        $lines = foreach ($line in [IO.File]::ReadAllLines((Join-Path $context 'Dockerfile'))) {
+            $line
+            if ($line -match '^FROM --platform=\$BUILDPLATFORM node:') { "ENV NODE_OPTIONS=`"--max-old-space-size=$heap`"" }
+        }
+        [IO.File]::WriteAllText($dockerfile, (($lines -join "`n") + "`n"))
+    }
+
+    if (-not (Run docker build --progress=plain -f $dockerfile --build-arg "USE_CUDA=$cuda" --build-arg "BUILD_HASH=$sha" `
+                --build-arg 'BUILD_CHANNEL=local' -t $Script:Conf.Image -t "${LocalImageName}:git-$sha-$variant" $context)) {
+        Stop-WithError (Msg 'build_fail')
+    }
+    Ok (Msg 'build_ok' $Script:Conf.Image)
+}
+
+# Frees the build cache and my-local-ia images that no container uses.
+function Clear-LocalBuilds {
+    $keep = Capture docker image inspect -f '{{.Id}}' $Script:Conf.Image
+    $null = Run docker builder prune -f
+    foreach ($row in ((Capture docker images --format '{{.Repository}}:{{.Tag}} {{.ID}}' $LocalImageName) -split "`n")) {
+        $ref, $id = $row -split ' '
+        if (-not $id -or ($keep -and $keep.Contains($id))) { continue }
+        $null = Run docker rmi $ref
+    }
+}
+
+# Get-Image: downloads or builds the chosen image.
+function Get-Image {
+    if ($Script:Conf.ImageKind -eq 'local') { Build-LocalImage; return }
+    Pull-Image
+}
+
 function Pull-Image {
     if (-not (Run docker pull $Script:Conf.Image)) {
         if ($Script:Conf.ImageKind -eq 'custom') { Stop-WithError (Msg 'pull_fail_custom' $Script:Conf.Image) }
@@ -1335,9 +1460,13 @@ function Action-Install {
     Step (Msg 'step_config')
     Write-EnvFile
 
-    Step (Msg 'step_pull')
-    Confirm-OrStop (Msg 'pull_q' $Script:Conf.Image)
-    Pull-Image
+    if ($Script:Conf.ImageKind -eq 'local') {
+        Step (Msg 'step_build')
+    } else {
+        Step (Msg 'step_pull')
+        Confirm-OrStop (Msg 'pull_q' $Script:Conf.Image)
+    }
+    Get-Image
 
     Step (Msg 'step_start')
     Confirm-OrStop (Msg 'start_q')
@@ -1390,17 +1519,22 @@ function Action-Update {
     Info (Msg 'update_current' $current)
 
     Step (Msg 'step_questions')
-    $choice = Choose (Msg 'q_update_version') @((Msg 'q_update_keep'), (Msg 'q_version_official'), (Msg 'q_version_custom'))
+    $choice = Choose (Msg 'q_update_version') @((Msg 'q_update_keep'), (Msg 'q_version_official'), (Msg 'q_version_custom'), (Msg 'q_version_local'))
     switch ($choice) {
-        1 { $Script:Conf.Image = $current }
+        1 {
+            $Script:Conf.Image = $current
+            # A local image has no registry to pull from: "newest" means rebuilding it.
+            if ($current -like "${LocalImageName}:*") { $Script:Conf.ImageKind = 'local'; Ask-Repo; $Script:Conf.Image = Local-Image }
+        }
         2 { $Script:Conf.ImageKind = 'official'; $Script:Conf.Image = Official-Image }
         3 { $Script:Conf.ImageKind = 'custom'; Ask-GithubUser; $Script:Conf.Image = Custom-Image }
+        4 { $Script:Conf.ImageKind = 'local'; Ask-Repo; $Script:Conf.Image = Local-Image }
     }
     Info (Msg 'summary_image' $Script:Conf.Image)
     Confirm-OrStop (Msg 'continue_q')
 
-    Step (Msg 'step_pull')
-    Pull-Image
+    if ($Script:Conf.ImageKind -eq 'local') { Step (Msg 'step_build') } else { Step (Msg 'step_pull') }
+    Get-Image
     if (Confirm (Msg 'backup_q')) { Backup-Data }
     Save-Conf
 
@@ -1415,6 +1549,7 @@ function Action-Update {
         Ok (Msg 'update_ok' $Script:Conf.Image)
         $Script:Problems = 0
         Run-Tests
+        if ($Script:Conf.ImageKind -eq 'local' -and (Confirm (Msg 'build_clean_q') 'N')) { Clear-LocalBuilds }
     } else {
         Warn (Msg 'update_rollback')
         $null = Run docker rm -f $Container

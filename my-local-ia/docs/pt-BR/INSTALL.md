@@ -254,6 +254,25 @@ Quando o repositório my-local-ia estiver publicado no GitHub e a imagem dele es
 
 O instalador baixa `ghcr.io/<usuario-github>/my-local-ia:cuda`, mantém todos os seus dados e volta para a versão anterior se algo falhar. Se ele disser que não conseguiu baixar a imagem, ela ainda não foi publicada, ou o pacote dela está privado (veja o guia de solução de problemas).
 
+### Opção sem GitHub Actions: compilar a imagem no próprio servidor
+
+Se você não quer depender do GitHub Actions (ou quer testar uma mudança antes de publicar), o instalador compila a imagem aqui mesmo:
+
+1. Rode o instalador e escolha **2) Atualizar ou trocar de versão** (ou **1) Instalar**, numa instalação nova).
+2. Escolha **my-local-ia compilado aqui no servidor a partir do código-fonte**.
+3. Confirme o usuário do GitHub, o endereço do repositório (padrão: `https://github.com/<usuario>/my-local-ia`) e a branch (padrão: `main`).
+4. Confirme a compilação. Ela leva de **20 a 60 minutos** e precisa de uns **25 GB livres**.
+
+O que acontece:
+
+- **Linux:** o código é baixado com `git` em `/opt/my-local-ia/src` (o `git` é instalado se faltar). Nas próximas vezes só as mudanças são baixadas.
+- **Windows:** o código é baixado como ZIP em `C:\ProgramData\my-local-ia\src` (sem `git`, para os scripts manterem o formato de linha do Linux dentro da imagem). O repositório precisa estar no GitHub.
+- A imagem é gerada com o mesmo `Dockerfile` do GitHub Actions, com memória extra para a compilação da interface (metade da RAM, entre 4 e 12 GB), e recebe os nomes `my-local-ia:local-cuda` (com GPU) ou `my-local-ia:local-main` (sem GPU).
+- A troca do contêiner é igual à da atualização normal: backup opcional, o contêiner antigo fica guardado até o novo responder e, se o novo falhar, o instalador volta para o antigo.
+- No fim, o instalador oferece apagar o cache da compilação e as imagens antigas para liberar disco.
+
+Para atualizar depois: rode **Atualizar** e escolha **A mesma versão, na atualização mais recente**. Com uma imagem compilada aqui, isso baixa o código novo e compila de novo.
+
 ---
 
 ## 10. Onde tudo fica guardado

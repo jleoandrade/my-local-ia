@@ -25,6 +25,9 @@ readonly BACKUP_DIR="/var/backups/my-local-ia"
 readonly OFFICIAL_IMAGE_GPU="ghcr.io/open-webui/open-webui:cuda"
 readonly OFFICIAL_IMAGE_CPU="ghcr.io/open-webui/open-webui:main"
 readonly CUSTOM_IMAGE_NAME="my-local-ia"  # published as ghcr.io/<github user>/my-local-ia
+readonly LOCAL_IMAGE_NAME="my-local-ia"   # built on this server as my-local-ia:local-<cuda|main>
+readonly SOURCE_DIR="/opt/my-local-ia/src"
+readonly MIN_BUILD_FREE_GB=25
 readonly HEALTH_TIMEOUT=900                # first start can take minutes (it downloads models)
 readonly MIN_FREE_GB=30
 readonly KEEP_BACKUPS=5
@@ -39,8 +42,10 @@ STEP=0
 STEP_TOTAL=0
 
 # Settings saved in $CONF_FILE between runs.
-IMAGE_KIND=""      # official | custom
+IMAGE_KIND=""      # official | custom | local
 GITHUB_USER=""
+REPO_URL=""
+REPO_BRANCH=""
 IMAGE=""
 PORT=""
 OLLAMA_URL=""
@@ -138,6 +143,17 @@ MSG_en=(
   [q_version]="Which version do you want to install?"
   [q_version_official]="Official Open WebUI (recommended for now)"
   [q_version_custom]="my-local-ia (custom build from your GitHub repository)"
+  [q_version_local]="my-local-ia built here on this server from the source code (20–60 minutes)"
+  [q_repo_url]="Address of the my-local-ia repository"
+  [q_repo_branch]="Branch"
+  [step_build]="Building the my-local-ia image on this server"
+  [build_q]="Build %s now? It takes 20–60 minutes and about %s GB of disk."
+  [build_disk_low]="Only %s GB free in %s; the build needs about %s GB. Free space first or it may fail halfway."
+  [build_git]="git is needed to download the source code."
+  [build_source]="Source code: %s (%s), commit %s"
+  [build_ok]="Image built: %s"
+  [build_fail]="The build failed. The installed version was not touched. The log shows the step that failed."
+  [build_clean_q]="Remove the build cache and old my-local-ia images to free disk?"
   [q_github_user]="Your GitHub user (owner of the my-local-ia repository)"
   [q_port]="Port to access my-local-ia"
   [port_invalid]="Invalid port. Use a number between 1024 and 65535."
@@ -322,6 +338,17 @@ MSG_pt=(
   [q_version]="Qual versão você quer instalar?"
   [q_version_official]="Open WebUI oficial (recomendado por enquanto)"
   [q_version_custom]="my-local-ia (versão personalizada do seu repositório no GitHub)"
+  [q_version_local]="my-local-ia compilado aqui no servidor a partir do código-fonte (20–60 minutos)"
+  [q_repo_url]="Endereço do repositório do my-local-ia"
+  [q_repo_branch]="Branch"
+  [step_build]="Compilando a imagem do my-local-ia neste servidor"
+  [build_q]="Compilar %s agora? Leva de 20 a 60 minutos e uns %s GB de disco."
+  [build_disk_low]="Só há %s GB livres em %s; a compilação precisa de uns %s GB. Libere espaço antes, senão ela pode falhar no meio."
+  [build_git]="O git é necessário para baixar o código-fonte."
+  [build_source]="Código-fonte: %s (%s), commit %s"
+  [build_ok]="Imagem compilada: %s"
+  [build_fail]="A compilação falhou. A versão instalada não foi alterada. O log mostra a etapa que falhou."
+  [build_clean_q]="Apagar o cache de compilação e imagens antigas do my-local-ia para liberar disco?"
   [q_github_user]="Seu usuário do GitHub (dono do repositório my-local-ia)"
   [q_port]="Porta de acesso ao my-local-ia"
   [port_invalid]="Porta inválida. Use um número entre 1024 e 65535."
@@ -506,6 +533,17 @@ MSG_es=(
   [q_version]="¿Qué versión quieres instalar?"
   [q_version_official]="Open WebUI oficial (recomendado por ahora)"
   [q_version_custom]="my-local-ia (versión personalizada de tu repositorio en GitHub)"
+  [q_version_local]="my-local-ia compilado aquí en el servidor desde el código fuente (20–60 minutos)"
+  [q_repo_url]="Dirección del repositorio de my-local-ia"
+  [q_repo_branch]="Rama"
+  [step_build]="Compilando la imagen de my-local-ia en este servidor"
+  [build_q]="¿Compilar %s ahora? Tarda de 20 a 60 minutos y ocupa unos %s GB de disco."
+  [build_disk_low]="Solo hay %s GB libres en %s; la compilación necesita unos %s GB. Libera espacio antes o puede fallar a mitad."
+  [build_git]="Se necesita git para descargar el código fuente."
+  [build_source]="Código fuente: %s (%s), commit %s"
+  [build_ok]="Imagen compilada: %s"
+  [build_fail]="La compilación falló. La versión instalada no se tocó. El registro muestra el paso que falló."
+  [build_clean_q]="¿Borrar la caché de compilación y las imágenes antiguas de my-local-ia para liberar disco?"
   [q_github_user]="Tu usuario de GitHub (dueño del repositorio my-local-ia)"
   [q_port]="Puerto de acceso a my-local-ia"
   [port_invalid]="Puerto no válido. Usa un número entre 1024 y 65535."
@@ -692,7 +730,12 @@ write_file() {
 # locals use a __ prefix that no caller uses.
 read_line() {
   local __rl_var=$1 __rl_prompt=$2 __rl_answer=""
-  read -r -p "$__rl_prompt" __rl_answer || true
+  if ! read -r -p "$__rl_prompt" __rl_answer && [[ -z $__rl_answer ]]; then
+    # End of input (Ctrl+D or a closed pipe): stop instead of asking forever.
+    printf '\n'
+    warn "$(t interrupted)"
+    exit 130
+  fi
   printf -v "$__rl_var" '%s' "$__rl_answer"
 }
 
@@ -777,6 +820,7 @@ save_conf() {
   local content
   content=$(printf '%s=%q\n' \
     LANG_CODE "$LANG_CODE" IMAGE_KIND "$IMAGE_KIND" GITHUB_USER "$GITHUB_USER" IMAGE "$IMAGE" \
+    REPO_URL "$REPO_URL" REPO_BRANCH "$REPO_BRANCH" \
     PORT "$PORT" OLLAMA_URL "$OLLAMA_URL" MODELS_DIR "$MODELS_DIR" USE_GPU "$USE_GPU")
   run install -d -m 700 "$CONF_DIR"
   write_file "$CONF_FILE" "# my-local-ia installer settings (no secrets here)
@@ -821,6 +865,24 @@ custom_image() {
   local tag=main
   if [[ $USE_GPU == yes ]]; then tag=cuda; fi
   echo "ghcr.io/${GITHUB_USER,,}/$CUSTOM_IMAGE_NAME:$tag"
+}
+
+local_image() {
+  local tag=local-main
+  if [[ $USE_GPU == yes ]]; then tag=local-cuda; fi
+  echo "$LOCAL_IMAGE_NAME:$tag"
+}
+
+ask_github_user() {
+  while [[ -z $GITHUB_USER || ! $GITHUB_USER =~ ^[A-Za-z0-9-]+$ ]]; do
+    ask GITHUB_USER "$(t q_github_user)" "$GITHUB_USER"
+  done
+}
+
+ask_repo() {
+  ask_github_user
+  ask REPO_URL "$(t q_repo_url)" "${REPO_URL:-https://github.com/$GITHUB_USER/my-local-ia.git}"
+  ask REPO_BRANCH "$(t q_repo_branch)" "${REPO_BRANCH:-main}"
 }
 
 ############################################
@@ -1078,17 +1140,12 @@ ask_questions() {
   local choice
   if [[ -n $GPU_LIST ]]; then USE_GPU=yes; else USE_GPU=no; fi
 
-  choose choice "$(t q_version)" "$(t q_version_official)" "$(t q_version_custom)"
-  if ((choice == 2)); then
-    IMAGE_KIND=custom
-    while [[ -z $GITHUB_USER || ! $GITHUB_USER =~ ^[A-Za-z0-9-]+$ ]]; do
-      ask GITHUB_USER "$(t q_github_user)" "$GITHUB_USER"
-    done
-    IMAGE=$(custom_image)
-  else
-    IMAGE_KIND=official
-    IMAGE=$(official_image)
-  fi
+  choose choice "$(t q_version)" "$(t q_version_official)" "$(t q_version_custom)" "$(t q_version_local)"
+  case $choice in
+    2) IMAGE_KIND=custom; ask_github_user; IMAGE=$(custom_image) ;;
+    3) IMAGE_KIND=local; ask_repo; IMAGE=$(local_image) ;;
+    *) IMAGE_KIND=official; IMAGE=$(official_image) ;;
+  esac
 
   while true; do
     ask PORT "$(t q_port)" "${PORT:-$DEFAULT_PORT}"
@@ -1380,6 +1437,83 @@ run_tests() {
 # Backups
 ############################################
 
+# Builds the image from the repository with the same Dockerfile the GitHub workflow uses.
+build_local_image() {
+  if ! command -v git >/dev/null; then
+    info "$(t build_git)"
+    install_packages git || die "$(t build_git)"
+  fi
+  local root free
+  root=$(docker info -f '{{.DockerRootDir}}' 2>/dev/null || echo /var/lib/docker)
+  free=$(df -BG --output=avail "$root" 2>/dev/null | tail -1 | tr -dc '0-9' || true)
+  if [[ -n $free ]] && ((free < MIN_BUILD_FREE_GB)); then
+    warn "$(t build_disk_low "$free" "$root" "$MIN_BUILD_FREE_GB")"
+    confirm_or_stop "$(t continue_q)" N
+  fi
+  confirm_or_stop "$(t build_q "$IMAGE" "$MIN_BUILD_FREE_GB")"
+
+  if [[ -d $SOURCE_DIR/.git ]]; then
+    run git -C "$SOURCE_DIR" remote set-url origin "$REPO_URL"
+    run git -C "$SOURCE_DIR" fetch --depth 1 origin "$REPO_BRANCH" || die "$(t build_fail)"
+    run git -C "$SOURCE_DIR" reset --hard FETCH_HEAD
+    run git -C "$SOURCE_DIR" clean -fdx
+  else
+    run install -d -m 755 "${SOURCE_DIR%/*}"
+    run git clone --depth 1 --branch "$REPO_BRANCH" "$REPO_URL" "$SOURCE_DIR" || die "$(t build_fail)"
+  fi
+  local sha=dry-run
+  if ((!DRY_RUN)); then sha=$(git -C "$SOURCE_DIR" rev-parse --short HEAD); fi
+  info "$(t build_source "$REPO_URL" "$REPO_BRANCH" "$sha")"
+
+  # The frontend build needs a bigger Node heap than the default: half the RAM, 4–12 GB.
+  local ram_mb heap cuda=false variant=main dockerfile
+  ram_mb=$(awk '/MemTotal/ {print int($2 / 1024)}' /proc/meminfo 2>/dev/null || echo 8192)
+  heap=$((ram_mb / 2))
+  ((heap < 4096)) && heap=4096
+  ((heap > 12288)) && heap=12288
+  if [[ $USE_GPU == yes ]]; then cuda=true variant=cuda; fi
+  dockerfile="$CONF_DIR/Dockerfile.build"
+  say "$C_DIM" "    > $dockerfile (NODE_OPTIONS=--max-old-space-size=$heap)"
+  if ((!DRY_RUN)); then
+    awk -v heap="$heap" '
+      { print }
+      /^FROM --platform=\$BUILDPLATFORM node:/ { print "ENV NODE_OPTIONS=\"--max-old-space-size=" heap "\"" }
+    ' "$SOURCE_DIR/Dockerfile" >"$dockerfile"
+  fi
+
+  if ! run env DOCKER_BUILDKIT=1 docker build --progress=plain -f "$dockerfile" \
+    --build-arg USE_CUDA="$cuda" --build-arg BUILD_HASH="$sha" --build-arg BUILD_CHANNEL=local \
+    -t "$IMAGE" -t "$LOCAL_IMAGE_NAME:git-$sha-$variant" "$SOURCE_DIR"; then
+    die "$(t build_fail)"
+  fi
+  ok "$(t build_ok "$IMAGE")"
+}
+
+# Frees the build cache and my-local-ia images that no container uses.
+clean_local_builds() {
+  local keep
+  keep=$(docker image inspect -f '{{.Id}}' "$IMAGE" 2>/dev/null || true)
+  run docker builder prune -f
+  docker images --format '{{.Repository}}:{{.Tag}} {{.ID}}' "$LOCAL_IMAGE_NAME" 2>/dev/null |
+    while read -r ref id; do
+      [[ -n $keep && $keep == *"$id"* ]] && continue
+      run docker rmi "$ref" || true
+    done
+}
+
+# get_image: downloads or builds $IMAGE.
+get_image() {
+  if [[ $IMAGE_KIND == local ]]; then
+    build_local_image
+    return
+  fi
+  if ! run docker pull "$IMAGE"; then
+    if [[ $IMAGE_KIND == custom ]]; then die "$(t pull_fail_custom "$IMAGE")"; fi
+    die "$(t pull_fail)"
+  fi
+  ok "$(t pull_ok)"
+}
+
 helper_image() {
   # The app image already has tar; fall back to a tiny image if it is gone.
   if [[ -n ${IMAGE:-} ]] && docker image inspect "$IMAGE" >/dev/null 2>&1; then echo "$IMAGE"; else echo "$HELPER_IMAGE"; fi
@@ -1485,13 +1619,13 @@ action_install() {
   step "$(t step_config)"
   write_env_file
 
-  step "$(t step_pull)"
-  confirm_or_stop "$(t pull_q "$IMAGE")"
-  if ! run docker pull "$IMAGE"; then
-    if [[ $IMAGE_KIND == custom ]]; then die "$(t pull_fail_custom "$IMAGE")"; fi
-    die "$(t pull_fail)"
+  if [[ $IMAGE_KIND == local ]]; then
+    step "$(t step_build)"
+  else
+    step "$(t step_pull)"
+    confirm_or_stop "$(t pull_q "$IMAGE")"
   fi
-  ok "$(t pull_ok)"
+  get_image
 
   step "$(t step_start)"
   confirm_or_stop "$(t start_q)"
@@ -1541,27 +1675,23 @@ action_update() {
   info "$(t update_current "$current")"
 
   step "$(t step_questions)"
-  choose choice "$(t q_update_version)" "$(t q_update_keep)" "$(t q_version_official)" "$(t q_version_custom)"
+  choose choice "$(t q_update_version)" "$(t q_update_keep)" "$(t q_version_official)" \
+    "$(t q_version_custom)" "$(t q_version_local)"
   case $choice in
-    1) IMAGE=${current:-$IMAGE} ;;
-    2) IMAGE_KIND=official IMAGE=$(official_image) ;;
-    3)
-      IMAGE_KIND=custom
-      while [[ -z $GITHUB_USER || ! $GITHUB_USER =~ ^[A-Za-z0-9-]+$ ]]; do
-        ask GITHUB_USER "$(t q_github_user)" "$GITHUB_USER"
-      done
-      IMAGE=$(custom_image)
+    1)
+      IMAGE=${current:-$IMAGE}
+      # A local image has no registry to pull from: "newest" means rebuilding it.
+      if [[ $IMAGE == "$LOCAL_IMAGE_NAME":* ]]; then IMAGE_KIND=local IMAGE=$(local_image); ask_repo; fi
       ;;
+    2) IMAGE_KIND=official IMAGE=$(official_image) ;;
+    3) IMAGE_KIND=custom; ask_github_user; IMAGE=$(custom_image) ;;
+    4) IMAGE_KIND=local; ask_repo; IMAGE=$(local_image) ;;
   esac
   info "$(t summary_image "$IMAGE")"
   confirm_or_stop "$(t continue_q)"
 
-  step "$(t step_pull)"
-  if ! run docker pull "$IMAGE"; then
-    if [[ $IMAGE_KIND == custom ]]; then die "$(t pull_fail_custom "$IMAGE")"; fi
-    die "$(t pull_fail)"
-  fi
-  ok "$(t pull_ok)"
+  if [[ $IMAGE_KIND == local ]]; then step "$(t step_build)"; else step "$(t step_pull)"; fi
+  get_image
   if confirm "$(t backup_q)"; then backup_data; fi
   save_conf
 
@@ -1575,6 +1705,7 @@ action_update() {
     run docker rm "$PREVIOUS_CONTAINER"
     ok "$(t update_ok "$IMAGE")"
     run_tests
+    if [[ $IMAGE_KIND == local ]] && confirm "$(t build_clean_q)" N; then clean_local_builds; fi
   else
     warn "$(t update_rollback)"
     run docker rm -f "$CONTAINER"

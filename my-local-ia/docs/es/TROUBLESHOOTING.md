@@ -338,6 +338,17 @@ docker start my-local-ia
   2. Abre tu perfil → **Packages** → `my-local-ia` → **Package settings** → **Change visibility** → **Public**.
   3. Ejecuta **Actualizar** de nuevo y elige my-local-ia. Mientras tanto, la versión oficial sigue funcionando.
 
+### "La compilación falló" (imagen compilada en el servidor)
+
+La versión instalada sigue funcionando: el contenedor solo se cambia cuando la imagen nueva está lista. El registro muestra el paso exacto (busca las últimas líneas con `ERROR` o `error`).
+
+| Qué muestra el registro                                             | Causa                                    | Solución                                                                                                                                 |
+| ------------------------------------------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `JavaScript heap out of memory` o `Killed` durante `npm run build`  | Poca memoria para compilar la interfaz   | Cierra otros programas o dale más RAM a la VM; en Windows, aumenta la memoria de WSL (archivo `%UserProfile%\.wslconfig`, `memory=12GB`) |
+| `no space left on device`                                           | El disco se llenó durante la compilación | Libera unos 25 GB (ver la sección 10) y vuelve a ejecutar; `docker builder prune -f` borra cachés antiguas                               |
+| `Could not resolve host` / `fatal: unable to access` / `curl: (22)` | Sin internet o dirección/rama incorrecta | Revisa la dirección del repositorio y la rama; abre la dirección en el navegador                                                         |
+| Error en `pip install` o `npm ci`                                   | Falla de red pasajera                    | Vuelve a ejecutar: los pasos que ya funcionaron quedan en caché                                                                          |
+
 ---
 
 ## 10. Espacio en disco

@@ -254,6 +254,25 @@ Cuando el repositorio my-local-ia esté publicado en GitHub y su imagen esté li
 
 El instalador descarga `ghcr.io/<usuario-github>/my-local-ia:cuda`, conserva todos tus datos y vuelve a la versión anterior si algo falla. Si dice que no pudo descargar la imagen, todavía no está publicada, o su paquete es privado (consulta la guía de solución de problemas).
 
+### Sin GitHub Actions: compilar la imagen en el propio servidor
+
+Si no quieres depender de GitHub Actions (o quieres probar un cambio antes de publicarlo), el instalador compila la imagen aquí mismo:
+
+1. Ejecuta el instalador y elige **2) Actualizar o cambiar de versión** (o **1) Instalar** en una instalación nueva).
+2. Elige **my-local-ia compilado aquí en el servidor desde el código fuente**.
+3. Confirma el usuario de GitHub, la dirección del repositorio (por defecto: `https://github.com/<usuario>/my-local-ia`) y la rama (por defecto: `main`).
+4. Confirma la compilación. Tarda de **20 a 60 minutos** y necesita unos **25 GB libres**.
+
+Qué pasa:
+
+- **Linux:** el código se descarga con `git` en `/opt/my-local-ia/src` (`git` se instala si falta). Las siguientes veces solo se descargan los cambios.
+- **Windows:** el código se descarga como ZIP en `C:\ProgramData\my-local-ia\src` (sin `git`, para que los scripts conserven el formato de línea de Linux dentro de la imagen). El repositorio tiene que estar en GitHub.
+- La imagen se genera con el mismo `Dockerfile` de GitHub Actions, con memoria extra para la compilación de la interfaz (la mitad de la RAM, entre 4 y 12 GB), y se llama `my-local-ia:local-cuda` (con GPU) o `my-local-ia:local-main` (sin GPU).
+- El cambio de contenedor es igual al de una actualización normal: copia de seguridad opcional, el contenedor anterior se guarda hasta que el nuevo responda y, si el nuevo falla, el instalador vuelve al anterior.
+- Al final, el instalador ofrece borrar la caché de compilación y las imágenes antiguas para liberar disco.
+
+Para actualizar después: ejecuta **Actualizar** y elige **La misma versión, en su última actualización**. Con una imagen compilada aquí, eso descarga el código nuevo y vuelve a compilar.
+
 ---
 
 ## 10. Dónde se guarda todo

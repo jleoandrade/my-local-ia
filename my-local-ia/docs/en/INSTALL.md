@@ -254,6 +254,25 @@ When the my-local-ia repository is published on GitHub and its image is built:
 
 The installer downloads `ghcr.io/<github-user>/my-local-ia:cuda`, keeps all your data and goes back to the previous version if anything fails. If it says the image could not be downloaded, the image is not published yet, or its package is private (see the troubleshooting guide).
 
+### Without GitHub Actions: build the image on the server itself
+
+If you do not want to depend on GitHub Actions (or want to try a change before publishing it), the installer builds the image right here:
+
+1. Run the installer and choose **2) Update or switch version** (or **1) Install** on a new installation).
+2. Choose **my-local-ia built here on this server from the source code**.
+3. Confirm the GitHub user, the repository address (default: `https://github.com/<user>/my-local-ia`) and the branch (default: `main`).
+4. Confirm the build. It takes **20 to 60 minutes** and needs about **25 GB free**.
+
+What happens:
+
+- **Linux:** the code is downloaded with `git` into `/opt/my-local-ia/src` (`git` is installed if missing). Later runs only download the changes.
+- **Windows:** the code is downloaded as a ZIP into `C:\ProgramData\my-local-ia\src` (no `git`, so the scripts keep Linux line endings inside the image). The repository must be on GitHub.
+- The image is built with the same `Dockerfile` as GitHub Actions, with extra memory for the interface build (half the RAM, between 4 and 12 GB), and is named `my-local-ia:local-cuda` (with GPU) or `my-local-ia:local-main` (without GPU).
+- The container swap is the same as a normal update: optional backup, the old container is kept until the new one answers and, if the new one fails, the installer goes back to the old one.
+- At the end, the installer offers to remove the build cache and old images to free disk.
+
+To update later: run **Update** and choose **Same version, newest release**. With an image built here, that downloads the new code and builds again.
+
 ---
 
 ## 10. Where everything is stored
