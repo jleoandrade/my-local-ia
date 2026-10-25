@@ -487,7 +487,11 @@ def test_settings_from_an_older_version_get_the_new_robot_defaults():
     assert Settings(**custom).robot_sources == ['me']
 
 
-def test_robot_pick_prefers_what_runs_here():
+def test_robot_pick_balances_the_ratings():
+    from collections import Counter
+
+    from open_webui.my_local_ia.estimate import estimate
+
     def entry(eid, size, rank=0, created=''):
         return {
             'id': eid,
@@ -497,14 +501,28 @@ def test_robot_pick_prefers_what_runs_here():
             'meta': {'rank': rank, 'created': created},
         }
 
-    library = [entry('ol-huge', 400, rank=0), entry('ol-small', 5, rank=5), entry('ol-mid', 9, rank=2)]
-    hugging_face = [entry('hf-old', 4, created='2026-01'), entry('hf-new', 4, created='2026-09'), entry('hf-big', 300)]
-    chosen = [m['id'] for m in robot.pick(library, hugging_face, 4, VM)]
-    # 70% of 4 slots for the library (rounded to 3), the rest for Hugging Face; huge models go last.
-    assert chosen == ['ol-small', 'ol-mid', 'ol-huge', 'hf-new']
-    # When Hugging Face has little, the library takes the free slots (and vice versa).
-    assert len(robot.pick(library, [], 10, VM)) == 3
-    assert [m['id'] for m in robot.pick([], hugging_face, 2, VM)] == ['hf-new', 'hf-old']
+    # On the 12 GB test VM: 4 GB runs smoothly, 9 GB is usable, 14 GB is heavy, 400 GB will not run.
+    library = (
+        [entry(f'ol-small-{i}', 4, rank=i) for i in range(40)]
+        + [entry(f'ol-mid-{i}', 9, rank=100 + i) for i in range(30)]
+        + [entry(f'ol-big-{i}', 14, rank=200 + i) for i in range(5)]
+        + [entry(f'ol-huge-{i}', 400, rank=300 + i) for i in range(10)]
+    )
+    hugging_face = [entry(f'hf-small-{i}', 4, created=f'2026-09-{i + 10:02d}') for i in range(20)]
+
+    def levels(chosen):
+        return Counter(estimate(m['size_gb'], 1.0, 'chat', VM).level for m in chosen)
+
+    chosen = robot.pick(library, hugging_face, 50, VM)
+    assert len(chosen) == 50
+    # 40% / 30% / 22% / 8% of 50; heavy has only 5, so its spare slots go to usable first.
+    assert levels(chosen) == {'smooth': 20, 'usable': 21, 'heavy': 5, 'wont_run': 4}
+    smooth = [m['id'] for m in chosen if m['size_gb'] == 4]
+    # Within a rating, 70% from the library (most popular first) and the newest from Hugging Face.
+    assert smooth[:14] == [f'ol-small-{i}' for i in range(14)]
+    assert smooth[14:] == [f'hf-small-{i}' for i in range(19, 13, -1)]
+    # With few candidates, every one is kept.
+    assert len(robot.pick(library[:3], [], 10, VM)) == 3
 
 
 ####################

@@ -34,7 +34,7 @@ log = logging.getLogger(__name__)
 
 API = 'https://huggingface.co/api/models'
 STATUS_KEY = 'my_local_ia.robot.status'  # {last_run, added, total, error, version}
-VERSION = 3  # bumped when the sources change, so an update runs the robot again right away
+VERSION = 4  # bumped when the sources change, so an update runs the robot again right away
 TIMEOUT = aiohttp.ClientTimeout(total=60)
 
 # Hugging Face task → catalog category
@@ -52,8 +52,12 @@ TASKS = {
 }
 TRENDING_TASKS = ['automatic-speech-recognition', 'text-to-speech', 'feature-extraction', 'sentence-similarity']
 GB_PER_BILLION = {'gguf': 0.6, 'safetensors': 2.0}
-LIBRARY_SHARE = 0.7  # of robot_max_models, for the Ollama library; Hugging Face gets the rest
-LEVEL_RANK = {'smooth': 0, 'usable': 1, 'heavy': 2, 'wont_run': 3}
+LIBRARY_SHARE = 0.7  # of each rating's slots, for the Ollama library; Hugging Face gets the rest
+# The slots are split by rating on this server, so the catalog is not all small models: on a
+# 12 GB GPU almost everything up to 7 GB runs smoothly, while "usable" is a narrow band.
+LEVEL_SHARE = {'smooth': 0.40, 'usable': 0.30, 'heavy': 0.22, 'wont_run': 0.08}
+# Slots a rating cannot fill go to the others in this order.
+SPARE_ORDER = ('usable', 'heavy', 'smooth', 'wont_run')
 
 _run_lock = asyncio.Lock()
 
@@ -355,18 +359,36 @@ async def find_library_models() -> list[dict]:
     return found
 
 
+def take(library: list[dict], hugging_face: list[dict], n: int) -> list[dict]:
+    """n entries, LIBRARY_SHARE of them from the library when both sources have enough."""
+    from_library = min(len(library), max(n - len(hugging_face), round(n * LIBRARY_SHARE)))
+    return library[:from_library] + hugging_face[: n - from_library]
+
+
 def pick(library: list[dict], hugging_face: list[dict], limit: int, hw: Hardware) -> list[dict]:
-    """Up to `limit` entries: what runs well here first, then by popularity (library) or date (HF)."""
+    """Up to `limit` entries split by rating (LEVEL_SHARE); by popularity (library) or date (HF) within each."""
 
-    def level(item: dict) -> int:
-        return LEVEL_RANK[estimate(item['size_gb'], item['active_ratio'], item['category'], hw).level]
+    def level(item: dict) -> str:
+        return estimate(item['size_gb'], item['active_ratio'], item['category'], hw).level
 
-    library = sorted(library, key=lambda m: (level(m), m['meta']['rank']))
+    library = sorted(library, key=lambda m: m['meta']['rank'])
     hugging_face = sorted(hugging_face, key=lambda m: m['meta']['created'], reverse=True)
-    hugging_face = sorted(hugging_face, key=level)  # stable: newest first within each level
-    library_slots = min(len(library), max(limit - len(hugging_face), round(limit * LIBRARY_SHARE)))
-    chosen = library[:library_slots]
-    return chosen + hugging_face[: limit - len(chosen)]
+    pools = {
+        lv: ([m for m in library if level(m) == lv], [m for m in hugging_face if level(m) == lv]) for lv in LEVEL_SHARE
+    }
+    available = {lv: len(lib) + len(hf) for lv, (lib, hf) in pools.items()}
+
+    slots = {lv: min(available[lv], round(limit * share)) for lv, share in LEVEL_SHARE.items()}
+    spare = limit - sum(slots.values())
+    for lv in SPARE_ORDER:
+        extra = min(spare, available[lv] - slots[lv])
+        slots[lv] += extra
+        spare -= extra
+
+    chosen = []
+    for lv in LEVEL_SHARE:
+        chosen += take(*pools[lv], slots[lv])
+    return chosen[:limit]
 
 
 async def find_models(settings: Settings) -> tuple[list[dict], set[str], list[str]]:
