@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+if [ -f "$0" ] && grep -q $'\r' "$0"; then sed -i 's/\r$//' "$0" 2>/dev/null && exec bash "$0" "$@"; f=$(mktemp); tr -d '\r' <"$0" >"$f"; exec bash "$f" "$@"; fi # Windows line endings (CRLF) break bash: fix them and restart. Must stay on line 2, before any blank line.
 # my-local-ia installer for Linux.
 #
 # Installs Open WebUI (the official image or the my-local-ia build) next to an
@@ -1705,7 +1706,7 @@ action_uninstall() {
 ############################################
 
 usage() {
-  sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '3,13p' "$0" | sed 's/^# \{0,1\}//'
 }
 
 detect_language() {

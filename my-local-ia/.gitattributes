@@ -1,0 +1,2 @@
+# The bash installer must keep Linux line endings (LF), even when the repository is checked out on Windows.
+*.sh text eol=lf

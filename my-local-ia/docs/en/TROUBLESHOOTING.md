@@ -50,6 +50,18 @@ Most problems are identified by the first line marked ✖ in the Verify output. 
   - Linux: `sudo bash /tmp/install-my-local-ia.sh`
   - Windows: Start menu → **PowerShell** → right-click → **Run as administrator**, then run the command again.
 
+### Linux: `$'\r': command not found` or `set: pipefail: invalid option name`
+
+- **Cause:** the file was converted to Windows line endings (CRLF) on the way to the server, for example by opening and saving it in a Windows editor or copying it in "text" mode.
+- **Solution:** current versions of the installer fix this by themselves and restart. With an older copy, fix the file and run it again:
+
+  ```bash
+  sudo sed -i 's/\r$//' /tmp/install-my-local-ia.sh
+  sudo bash /tmp/install-my-local-ia.sh
+  ```
+
+  To avoid it, copy the file with `scp`, or set WinSCP to **binary** transfer mode.
+
 ### Windows: "running scripts is disabled on this system"
 
 - **Cause:** the Windows execution policy blocks scripts.

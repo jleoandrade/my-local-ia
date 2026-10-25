@@ -50,6 +50,18 @@ La mayoría de los problemas se identifican en la primera línea marcada con ✖
   - Linux: `sudo bash /tmp/install-my-local-ia.sh`
   - Windows: menú Inicio → **PowerShell** → clic derecho → **Ejecutar como administrador**, y ejecuta el comando de nuevo.
 
+### Linux: `$'\r': command not found` o `set: pipefail: invalid option name`
+
+- **Causa:** el archivo se convirtió a saltos de línea de Windows (CRLF) en el camino al servidor, por ejemplo al abrirlo y guardarlo en un editor de Windows o al copiarlo en modo "texto".
+- **Solución:** las versiones actuales del instalador lo corrigen solas y se reinician. Con una copia antigua, corrige el archivo y ejecútalo de nuevo:
+
+  ```bash
+  sudo sed -i 's/\r$//' /tmp/install-my-local-ia.sh
+  sudo bash /tmp/install-my-local-ia.sh
+  ```
+
+  Para evitarlo, copia el archivo con `scp`, o configura WinSCP para transferir en modo **binario**.
+
 ### Windows: "la ejecución de scripts está deshabilitada en este sistema"
 
 - **Causa:** la directiva de ejecución de Windows bloquea los scripts.
