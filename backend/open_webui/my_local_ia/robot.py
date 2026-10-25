@@ -1,6 +1,11 @@
-"""Finds new models on Hugging Face and adds them to the catalog ("auto" entries).
+"""Finds new models and adds them to the catalog ("auto" entries).
 
-Port of the original site's scripts/update-models.mjs. Sizes come from the
+Two sources: the official Ollama library (every family in every size, with the
+exact download size from the Ollama registry) and GGUF uploads on Hugging Face.
+At most `robot_max_models` entries are kept, and the ones that run on this
+server's hardware come first, so the slots are not spent on 600 GB models.
+
+The Hugging Face part is a port of the original site's scripts/update-models.mjs. Sizes come from the
 parameter count published on Hugging Face (GGUF: Q4_K_M ≈ 0.6 GB per billion;
 audio and embeddings: FP16 = 2 GB per billion); the speed for this server is
 then computed by estimate.py like for any other entry. Descriptions are built
@@ -17,7 +22,10 @@ from typing import Optional
 import aiohttp
 from open_webui.internal.db import get_async_db
 from open_webui.models.config import Config
-from open_webui.my_local_ia.catalog import CatalogEntry
+from open_webui.my_local_ia import ollama_library
+from open_webui.my_local_ia.catalog import CatalogEntry, get_hardware
+from open_webui.my_local_ia.estimate import estimate
+from open_webui.my_local_ia.hardware import Hardware
 from open_webui.my_local_ia.settings import Settings, get_settings
 from open_webui.utils.session_pool import get_session
 from sqlalchemy import delete, select
@@ -25,7 +33,8 @@ from sqlalchemy import delete, select
 log = logging.getLogger(__name__)
 
 API = 'https://huggingface.co/api/models'
-STATUS_KEY = 'my_local_ia.robot.status'  # {last_run, added, total, error}
+STATUS_KEY = 'my_local_ia.robot.status'  # {last_run, added, total, error, version}
+VERSION = 2  # bumped when the sources change, so an update runs the robot again right away
 TIMEOUT = aiohttp.ClientTimeout(total=60)
 
 # Hugging Face task → catalog category
@@ -43,6 +52,8 @@ TASKS = {
 }
 TRENDING_TASKS = ['automatic-speech-recognition', 'text-to-speech', 'feature-extraction', 'sentence-similarity']
 GB_PER_BILLION = {'gguf': 0.6, 'safetensors': 2.0}
+LIBRARY_SHARE = 0.7  # of robot_max_models, for the Ollama library; Hugging Face gets the rest
+LEVEL_RANK = {'smooth': 0, 'usable': 1, 'heavy': 2, 'wont_run': 3}
 
 _run_lock = asyncio.Lock()
 
@@ -130,6 +141,11 @@ PHRASES = {
     'pt': {'en': ' Supports Portuguese.', 'pt-BR': ' Suporta português.', 'es': ' Admite portugués.'},
     'es_lang': {'en': ' Supports Spanish.', 'pt-BR': ' Suporta espanhol.', 'es': ' Admite español.'},
     'en_only': {'en': ' Focused on English.', 'pt-BR': ' Focado em inglês.', 'es': ' Enfocado en inglés.'},
+    'library': {
+        'en': ' From the Ollama library: "{text}"',
+        'pt-BR': ' Na biblioteca do Ollama (em inglês): "{text}"',
+        'es': ' En la biblioteca de Ollama (en inglés): "{text}"',
+    },
     'license': {'en': ' License {lic}: {rule}.', 'pt-BR': ' Licença {lic}: {rule}.', 'es': ' Licencia {lic}: {rule}.'},
     'commercial': {'en': 'commercial use allowed', 'pt-BR': 'permite uso comercial', 'es': 'permite uso comercial'},
     'non_commercial': {
@@ -169,6 +185,19 @@ def classify(name: str, hf_task: str) -> tuple[str, bool]:
     vision = not code and (hf_task == 'image-text-to-text' or bool(re.search(r'vl|vision', name, re.I)))
     reasoning = bool(re.search(r'r1\b|think|reason|qwq|magistral', name, re.I))
     return ('code' if code else 'vis' if vision else 'chat'), reasoning
+
+
+def classify_library(family: dict) -> tuple[str, bool]:
+    """(category, reasoning) of an Ollama library family from its name and capability badges."""
+    name, caps = family['name'], family['capabilities']
+    reasoning = 'thinking' in caps or bool(re.search(r'r1\b|think|reason|qwq|magistral', name, re.I))
+    if 'embedding' in caps or re.search(r'embed', name, re.I):
+        return 'emb', False
+    if re.search(r'coder|code|devstral|starcoder|codestral', name, re.I):
+        return 'code', reasoning
+    if 'vision' in caps or re.search(r'vl\b|vision|llava', name, re.I):
+        return 'vis', reasoning
+    return 'chat', reasoning
 
 
 def active_ratio_from_name(model_id: str, params_b: float) -> float:
@@ -226,6 +255,29 @@ def describe(
     return description, use_for
 
 
+def describe_library(family: dict, category: str, reasoning: bool, params_b: float, active_b: Optional[float]):
+    """Description from the size and Ollama's own (English) summary of the family."""
+    description, use_for = {}, {}
+    summary = family.get('description', '').strip()
+    for lang in LANGS:
+        text = KIND[category][lang]
+        if params_b:
+            text += phrase('size', lang, size=size_text(params_b, lang))
+        if active_b and params_b and active_b < params_b:
+            text += phrase('moe', lang, n=active_b)
+        text += '.'
+        if summary:
+            text += phrase('library', lang, text=summary)
+        description[lang] = text
+        use_key = 'reasoning' if (category == 'chat' and reasoning) else category
+        use_for[lang] = USE_FOR[use_key][lang]
+    return description, use_for
+
+
+def library_name(family: str, tag: str) -> str:
+    return f'{family} {tag.upper()}'
+
+
 def slug(text: str) -> str:
     return re.sub(r'[^a-z0-9]+', '-', text.lower()).strip('-')
 
@@ -261,7 +313,83 @@ def sources(settings: Settings) -> list[tuple[str, str]]:
     return urls
 
 
-async def find_models(settings: Settings) -> list[dict]:
+async def find_library_models() -> list[dict]:
+    """Every size of every family of the Ollama library, most popular families first."""
+    families = await ollama_library.fetch_library()
+    if not families:
+        raise RuntimeError('the Ollama library page had no models (its format may have changed)')
+    variants = [(family, tag) for family in families for tag in family['sizes'] if tag != 'cloud']
+    sizes = await ollama_library.with_sizes(variants)
+    found = []
+    for rank, ((family, tag), download_gb) in enumerate(zip(variants, sizes)):
+        total_b, active_b = ollama_library.size_params(tag)
+        if download_gb is None and total_b is None:
+            continue  # neither the registry nor the tag tells the size
+        size_gb = download_gb or round(total_b * ollama_library.GB_PER_BILLION, 1)
+        params_b = total_b or round(size_gb / ollama_library.GB_PER_BILLION, 1)
+        category, reasoning = classify_library(family)
+        ratio = round(min(1.0, active_b / params_b), 3) if active_b and params_b else 1.0
+        description, use_for = describe_library(family, category, reasoning, params_b, active_b)
+        found.append(
+            {
+                'id': f'ol-{slug(family["name"])}-{slug(tag)}',
+                'name': library_name(family['name'], tag),
+                'category': category,
+                'size_gb': size_gb,
+                'active_ratio': ratio,
+                'reasoning': reasoning,
+                'description': description,
+                'use_for': use_for,
+                'ollama': f'{family["name"]}:{tag}',
+                'meta': {'library': family['name'], 'pulls': family['pulls'], 'rank': rank},
+            }
+        )
+    return found
+
+
+def pick(library: list[dict], hugging_face: list[dict], limit: int, hw: Hardware) -> list[dict]:
+    """Up to `limit` entries: what runs well here first, then by popularity (library) or date (HF)."""
+
+    def level(item: dict) -> int:
+        return LEVEL_RANK[estimate(item['size_gb'], item['active_ratio'], item['category'], hw).level]
+
+    library = sorted(library, key=lambda m: (level(m), m['meta']['rank']))
+    hugging_face = sorted(hugging_face, key=lambda m: m['meta']['created'], reverse=True)
+    hugging_face = sorted(hugging_face, key=level)  # stable: newest first within each level
+    library_slots = min(len(library), max(limit - len(hugging_face), round(limit * LIBRARY_SHARE)))
+    chosen = library[:library_slots]
+    return chosen + hugging_face[: limit - len(chosen)]
+
+
+async def find_models(settings: Settings) -> tuple[list[dict], set[str], list[str]]:
+    """(entries to keep, sources read successfully, errors) from every enabled source."""
+    library, hugging_face, fetched, errors = [], [], set(), []
+    if settings.robot_ollama_library:
+        try:
+            library = await find_library_models()
+            fetched.add('ol')
+        except Exception as e:
+            log.warning(f'my-local-ia robot: Ollama library: {e}')
+            errors.append(f'Ollama library: {e}')
+    if settings.robot_sources or settings.robot_trending_audio_embeddings:
+        hugging_face = await find_hugging_face_models(settings)
+        fetched.add('hf')
+    names, tags = await curated_keys()
+    library, hugging_face = (
+        [m for m in found if known_key(m['name']) not in names and m.get('ollama') not in tags]
+        for found in (library, hugging_face)
+    )
+    return pick(library, hugging_face, settings.robot_max_models, await get_hardware()), fetched, errors
+
+
+async def curated_keys() -> tuple[set[str], set[str]]:
+    """Names and Ollama tags of the hand-picked catalog, which the robot never duplicates."""
+    async with get_async_db() as db:
+        rows = (await db.execute(select(CatalogEntry).where(CatalogEntry.source == 'curated'))).scalars().all()
+    return {known_key(r.name) for r in rows}, {r.ollama for r in rows if r.ollama}
+
+
+async def find_hugging_face_models(settings: Settings) -> list[dict]:
     """Candidate catalog rows from Hugging Face, newest first."""
     seen, found = set(), []
     for url, weights in sources(settings):
@@ -311,7 +439,7 @@ async def find_models(settings: Settings) -> list[dict]:
                 }
             )
     found.sort(key=lambda m: m['meta']['created'], reverse=True)
-    return found[: settings.robot_max_models]
+    return found
 
 
 ####################
@@ -323,16 +451,21 @@ def known_key(name: str) -> str:
     return re.sub(r'gguf|instruct|\bit\b|[^a-z0-9]', '', name.lower())
 
 
-async def save(found: list[dict]) -> int:
-    """Replaces the auto entries; skips models already in the curated catalog. Returns how many are new."""
+async def save(found: list[dict], fetched: Optional[set[str]] = None) -> int:
+    """Replaces the auto entries; skips models already in the curated catalog. Returns how many are new.
+
+    Entries of a source that could not be read this time (`fetched` says which were) are kept.
+    """
     now = int(time.time())
+    fetched = {'hf', 'ol'} if fetched is None else fetched
     async with get_async_db() as db:
         rows = (await db.execute(select(CatalogEntry))).scalars().all()
         curated = {known_key(r.name) for r in rows if r.source == 'curated'}
+        curated_tags = {r.ollama for r in rows if r.source == 'curated' and r.ollama}
         previous = {r.id: r for r in rows if r.source == 'auto'}
         keep, added = set(), 0
         for item in found:
-            if known_key(item['name']) in curated:
+            if known_key(item['name']) in curated or item.get('ollama') in curated_tags:
                 continue
             keep.add(item['id'])
             row = previous.get(item['id'])
@@ -345,7 +478,7 @@ async def save(found: list[dict]) -> int:
                 for key, value in item.items():
                     setattr(row, key, value)
                 row.updated_at = now
-        gone = [rid for rid in previous if rid not in keep]
+        gone = [rid for rid in previous if rid not in keep and rid.split('-', 1)[0] in fetched]
         if gone:
             await db.execute(delete(CatalogEntry).where(CatalogEntry.id.in_(gone)))
         await db.commit()
@@ -355,11 +488,12 @@ async def save(found: list[dict]) -> int:
 async def run(settings: Optional[Settings] = None) -> dict:
     async with _run_lock:
         settings = settings or await get_settings()
-        status = {'last_run': int(time.time()), 'added': 0, 'total': 0, 'error': None}
+        status = {'last_run': int(time.time()), 'added': 0, 'total': 0, 'error': None, 'version': VERSION}
         try:
-            found = await find_models(settings)
-            status['added'] = await save(found)
+            found, fetched, errors = await find_models(settings)
+            status['added'] = await save(found, fetched)
             status['total'] = len(found)
+            status['error'] = '; '.join(errors) or None
         except Exception as e:
             log.exception(f'my-local-ia robot failed: {e}')
             status['error'] = str(e)
@@ -372,10 +506,14 @@ async def get_status() -> dict:
     return await Config.get(STATUS_KEY) or {}
 
 
-def is_due(settings: Settings, last_run: Optional[int], now: Optional[datetime] = None) -> bool:
-    """Daily or weekly, at robot_time (server local time), once per period."""
+def is_due(
+    settings: Settings, last_run: Optional[int], now: Optional[datetime] = None, version: Optional[int] = VERSION
+) -> bool:
+    """Daily or weekly, at robot_time (server local time), once per period; right away after an update."""
     if not settings.robot_enabled or settings.robot_frequency == 'manual':
         return False
+    if last_run is None or (version or 1) < VERSION:
+        return True  # never ran, or ran with older sources
     now = now or datetime.now()
     hour, minute = map(int, settings.robot_time.split(':'))
     scheduled = now.replace(hour=hour, minute=minute, second=0, microsecond=0)

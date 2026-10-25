@@ -3,6 +3,7 @@
 	import { getContext, onDestroy, onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 
+	import DownloadsPanel from './DownloadsPanel.svelte';
 	import { diskStatus, loadDisk } from './store';
 
 	const i18n = getContext('i18n');
@@ -44,3 +45,5 @@
 		</span>
 	</a>
 {/if}
+
+<DownloadsPanel />

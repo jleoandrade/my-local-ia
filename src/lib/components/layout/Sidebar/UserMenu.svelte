@@ -470,6 +470,27 @@
 				{/if}
 			</div>
 
+			<a
+				href="/my-local-ia/help"
+				draggable="false"
+				class="flex h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[0.8125rem] w-full hover:bg-gray-50/60 dark:hover:bg-gray-800/60 transition cursor-pointer select-none"
+				on:click={async (e) => {
+					if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
+					e.preventDefault();
+					show = false;
+					goto('/my-local-ia/help');
+					if ($mobile) {
+						await tick();
+						showSidebar.set(false);
+					}
+				}}
+			>
+				<div class="self-center">
+					<HelpCircleIcon className="size-3.5" />
+				</div>
+				<div class="self-center truncate">{$i18n.t('Help')}</div>
+			</a>
+
 			{#if role === 'admin'}
 				<div
 					class="user-menu-row flex items-center w-full rounded-xl hover:bg-gray-50/60 dark:hover:bg-gray-800/60 transition-colors"

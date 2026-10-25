@@ -383,7 +383,7 @@
 					<h2 class="text-lg font-semibold">{$i18n.t('Robot for new models')}</h2>
 					<p class="text-sm text-gray-500">
 						{$i18n.t(
-							'Looks for models on Hugging Face and adds them to the catalog with the rating for this hardware.'
+							'Looks for models in the Ollama library and on Hugging Face and adds them to the catalog with the rating for this hardware. The ones that run well here come first.'
 						)}
 					</p>
 				</div>
@@ -460,6 +460,10 @@
 					class="rounded-xl border border-gray-200 dark:border-gray-700 bg-transparent px-3 py-1.5 text-sm"
 					bind:value={sources}
 				/>
+			</label>
+			<label class="flex items-center justify-between gap-3 text-sm">
+				<span>{$i18n.t('Read the official Ollama library (every model in every size)')}</span>
+				<Switch bind:state={settings.robot_ollama_library} />
 			</label>
 			<label class="flex items-center justify-between gap-3 text-sm">
 				<span>{$i18n.t('Also look at trending audio and embeddings models')}</span>

@@ -73,6 +73,22 @@
 					>
 				{/each}
 			</div>
+			<a
+				href="/my-local-ia/help"
+				draggable="false"
+				aria-current={$page.url.pathname.startsWith('/my-local-ia/help') ? 'page' : undefined}
+				class="ml-auto flex shrink-0 items-center gap-1.5 rounded-full border border-gray-200 dark:border-gray-700 px-3 py-1 text-sm transition hover:bg-gray-100 dark:hover:bg-gray-850 {$page.url.pathname.startsWith(
+					'/my-local-ia/help'
+				)
+					? 'bg-gray-100 dark:bg-gray-850'
+					: ''}"
+			>
+				<span
+					class="flex size-4 items-center justify-center rounded-full border border-current text-[0.625rem] font-semibold"
+					aria-hidden="true">?</span
+				>
+				{$i18n.t('Help')}
+			</a>
 		</div>
 	</nav>
 

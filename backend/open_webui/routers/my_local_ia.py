@@ -1,12 +1,10 @@
-import json
 import logging
 import unicodedata
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.responses import StreamingResponse
 from open_webui.constants import ERROR_MESSAGES
-from open_webui.my_local_ia import disk, installed, ollama, picks, robot
+from open_webui.my_local_ia import disk, downloads, installed, ollama, picks, robot
 from open_webui.my_local_ia.catalog import (
     CatalogEntries,
     CatalogEntryModel,
@@ -220,10 +218,11 @@ async def resolve_pull(form: PullForm, user) -> tuple[str, Optional[CatalogEntry
 
 
 async def pull_check(form: PullForm, user) -> PullCheckResponse:
-    _, entry = await resolve_pull(form, user)
+    name, entry = await resolve_pull(form, user)
     status_now = await disk.disk_status()
     size = entry.size_gb if entry else 0.0
-    check = disk.check_download(status_now, size)
+    # Downloads still running will take their share of the disk too.
+    check = disk.check_download(status_now, size, -downloads.pending_gb(except_name=name))
     alternatives = []
     if entry and not check.fits:
         try:
@@ -242,27 +241,41 @@ async def check_pull(form: PullForm, user=Depends(get_verified_user)):
     return await pull_check(form, user)
 
 
-@router.post('/pull')
+@router.post('/pull', response_model=downloads.Download)
 async def pull(form: PullForm, user=Depends(get_verified_user)):
-    """Downloads a model into Ollama, streaming its progress as NDJSON. Refused if it does not fit the disk."""
-    name, _ = await resolve_pull(form, user)
+    """Starts downloading a model on the server and returns at once; GET /downloads shows the progress.
+
+    The download goes on when the browser window closes. Refused if it does not fit the disk.
+    """
+    name, entry = await resolve_pull(form, user)
     result = await pull_check(form, user)
     if not result.check.fits:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='no_space')
+    return downloads.start(
+        name,
+        user,
+        catalog_id=entry.id if entry else None,
+        display_name=entry.name if entry else name,
+        size_gb=entry.size_gb if entry else 0.0,
+    )
 
-    async def stream():
-        succeeded = False
-        async for line in ollama.pull_model(name):
-            try:
-                succeeded = succeeded or json.loads(line).get('status') == 'success'
-            except ValueError:
-                pass
-            yield line
-        if succeeded:
-            await installed.record_download(name if ':' in name else f'{name}:latest', user)
-            log.info(f'my-local-ia: {user.email} downloaded {name}')
 
-    return StreamingResponse(stream(), media_type='application/x-ndjson')
+@router.get('/downloads', response_model=list[downloads.Download])
+async def list_downloads(user=Depends(get_verified_user)):
+    """Running downloads and the ones that finished in the last minutes (everyone sees them)."""
+    return downloads.listing()
+
+
+@router.delete('/downloads/{name:path}')
+async def cancel_download(name: str, user=Depends(get_verified_user)):
+    """Admins cancel any download; users only the ones they started."""
+    job = downloads.get(name)
+    if job is None or job.status != 'downloading':
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=ERROR_MESSAGES.NOT_FOUND)
+    if user.role != 'admin' and job.user_id != user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='not_yours')
+    downloads.cancel(name)
+    return {'cancelled': True}
 
 
 ############################

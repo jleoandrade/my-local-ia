@@ -5,9 +5,10 @@
 	import { toast } from 'svelte-sonner';
 
 	import {
+		cancelDownload,
 		checkPull,
-		pullModel,
 		removeInstalled,
+		startDownload,
 		type Alternative,
 		type PullCheck
 	} from '$lib/apis/my-local-ia';
@@ -15,7 +16,7 @@
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import LevelBadge from './LevelBadge.svelte';
 	import { formatGb } from './labels';
-	import { loadDisk, loadInstalled } from './store';
+	import { downloads, loadDisk, loadInstalled, refreshDownloads } from './store';
 
 	const i18n = getContext('i18n');
 
@@ -26,10 +27,14 @@
 	let checking = false;
 	let check: PullCheck | null = null;
 	let choice = 0;
-	let downloading = false;
-	let progress = 0;
-	let statusText = '';
-	let controller: AbortController | null = null;
+	// Name of the server download this window follows; closing the window does not stop it.
+	let jobName: string | null = null;
+
+	$: job = jobName ? ($downloads.find((d) => d.name === jobName) ?? null) : null;
+	$: downloading = !!jobName;
+	$: progress = Math.round(job?.percent ?? 0);
+	$: statusText = job?.message || $i18n.t('Starting…');
+	$: if (job && job.status !== 'downloading') finished(job.status);
 
 	$: if (show && entry) start();
 
@@ -63,34 +68,34 @@
 	};
 
 	const download = async (catalogId: string, name: string) => {
-		downloading = true;
-		progress = 0;
-		statusText = $i18n.t('Starting…');
-		controller = new AbortController();
 		try {
-			const ok = await pullModel(
-				localStorage.token,
-				{ catalog_id: catalogId },
-				(line) => {
-					if (line.total && line.completed !== undefined) {
-						progress = Math.round((100 * line.completed) / line.total);
-					}
-					statusText = line.status ?? statusText;
-				},
-				controller.signal
-			);
-			if (ok) {
-				toast.success($i18n.t('{{name}} downloaded. It is now in the model list.', { name }));
-				await Promise.all([loadInstalled(true), loadDisk(true)]);
-				onDone();
-				close();
-			} else {
-				toast.error($i18n.t('The download did not finish.'));
-			}
+			const started = await startDownload(localStorage.token, { catalog_id: catalogId });
+			jobName = started.name;
+			await refreshDownloads();
 		} catch (e) {
-			if ((e as Error)?.name !== 'AbortError') toast.error(errorText(`${e}`));
+			toast.error(errorText(`${e}`));
 		}
-		downloading = false;
+	};
+
+	// The toast for a finished download comes from the panel under the disk meter.
+	const finished = async (status: string) => {
+		jobName = null;
+		if (status === 'done') {
+			await Promise.all([loadInstalled(true), loadDisk(true)]);
+			onDone();
+			close();
+		}
+	};
+
+	const cancel = async () => {
+		if (!jobName) return;
+		try {
+			await cancelDownload(localStorage.token, jobName);
+		} catch (e) {
+			toast.error(`${e}`);
+		}
+		jobName = null;
+		await refreshDownloads();
 	};
 
 	const run = async (alternative: Alternative | null) => {
@@ -111,12 +116,12 @@
 		return download(entry.id, entry.name);
 	};
 
+	// Only hides the window: a running download goes on and shows under the disk meter.
 	const close = () => {
-		controller?.abort();
 		show = false;
 		check = null;
 		choice = 0;
-		downloading = false;
+		jobName = null;
 	};
 </script>
 
@@ -144,11 +149,21 @@
 				<div class="flex justify-between text-xs text-gray-500">
 					<span>{statusText}</span><span>{progress}%</span>
 				</div>
-				<div class="flex justify-end">
+				<p class="text-xs text-gray-500">
+					{$i18n.t(
+						'You can close this window: the download goes on on the server and its progress shows under the disk meter.'
+					)}
+				</p>
+				<div class="flex justify-end gap-2">
+					<button
+						class="px-3.5 py-1.5 text-sm rounded-full hover:bg-gray-100 dark:hover:bg-gray-850"
+						type="button"
+						on:click={cancel}>{$i18n.t('Cancel download')}</button
+					>
 					<button
 						class="px-3.5 py-1.5 text-sm rounded-full bg-gray-100 dark:bg-gray-850"
 						type="button"
-						on:click={close}>{$i18n.t('Cancel')}</button
+						on:click={close}>{$i18n.t('Close')}</button
 					>
 				</div>
 			{:else if check.check.fits}

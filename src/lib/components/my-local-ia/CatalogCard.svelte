@@ -4,6 +4,7 @@
 
 	import type { CatalogModel } from '$lib/apis/my-local-ia';
 	import LevelBadge from './LevelBadge.svelte';
+	import { downloads } from './store';
 	import {
 		LEVEL_BAR,
 		categoryLabel,
@@ -22,6 +23,7 @@
 
 	$: t = (key: string) => $i18n.t(key);
 	$: estimate = model.estimate;
+	$: running = $downloads.find((d) => d.name === model.ollama && d.status === 'downloading');
 	$: addedOn = model.meta?.added
 		? new Date(model.meta.added * 1000).toLocaleDateString($i18n.language)
 		: '';
@@ -56,6 +58,8 @@
 		<span class="rounded-md bg-gray-100 dark:bg-gray-850 px-2 py-0.5">
 			{#if estimate.tps}
 				{$i18n.t('Estimated')} ~{Math.round(estimate.tps)} {$i18n.t('tokens/s')}
+			{:else if estimate.level === 'wont_run'}
+				{$i18n.t('too big for this server')}
 			{:else}
 				{noSpeedLabel(t, model.category)}
 			{/if}
@@ -81,9 +85,29 @@
 	{/if}
 	{#if model.source === 'auto'}
 		<div class="text-xs text-gray-500">
-			{$i18n.t('Found by the robot on Hugging Face on {{date}}. Estimated numbers.', {
-				date: addedOn
-			})}
+			{#if model.meta?.library}
+				{$i18n.t('Found by the robot in the Ollama library on {{date}}. Exact download size.', {
+					date: addedOn
+				})}
+				<a
+					class="underline"
+					href={`https://ollama.com/library/${encodeURIComponent(model.meta.library)}`}
+					target="_blank"
+					rel="noopener">ollama.com ↗</a
+				>
+			{:else}
+				{$i18n.t('Found by the robot on Hugging Face on {{date}}. Estimated numbers.', {
+					date: addedOn
+				})}
+				{#if model.meta?.hf_id}
+					<a
+						class="underline"
+						href={`https://huggingface.co/${model.meta.hf_id}`}
+						target="_blank"
+						rel="noopener">huggingface.co ↗</a
+					>
+				{/if}
+			{/if}
 		</div>
 	{/if}
 
@@ -95,6 +119,20 @@
 				on:click={() => goto(`/?model=${encodeURIComponent(installedAs ?? '')}`)}
 				>{$i18n.t('Installed · Use')}</button
 			>
+		{:else if running}
+			<button
+				type="button"
+				disabled
+				class="relative flex-1 overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-850 px-3 py-1.5 text-sm font-medium"
+			>
+				<span
+					class="absolute inset-y-0 left-0 bg-blue-600/20 transition-all"
+					style="width: {running.percent}%"
+				></span>
+				<span class="relative"
+					>{$i18n.t('Downloading… {{percent}}%', { percent: Math.round(running.percent) })}</span
+				>
+			</button>
 		{:else if model.ollama && estimate.level !== 'wont_run' && canDownload}
 			<button
 				type="button"

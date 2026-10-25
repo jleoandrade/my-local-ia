@@ -1,6 +1,12 @@
 # my-local-ia
 
-Local AI for your own server: [Open WebUI](https://github.com/open-webui/open-webui) + [Ollama](https://ollama.com), installed in one guided step, with hardware-aware features on the way (model catalog with speed estimates for your GPU, side-by-side simulator, disk monitoring).
+Local AI for your own server: [Open WebUI](https://github.com/open-webui/open-webui) + [Ollama](https://ollama.com), installed in one guided step, with hardware-aware features:
+
+- **"Does it run on my GPU?" catalog**: hand-picked models plus up to 300 found every day in the official Ollama library and on Hugging Face, each rated for the detected hardware; the "Fits this server" filter is on by default.
+- **Downloads in the background** for every user, with a disk check, alternatives when a model does not fit and the progress under the sidebar disk meter.
+- **Warnings in the chat**: heavy models in the selector, "Before sending" for attachments, and tools kept away from models that cannot call them.
+- **Simulator** comparing up to three models, and **disk space** monitoring with alerts.
+- **Help** page (button at the top of the my-local-ia pages, or profile picture → Help) explaining Open WebUI, Ollama and my-local-ia in English, Portuguese and Spanish. Its text lives in `src/lib/components/my-local-ia/help/`.
 
 |                 | English                                       | Português                                             | Español                                             |
 | --------------- | --------------------------------------------- | ----------------------------------------------------- | --------------------------------------------------- |

@@ -38,6 +38,9 @@
 
 	let filter = 'all';
 	let level: Level | null = null;
+	// On by default: the first view shows only what runs well here (smooth or usable).
+	let fitsOnly = true;
+	const FITS: Level[] = ['smooth', 'usable'];
 	let query = '';
 
 	let downloadEntry: CatalogModel | null = null;
@@ -71,25 +74,41 @@
 	const fold = (text: string) => text.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
 	$: counts = LEVELS.map((l) => catalog.filter((m) => m.estimate.level === l).length);
-	$: shown = catalog.filter((m) => {
-		if (level && m.estimate.level !== level) return false;
-		if (filter === 'reasoning' && !m.reasoning) return false;
-		if (filter === 'light' && m.size_gb > 3) return false;
-		if (filter === 'new' && m.source !== 'auto') return false;
-		if (filter === 'installed' && !installedByCatalog[m.id]) return false;
+	type Filters = {
+		fits: boolean;
+		filter: string;
+		level: Level | null;
+		query: string;
+		installed: Record<string, string>;
+	};
+
+	const matches = (m: CatalogModel, f: Filters) => {
+		if (f.level && m.estimate.level !== f.level) return false;
+		if (f.fits && !f.level && !FITS.includes(m.estimate.level)) return false;
+		if (f.filter === 'reasoning' && !m.reasoning) return false;
+		if (f.filter === 'light' && m.size_gb > 3) return false;
+		if (f.filter === 'new' && m.source !== 'auto') return false;
+		if (f.filter === 'installed' && !f.installed[m.id]) return false;
 		if (
-			!['all', 'reasoning', 'light', 'new', 'installed'].includes(filter) &&
-			m.category !== filter
+			!['all', 'reasoning', 'light', 'new', 'installed'].includes(f.filter) &&
+			m.category !== f.filter
 		)
 			return false;
-		if (!query.trim()) return true;
+		if (!f.query.trim()) return true;
 		const text = [
 			m.name,
 			...Object.values(m.description ?? {}),
 			...Object.values(m.use_for ?? {})
 		].join(' ');
-		return fold(text).includes(fold(query.trim()));
-	});
+		return fold(text).includes(fold(f.query.trim()));
+	};
+
+	$: filters = { fits: fitsOnly, filter, level, query, installed: installedByCatalog };
+	$: shown = catalog.filter((m) => matches(m, filters));
+	$: hiddenBySize =
+		fitsOnly && !level
+			? catalog.filter((m) => matches(m, { ...filters, fits: false })).length - shown.length
+			: 0;
 
 	const load = async () => {
 		const token = localStorage.token;
@@ -247,7 +266,26 @@
 					bind:value={query}
 				/>
 			</div>
-			<div class="flex flex-wrap gap-1.5">
+			<div class="flex flex-wrap items-center gap-1.5">
+				<button
+					type="button"
+					role="switch"
+					aria-checked={fitsOnly && !level}
+					class="flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium transition {fitsOnly &&
+					!level
+						? 'border-emerald-600 bg-emerald-50 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300'
+						: 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300'}"
+					title={$i18n.t('Only models rated Runs smoothly or Usable on this server')}
+					on:click={() => {
+						fitsOnly = !(fitsOnly && !level);
+						level = null;
+					}}
+				>
+					<span class="size-2 rounded-full {fitsOnly && !level ? 'bg-emerald-500' : 'bg-gray-300'}"
+					></span>
+					{$i18n.t('Fits this server')}
+				</button>
+				<span class="mx-1 h-5 w-px bg-gray-200 dark:bg-gray-700"></span>
 				{#each chips as [id, label]}
 					<button
 						type="button"
@@ -261,6 +299,14 @@
 			</div>
 			{#if shown.length === 0}
 				<p class="text-sm text-gray-500">{$i18n.t('No model matches this filter.')}</p>
+			{/if}
+			{#if fitsOnly && !level && hiddenBySize > 0}
+				<p class="text-xs text-gray-500">
+					{$i18n.t('{{count}} heavier models are hidden.', { count: hiddenBySize })}
+					<button type="button" class="underline" on:click={() => (fitsOnly = false)}
+						>{$i18n.t('Show all')}</button
+					>
+				</p>
 			{/if}
 			<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
 				{#each shown as model (model.id)}

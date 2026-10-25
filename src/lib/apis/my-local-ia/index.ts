@@ -130,6 +130,7 @@ export type Settings = {
 	robot_min_downloads: number;
 	robot_max_models: number;
 	robot_sources: string[];
+	robot_ollama_library: boolean;
 	robot_trending_audio_embeddings: boolean;
 };
 
@@ -184,52 +185,34 @@ export const checkDiskNow = (token: string): Promise<DiskStatus> =>
 export const checkPull = (token: string, form: { catalog_id?: string; model?: string }) =>
 	request(token, '/pull/check', 'POST', form) as Promise<PullCheck>;
 
-/** Starts a download and calls onProgress for every line Ollama sends. Resolves when it ends. */
-export const pullModel = async (
-	token: string,
-	form: { catalog_id?: string; model?: string },
-	onProgress: (line: {
-		status?: string;
-		total?: number;
-		completed?: number;
-		error?: string;
-	}) => void,
-	signal?: AbortSignal
-) => {
-	const res = await fetch(`${BASE}/pull`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json', authorization: `Bearer ${token}` },
-		body: JSON.stringify(form),
-		signal
-	});
-	if (!res.ok || !res.body) {
-		const error = await res.json().catch(() => ({ detail: res.statusText }));
-		throw error?.detail ?? error;
-	}
-	const reader = res.body.getReader();
-	const decoder = new TextDecoder();
-	let buffer = '';
-	let succeeded = false;
-	for (;;) {
-		const { value, done } = await reader.read();
-		if (done) break;
-		buffer += decoder.decode(value, { stream: true });
-		const lines = buffer.split('\n');
-		buffer = lines.pop() ?? '';
-		for (const line of lines) {
-			if (!line.trim()) continue;
-			try {
-				const data = JSON.parse(line);
-				if (data.status === 'success') succeeded = true;
-				if (data.error) throw data.error;
-				onProgress(data);
-			} catch (e) {
-				if (typeof e === 'string') throw e;
-			}
-		}
-	}
-	return succeeded;
+export type Download = {
+	name: string;
+	catalog_id: string | null;
+	display_name: string;
+	size_gb: number;
+	user_id: string;
+	user_name: string;
+	status: 'downloading' | 'done' | 'error' | 'cancelled';
+	completed: number;
+	total: number;
+	percent: number;
+	message: string;
+	error: string | null;
+	started_at: number;
+	finished_at: number | null;
 };
+
+/** Starts a download on the server; it goes on when the window or the page is closed. */
+export const startDownload = (
+	token: string,
+	form: { catalog_id?: string; model?: string }
+): Promise<Download> => request(token, '/pull', 'POST', form);
+
+/** Running downloads and the ones that finished in the last minutes. */
+export const getDownloads = (token: string): Promise<Download[]> => request(token, '/downloads');
+
+export const cancelDownload = (token: string, name: string): Promise<{ cancelled: boolean }> =>
+	request(token, `/downloads/${encodeURIComponent(name)}`, 'DELETE');
 
 export const getPublicSettings = (token: string): Promise<{ users_can_download: boolean }> =>
 	request(token, '/settings/public');

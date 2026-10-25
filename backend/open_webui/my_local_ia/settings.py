@@ -7,9 +7,25 @@ from pydantic import BaseModel, Field
 
 SETTINGS_KEY = 'my_local_ia.settings'
 
-# Where the robot looks for new models: GGUF uploads from well-known converters
-# (newest first) and, for audio and embeddings, the trending models of each task.
-DEFAULT_ROBOT_SOURCES = ['unsloth', 'ggml-org', 'lmstudio-community', 'city96', 'QuantStack']
+# Where the robot looks for new models on Hugging Face: GGUF uploads from well-known
+# converters and from the makers' own accounts (newest first) and, for audio and
+# embeddings, the trending models of each task.
+DEFAULT_ROBOT_SOURCES = [
+    'unsloth',
+    'bartowski',
+    'ggml-org',
+    'lmstudio-community',
+    'Qwen',
+    'google',
+    'mistralai',
+    'ibm-granite',
+    'city96',
+    'QuantStack',
+]
+# Defaults of earlier versions: saved settings still equal to them are moved to the new ones.
+OLD_ROBOT_SOURCES = ['unsloth', 'ggml-org', 'lmstudio-community', 'city96', 'QuantStack']
+OLD_ROBOT_MAX_MODELS = 200
+SETTINGS_VERSION = 2
 
 
 class Settings(BaseModel):
@@ -26,14 +42,17 @@ class Settings(BaseModel):
     alert_banner: bool = True  # banner for every user while the disk is at warning level or above
     alert_webhook_url: str = ''  # Discord, Slack, Teams, Google Chat…
 
-    # Robot that finds new models on Hugging Face
+    # Robot that finds new models in the Ollama library and on Hugging Face
     robot_enabled: bool = True
     robot_frequency: Literal['daily', 'weekly', 'manual'] = 'daily'
     robot_time: str = Field('06:17', pattern=r'^([01]\d|2[0-3]):[0-5]\d$')  # server local time
     robot_min_downloads: int = Field(1000, ge=0)
-    robot_max_models: int = Field(200, ge=1, le=1000)
+    robot_max_models: int = Field(300, ge=1, le=1000)
+    robot_ollama_library: bool = True
     robot_sources: list[str] = Field(default_factory=lambda: list(DEFAULT_ROBOT_SOURCES))
     robot_trending_audio_embeddings: bool = True
+
+    version: int = SETTINGS_VERSION
 
 
 class SettingsForm(BaseModel):
@@ -53,13 +72,26 @@ class SettingsForm(BaseModel):
     robot_time: Optional[str] = None
     robot_min_downloads: Optional[int] = None
     robot_max_models: Optional[int] = None
+    robot_ollama_library: Optional[bool] = None
     robot_sources: Optional[list[str]] = None
     robot_trending_audio_embeddings: Optional[bool] = None
 
 
+def upgrade(saved: dict) -> dict:
+    """Moves settings saved by an older version to the new defaults, unless the admin changed them."""
+    saved = dict(saved)
+    if saved.get('version', 1) < 2:
+        if saved.get('robot_max_models') == OLD_ROBOT_MAX_MODELS:
+            saved.pop('robot_max_models')
+        if saved.get('robot_sources') == OLD_ROBOT_SOURCES:
+            saved.pop('robot_sources')
+    saved['version'] = SETTINGS_VERSION
+    return saved
+
+
 async def get_settings() -> Settings:
     saved = await Config.get(SETTINGS_KEY) or {}
-    return Settings(**saved)
+    return Settings(**upgrade(saved))
 
 
 async def update_settings(form: SettingsForm) -> Settings:

@@ -37,7 +37,8 @@ async def monitor_loop() -> None:
         except Exception as e:
             log.warning(f'my-local-ia: disk check failed: {e}')
         try:
-            if robot.is_due(settings, (await robot.get_status()).get('last_run')):
+            status = await robot.get_status()
+            if robot.is_due(settings, status.get('last_run'), version=status.get('version')):
                 await robot.run(settings)
         except Exception as e:
             log.warning(f'my-local-ia: robot failed: {e}')

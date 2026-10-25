@@ -192,8 +192,11 @@ def test_robot_classify_and_describe():
 def test_robot_schedule():
     s = Settings(robot_time='06:17')
     morning = datetime(2026, 10, 25, 6, 20)
-    assert robot.is_due(s, None, morning)
-    assert not robot.is_due(s, None, datetime(2026, 10, 25, 6, 0))
+    ran = int(morning.timestamp()) - 2 * 86400
+    assert robot.is_due(s, None, datetime(2026, 10, 25, 6, 0))  # never ran: right away
+    assert robot.is_due(s, ran, datetime(2026, 10, 25, 6, 0), version=1)  # older sources: right away
+    assert robot.is_due(s, ran, morning)
+    assert not robot.is_due(s, int(morning.timestamp()) - 600, datetime(2026, 10, 25, 6, 0))
     assert not robot.is_due(s, int(morning.timestamp()) - 3600, morning)
     assert robot.is_due(s, int(morning.timestamp()) - 86400, morning)
     assert not robot.is_due(Settings(robot_frequency='manual'), None, morning)
@@ -253,7 +256,7 @@ async def test_robot_run_saves_new_models(monkeypatch):
     monkeypatch.setattr(robot, 'get_json', fake_get_json)
     await CatalogEntries.ensure_table()
     await CatalogEntries.seed_curated()
-    status = await robot.run(Settings(robot_sources=['unsloth']))
+    status = await robot.run(Settings(robot_sources=['unsloth'], robot_ollama_library=False))
     assert status['error'] is None
     assert status['added'] == 1  # Tiny: too few downloads; Gemma 3 12B: already in the curated catalog
     entry = await CatalogEntries.get_by_id('hf-unsloth-newmodel-7b-gguf')
@@ -263,7 +266,7 @@ async def test_robot_run_saves_new_models(monkeypatch):
     assert 'Context of up to 128K tokens' in entry.description['en']
     assert 'Licença mit: permite uso comercial' in entry.description['pt-BR']
     # A second run with the same results adds nothing new.
-    assert (await robot.run(Settings(robot_sources=['unsloth'])))['added'] == 0
+    assert (await robot.run(Settings(robot_sources=['unsloth'], robot_ollama_library=False)))['added'] == 0
 
 
 def test_pulled_at_reads_ollama_dates():
@@ -329,3 +332,250 @@ def test_hardware_refresh_only_when_it_changed(monkeypatch):
         assert calls == [False, True, False, False, True]
 
     asyncio.run(scenario())
+
+
+####################
+# Ollama library
+####################
+
+LIBRARY_PAGE = """
+<ul>
+<li x-test-model class="flex items-baseline border-b border-neutral-200 py-6">
+  <a href="/library/qwen3" class="group w-full">
+    <div class="flex flex-col mb-1" title="qwen3">
+      <h2 class="truncate text-xl font-medium"><span x-test-search-response-title>qwen3</span></h2>
+      <p class="max-w-lg break-words text-neutral-800 text-md">Qwen3 is the latest generation of large language models in Qwen series &amp; more.</p>
+    </div>
+    <div class="flex flex-col">
+      <div class="flex flex-wrap space-x-2">
+        <span x-test-capability class="inline-flex">tools</span>
+        <span x-test-capability class="inline-flex">thinking</span>
+        <span x-test-size class="inline-flex">0.6b</span>
+        <span x-test-size class="inline-flex">8b</span>
+        <span x-test-size class="inline-flex">30b-a3b</span>
+        <span x-test-size class="inline-flex">235b</span>
+      </div>
+      <p class="my-1 flex space-x-5">
+        <span class="flex items-center"><svg></svg><span x-test-pull-count>12.3M</span><span>&nbsp;Pulls</span></span>
+        <span class="flex items-center"><span x-test-tag-count>58</span>&nbsp;Tags</span>
+      </p>
+    </div>
+  </a>
+</li>
+<li x-test-model class="flex">
+  <a href="/library/qwen2.5-coder" class="group w-full">
+    <span x-test-search-response-title>qwen2.5-coder</span>
+    <p class="max-w-lg">The latest series of Code-Specific Qwen models.</p>
+    <span x-test-capability>tools</span>
+    <span x-test-size>7b</span>
+    <span x-test-size>14b</span>
+    <span x-test-pull-count>820K</span>
+  </a>
+</li>
+<li x-test-model class="flex">
+  <a href="/library/nomic-embed-text"><span x-test-search-response-title>nomic-embed-text</span>
+  <p>A high-performing open embedding model.</p><span x-test-capability>embedding</span>
+  <span x-test-pull-count>40M</span></a>
+</li>
+<li x-test-model class="flex">
+  <a href="/library/kimi-k2"><span x-test-search-response-title>kimi-k2</span>
+  <p>Cloud only.</p><span x-test-capability>cloud</span><span x-test-size>cloud</span></a>
+</li>
+</ul>
+"""
+
+
+def test_parse_ollama_library_page():
+    from open_webui.my_local_ia import ollama_library
+
+    families = ollama_library.parse_library(LIBRARY_PAGE)
+    assert [f['name'] for f in families] == ['qwen3', 'qwen2.5-coder', 'nomic-embed-text', 'kimi-k2']
+    qwen3 = families[0]
+    assert qwen3['sizes'] == ['0.6b', '8b', '30b-a3b', '235b']
+    assert qwen3['capabilities'] == ['tools', 'thinking']
+    assert qwen3['pulls'] == 12_300_000
+    assert qwen3['description'].endswith('in Qwen series & more.')
+    assert families[1]['pulls'] == 820_000
+    assert ollama_library.parse_library('<html>new layout</html>') == []
+
+
+def test_ollama_size_tags_and_classification():
+    from open_webui.my_local_ia import ollama_library
+
+    assert ollama_library.size_params('8b') == (8.0, None)
+    assert ollama_library.size_params('0.6b') == (0.6, None)
+    assert ollama_library.size_params('e4b') == (4.0, None)
+    assert ollama_library.size_params('30b-a3b') == (30.0, 3.0)
+    assert ollama_library.size_params('16x17b') == (None, 17.0)
+    assert ollama_library.size_params('360m') == (0.36, None)
+    assert ollama_library.size_params('cloud') == (None, None)
+    families = ollama_library.parse_library(LIBRARY_PAGE)
+    assert robot.classify_library(families[0]) == ('chat', True)
+    assert robot.classify_library(families[1]) == ('code', False)
+    assert robot.classify_library(families[2]) == ('emb', False)
+    assert robot.classify_library({'name': 'qwen2.5vl', 'capabilities': ['vision']}) == ('vis', False)
+
+
+@pytest.mark.asyncio
+async def test_robot_reads_the_ollama_library_and_keeps_what_runs_here(monkeypatch):
+    from open_webui.my_local_ia import ollama_library
+    from open_webui.my_local_ia.catalog import CatalogEntries
+
+    async def fake_fetch_library():
+        return ollama_library.parse_library(LIBRARY_PAGE)
+
+    sizes = {
+        'qwen3:0.6b': 0.5,
+        'qwen3:8b': 5.2,
+        'qwen3:30b-a3b': 18.6,
+        'qwen3:235b': 142.0,
+        'qwen2.5-coder:7b': 4.7,
+        'qwen2.5-coder:14b': 9.0,
+    }
+
+    async def fake_download_gb(name, tag):
+        return sizes.get(f'{name}:{tag}')
+
+    async def fake_hardware():
+        return VM
+
+    monkeypatch.setattr(ollama_library, 'fetch_library', fake_fetch_library)
+    monkeypatch.setattr(ollama_library, 'download_gb', fake_download_gb)
+    monkeypatch.setattr(robot, 'get_hardware', fake_hardware)
+    await CatalogEntries.ensure_table()
+    await CatalogEntries.seed_curated()
+
+    settings = Settings(robot_sources=[], robot_trending_audio_embeddings=False, robot_max_models=3)
+    status = await robot.run(settings)
+    assert status['error'] is None
+    entries = {e.id: e for e in await CatalogEntries.get_all() if e.id.startswith('ol-')}
+    # qwen3:8b, qwen3:235b and qwen2.5-coder:7b are hand-picked already: no duplicates, no slot used.
+    assert {'ol-qwen3-8b', 'ol-qwen3-235b', 'ol-qwen2-5-coder-7b'}.isdisjoint(entries)
+    # 3 slots, 4 candidates (nomic-embed-text has no size tag): the ones that run best here win.
+    assert set(entries) == {'ol-qwen3-0-6b', 'ol-qwen3-30b-a3b', 'ol-qwen2-5-coder-14b'}
+    assert entries['ol-qwen3-0-6b'].ollama == 'qwen3:0.6b'
+    assert entries['ol-qwen3-0-6b'].size_gb == 0.5
+    assert entries['ol-qwen3-30b-a3b'].active_ratio == 0.1
+    assert entries['ol-qwen3-30b-a3b'].reasoning is True
+    assert entries['ol-qwen2-5-coder-14b'].category == 'code'
+    assert 'Na biblioteca do Ollama' in entries['ol-qwen3-0-6b'].description['pt-BR']
+    assert not any(e.ollama.startswith('kimi-k2') for e in entries.values())
+
+    # If the library cannot be read next time, its entries stay and the error is reported.
+    async def broken():
+        raise RuntimeError('offline')
+
+    monkeypatch.setattr(ollama_library, 'fetch_library', broken)
+    status = await robot.run(settings)
+    assert 'offline' in status['error']
+    assert 'ol-qwen3-0-6b' in {e.id for e in await CatalogEntries.get_all()}
+
+
+def test_settings_from_an_older_version_get_the_new_robot_defaults():
+    from open_webui.my_local_ia.settings import DEFAULT_ROBOT_SOURCES, OLD_ROBOT_SOURCES, upgrade
+
+    old = upgrade({'robot_max_models': 200, 'robot_sources': OLD_ROBOT_SOURCES, 'disk_block_pct': 90})
+    assert Settings(**old).robot_max_models == 300
+    assert Settings(**old).robot_sources == DEFAULT_ROBOT_SOURCES
+    assert Settings(**old).disk_block_pct == 90
+    custom = upgrade({'robot_max_models': 50, 'robot_sources': ['me']})
+    assert Settings(**custom).robot_max_models == 50
+    assert Settings(**custom).robot_sources == ['me']
+
+
+def test_robot_pick_prefers_what_runs_here():
+    def entry(eid, size, rank=0, created=''):
+        return {
+            'id': eid,
+            'size_gb': size,
+            'active_ratio': 1.0,
+            'category': 'chat',
+            'meta': {'rank': rank, 'created': created},
+        }
+
+    library = [entry('ol-huge', 400, rank=0), entry('ol-small', 5, rank=5), entry('ol-mid', 9, rank=2)]
+    hugging_face = [entry('hf-old', 4, created='2026-01'), entry('hf-new', 4, created='2026-09'), entry('hf-big', 300)]
+    chosen = [m['id'] for m in robot.pick(library, hugging_face, 4, VM)]
+    # 70% of 4 slots for the library (rounded to 3), the rest for Hugging Face; huge models go last.
+    assert chosen == ['ol-small', 'ol-mid', 'ol-huge', 'hf-new']
+    # When Hugging Face has little, the library takes the free slots (and vice versa).
+    assert len(robot.pick(library, [], 10, VM)) == 3
+    assert [m['id'] for m in robot.pick([], hugging_face, 2, VM)] == ['hf-new', 'hf-old']
+
+
+####################
+# Background downloads
+####################
+
+
+@pytest.mark.asyncio
+async def test_downloads_run_in_the_background(monkeypatch):
+    from types import SimpleNamespace
+
+    from open_webui.my_local_ia import disk, downloads, installed, ollama
+
+    GB = 1_000_000_000
+    gate = asyncio.Event()
+    recorded = []
+
+    async def fake_pull(name):
+        yield json.dumps({'status': 'pulling manifest'}).encode()
+        yield json.dumps({'status': 'pulling aaa', 'digest': 'sha256:aaa', 'total': 3 * GB, 'completed': GB}).encode()
+        yield json.dumps({'status': 'pulling bbb', 'digest': 'sha256:bbb', 'total': GB, 'completed': GB}).encode()
+        await gate.wait()
+        yield json.dumps(
+            {'status': 'pulling aaa', 'digest': 'sha256:aaa', 'total': 3 * GB, 'completed': 3 * GB}
+        ).encode()
+        yield json.dumps({'status': 'success'}).encode()
+
+    async def fake_record(name, user):
+        recorded.append((name, user.name))
+
+    async def no_check():
+        return None
+
+    monkeypatch.setattr(ollama, 'pull_model', fake_pull)
+    monkeypatch.setattr(installed, 'record_download', fake_record)
+    monkeypatch.setattr(disk, 'check_and_alert', no_check)
+    user = SimpleNamespace(id='u1', name='Ana')
+
+    job = downloads.start('qwen3', user, catalog_id='qwen3-8b', display_name='Qwen 3 8B', size_gb=5.2)
+    assert downloads.start('qwen3', user) is job  # the same model is not downloaded twice
+    for _ in range(20):
+        await asyncio.sleep(0)
+    # Half of the layers' bytes are in: 2 of 4 GB.
+    assert (job.status, job.completed, job.total, job.percent) == ('downloading', 2 * GB, 4 * GB, 50.0)
+    assert downloads.pending_gb() == 2.0
+    assert downloads.pending_gb(except_name='qwen3') == 0
+
+    gate.set()
+    for _ in range(20):
+        await asyncio.sleep(0)
+    assert job.status == 'done' and job.percent == 100.0
+    assert recorded == [('qwen3:latest', 'Ana')]
+    assert downloads.listing()[0] is job
+    assert downloads.listing(now=job.finished_at + 3600) == []  # old finished jobs drop off
+
+
+@pytest.mark.asyncio
+async def test_downloads_can_be_cancelled(monkeypatch):
+    from types import SimpleNamespace
+
+    from open_webui.my_local_ia import disk, downloads, ollama
+
+    async def endless(name):
+        yield json.dumps({'status': 'pulling aaa', 'digest': 'sha256:aaa', 'total': 10, 'completed': 1}).encode()
+        await asyncio.Event().wait()
+
+    async def no_check():
+        return None
+
+    monkeypatch.setattr(ollama, 'pull_model', endless)
+    monkeypatch.setattr(disk, 'check_and_alert', no_check)
+    job = downloads.start('big:70b', SimpleNamespace(id='u1', name='Ana'))
+    await asyncio.sleep(0)
+    assert downloads.cancel('big:70b') is True
+    for _ in range(5):
+        await asyncio.sleep(0)
+    assert job.status == 'cancelled'
+    assert downloads.cancel('big:70b') is False
