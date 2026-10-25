@@ -1,0 +1,91 @@
+# Builds the my-local-ia images that the installers download:
+#   ghcr.io/<owner>/my-local-ia:cuda   (NVIDIA GPU)
+#   ghcr.io/<owner>/my-local-ia:main   (CPU only)
+# plus a git-<sha>-<variant> tag for every build, so any version can be restored.
+#
+# Only linux/amd64 and two variants, unlike upstream's docker.yaml (5 variants x 2
+# architectures). Disable "Create and publish Docker images with specific build args"
+# in the Actions tab of the fork so both do not run on every push.
+name: my-local-ia image
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+concurrency:
+  group: my-local-ia-image-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        variant:
+          - name: cuda
+            build_args: USE_CUDA=true
+          - name: main
+            build_args: ''
+
+    steps:
+      - name: Prepare environment
+        run: echo "FULL_IMAGE_NAME=${REGISTRY}/${GITHUB_REPOSITORY_OWNER,,}/my-local-ia" >> "${GITHUB_ENV}"
+
+      # The CUDA image is large; the runner needs the space taken by preinstalled toolchains.
+      - name: Free disk space
+        if: matrix.variant.name == 'cuda'
+        run: sudo rm -rf /opt/hostedtoolcache /usr/share/dotnet /usr/local/lib/android
+
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # The frontend build needs more memory than Node's default heap.
+      - name: Prepare CI Dockerfile
+        run: |
+          awk '
+            /^FROM --platform=\$BUILDPLATFORM node:/ {
+              print
+              print "ENV NODE_OPTIONS=\"--max-old-space-size=12288\""
+              next
+            }
+            { print }
+          ' Dockerfile > "${RUNNER_TEMP}/Dockerfile"
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ runner.temp }}/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.FULL_IMAGE_NAME }}:${{ matrix.variant.name }}
+            ${{ env.FULL_IMAGE_NAME }}:git-${{ github.sha }}-${{ matrix.variant.name }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.title=my-local-ia (${{ matrix.variant.name }})
+          cache-from: type=registry,ref=${{ env.FULL_IMAGE_NAME }}:cache-${{ matrix.variant.name }}
+          cache-to: type=registry,ref=${{ env.FULL_IMAGE_NAME }}:cache-${{ matrix.variant.name }},mode=max
+          build-args: |
+            BUILD_HASH=${{ github.sha }}
+            BUILD_CHANNEL=main
+            ${{ matrix.variant.build_args }}
