@@ -187,6 +187,7 @@ from open_webui.routers import (
 )
 from open_webui.routers import my_local_ia
 from open_webui.my_local_ia.service import startup as my_local_ia_startup
+from open_webui.my_local_ia.tool_calling import default_function_calling as my_local_ia_function_calling
 from open_webui.routers.retrieval import (
     get_ef,
     get_embedding_function,
@@ -1365,6 +1366,7 @@ async def chat_completion(
                 'function_calling': (
                     form_data.get('params', {}).get('function_calling')
                     or model_info_params.get('function_calling')
+                    or await my_local_ia_function_calling(model)
                     or 'native'
                 ),
                 'tool_approval_mode': tool_approval_mode,

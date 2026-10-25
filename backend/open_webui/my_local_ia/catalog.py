@@ -144,6 +144,21 @@ async def detect_hardware() -> Hardware:
         return hw
 
 
+def _fingerprint(hw: Hardware) -> tuple:
+    """What a hardware change alters: GPUs and their memory, RAM and CPU threads."""
+    return (tuple((g.name, g.vram_gb) for g in hw.gpus), hw.ram_total_gb, hw.cpu_threads)
+
+
+async def refresh_hardware_if_changed() -> bool:
+    """Quick check without the RAM benchmark; runs the full detection only when something changed."""
+    saved = await Config.get(HARDWARE_DETECTED_KEY)
+    current = await asyncio.to_thread(detect, False)
+    if saved and _fingerprint(Hardware.model_validate(saved)) == _fingerprint(current):
+        return False
+    await detect_hardware()
+    return True
+
+
 async def get_detected_hardware() -> Hardware:
     saved = await Config.get(HARDWARE_DETECTED_KEY)
     if saved:

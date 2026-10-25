@@ -58,11 +58,41 @@
 		await loadInstalled(true);
 	};
 
+	// Says what changed, or what the system still reports, so a resize that did not reach
+	// the VM (or a manual value hiding the new one) is obvious.
+	const describeChange = (before: Hardware | null, after: Hardware) => {
+		const changes: string[] = [];
+		const gb = (value: number) => formatGb(value, $i18n.language);
+		if (before && before.ram_total_gb !== after.ram_total_gb)
+			changes.push(`RAM ${gb(before.ram_total_gb)} → ${gb(after.ram_total_gb)}`);
+		if (before && before.vram_gb !== after.vram_gb)
+			changes.push(`VRAM ${gb(before.vram_gb)} → ${gb(after.vram_gb)}`);
+		if (before && before.cpu_threads !== after.cpu_threads)
+			changes.push(`CPU ${before.cpu_threads} → ${after.cpu_threads} threads`);
+		return changes.length
+			? $i18n.t('Hardware changed: {{changes}}.', { changes: changes.join(' · ') })
+			: $i18n.t(
+					'Nothing changed: the system reports {{ram}} of RAM and {{vram}} of GPU memory. If you added memory, restart the server so the system sees it.',
+					{ ram: gb(after.ram_total_gb), vram: gb(after.vram_gb) }
+				);
+	};
+
 	const detect = async () => {
 		busy = 'detect';
+		const before = hardware;
 		try {
-			await refreshAfterHardware(await detectHardware(localStorage.token));
-			toast.success($i18n.t('Hardware detected again.'));
+			const after = await detectHardware(localStorage.token);
+			await refreshAfterHardware(after);
+			toast.success(describeChange(before, after), { duration: 8000 });
+			const manual = OVERRIDES.filter((key) => after.sources?.[key] === 'manual');
+			if (manual.length) {
+				toast.warning(
+					$i18n.t(
+						'Values set by hand are still used instead of the detected ones. Click "Use detected values" to drop them.'
+					),
+					{ duration: 10000 }
+				);
+			}
 		} catch (e) {
 			toast.error(`${e}`);
 		}
@@ -189,7 +219,14 @@
 				<div>
 					<h1 class="text-2xl font-semibold">{$i18n.t('Hardware of this server')}</h1>
 					<p class="text-sm text-gray-500">
-						{$i18n.t('Detected at startup. Every rating and estimate comes from these numbers.')}
+						{$i18n.t(
+							'Detected at startup and checked again every few minutes. Every rating and estimate comes from these numbers.'
+						)}
+						{#if hardware.detected_at}
+							{$i18n.t('Last detection: {{date}}', {
+								date: new Date(hardware.detected_at * 1000).toLocaleString($i18n.language)
+							})}
+						{/if}
 					</p>
 				</div>
 				<button

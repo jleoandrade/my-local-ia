@@ -1,3 +1,4 @@
+import asyncio
 import json
 from datetime import datetime
 from pathlib import Path
@@ -272,3 +273,59 @@ def test_pulled_at_reads_ollama_dates():
     assert pulled_at({'modified_at': '2026-10-20T07:00:00.123456789-03:00'}) == 1792490400
     assert pulled_at({'modified_at': 'yesterday'}) is None
     assert pulled_at({}) is None
+
+
+def test_function_calling_mode_for_ollama_models():
+    from open_webui.my_local_ia.tool_calling import mode_for, parameters_b
+
+    assert parameters_b({'parameter_size': '7.6B'}) == 7.6
+    assert abs(parameters_b({'parameter_size': '494.03M'}) - 0.494) < 0.001
+    assert parameters_b({}) is None
+    tools = ['completion', 'tools']
+    # Coder models answer with the tool call as JSON text: keep tools out of their requests.
+    assert mode_for('qwen2.5-coder:7b', tools, {'parameter_size': '7.6B'}) == 'legacy'
+    assert mode_for('qwen2.5-coder:32b', tools, {'parameter_size': '32.8B'}) == 'legacy'
+    assert mode_for('llama3.2:3b', tools, {'parameter_size': '3.2B'}) == 'legacy'
+    # No tool support at all, or too small.
+    assert mode_for('gemma2:9b', ['completion'], {'parameter_size': '9.2B'}) == 'legacy'
+    assert mode_for('qwen3:1.7b', tools + ['thinking'], {'parameter_size': '1.7B'}) == 'legacy'
+    # Good tool callers keep native mode.
+    assert mode_for('gpt-oss:20b', tools + ['thinking'], {'parameter_size': '20.9B'}) is None
+    assert mode_for('qwen2.5:14b', tools, {'parameter_size': '14.8B'}) is None
+    assert mode_for('llama3.1:8b', tools, {'parameter_size': '8.0B'}) is None
+    assert mode_for('qwen3-coder:30b', tools, {'parameter_size': '30.5B'}) is None
+
+
+def test_hardware_refresh_only_when_it_changed(monkeypatch):
+    from open_webui.my_local_ia import catalog
+    from open_webui.my_local_ia.hardware import Hardware
+
+    async def scenario():
+        saved = {}
+        calls = []
+
+        async def get(key, default=None):
+            return saved.get(key, default)
+
+        async def upsert(updates, **kwargs):
+            saved.update(updates)
+
+        machine = {'ram': 15.7}
+
+        def fake_detect(measure_ram=True):
+            calls.append(measure_ram)
+            return Hardware(ram_total_gb=machine['ram'], ram_for_models_gb=machine['ram'] - 4, cpu_threads=4)
+
+        monkeypatch.setattr(catalog.Config, 'get', get)
+        monkeypatch.setattr(catalog.Config, 'upsert', upsert)
+        monkeypatch.setattr(catalog, 'detect', fake_detect)
+
+        assert await catalog.refresh_hardware_if_changed() is True  # nothing saved yet
+        assert await catalog.refresh_hardware_if_changed() is False
+        machine['ram'] = 31.4  # the VM got more memory
+        assert await catalog.refresh_hardware_if_changed() is True
+        assert saved[catalog.HARDWARE_DETECTED_KEY]['ram_total_gb'] == 31.4
+        # Quick checks skip the RAM benchmark; only real changes run the full detection.
+        assert calls == [False, True, False, False, True]
+
+    asyncio.run(scenario())
