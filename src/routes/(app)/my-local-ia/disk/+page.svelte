@@ -240,7 +240,7 @@
 
 			<div class="overflow-x-auto rounded-2xl border border-gray-100 dark:border-gray-850">
 				<table class="w-full min-w-[52rem] text-sm">
-					<thead class="text-left text-xs text-gray-500">
+					<thead class="text-left text-xs text-gray-500 whitespace-nowrap">
 						<tr>
 							<th class="px-3 py-2 w-8"><span class="sr-only">{$i18n.t('Remove')}</span></th>
 							<th class="px-3 py-2 font-medium">{$i18n.t('Model')}</th>
