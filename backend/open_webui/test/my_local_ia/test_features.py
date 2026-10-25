@@ -439,8 +439,12 @@ async def test_robot_reads_the_ollama_library_and_keeps_what_runs_here(monkeypat
     async def fake_hardware():
         return VM
 
+    async def no_registry_list(name):
+        return None  # the registry list is unavailable: the sizes shown on the page are used
+
     monkeypatch.setattr(ollama_library, 'fetch_library', fake_fetch_library)
     monkeypatch.setattr(ollama_library, 'download_gb', fake_download_gb)
+    monkeypatch.setattr(ollama_library, 'registry_sizes', no_registry_list)
     monkeypatch.setattr(robot, 'get_hardware', fake_hardware)
     await CatalogEntries.ensure_table()
     await CatalogEntries.seed_curated()
@@ -579,3 +583,89 @@ async def test_downloads_can_be_cancelled(monkeypatch):
         await asyncio.sleep(0)
     assert job.status == 'cancelled'
     assert downloads.cancel('big:70b') is False
+
+
+# The layout the site serves today: no x-test markers, cards made of plain links.
+NEW_LAYOUT_PAGE = """
+<!doctype html><html><head><title>library</title></head><body>
+<nav><a href="/library">Models</a> <a href="/search">Search</a></nav>
+<ul role="list">
+  <li><a href="/library/gpt-oss"><div><h2>gpt-oss</h2>
+    <p class="text-neutral-800">OpenAI&#39;s open-weight models designed for powerful reasoning and agentic tasks.</p>
+    <div><span class="badge">tools</span><span class="badge">thinking</span><span class="badge">cloud</span>
+    <span class="size">20b</span><span class="size">120b</span></div>
+    <p class="text-sm"><span>5.1M</span>&nbsp;<span>Pulls</span> <span>5</span> Tags</p></div></a></li>
+  <li><a href="/library/gemma3"><img alt=""></a><a href="/library/gemma3"><h2>gemma3</h2>
+    <p>The current, most capable model that runs on a single GPU, with vision support.</p>
+    <span>vision</span></a><a href="/library/gemma3:27b">27b</a>
+    <p><span>21M Pulls</span></p></li>
+  <li><a href="/library/embeddinggemma"><h2>embeddinggemma</h2><p>A 300M parameter embedding model from Google.</p>
+    <span>embedding</span><span>300m</span></a></li>
+</ul></body></html>
+"""
+
+
+def test_parse_the_ollama_library_without_test_markers():
+    from open_webui.my_local_ia import ollama_library
+
+    families = ollama_library.parse_library(NEW_LAYOUT_PAGE)
+    assert [f['name'] for f in families] == ['gpt-oss', 'gemma3', 'embeddinggemma']
+    gpt = families[0]
+    assert gpt['description'].startswith("OpenAI's open-weight models")
+    assert gpt['capabilities'] == ['tools', 'thinking', 'cloud']
+    assert gpt['sizes'] == ['cloud', '20b', '120b']
+    assert gpt['pulls'] == 5_100_000
+    gemma = families[1]
+    assert gemma['capabilities'] == ['vision']
+    assert gemma['sizes'] == []  # the page does not list them here: the registry will
+    assert gemma['pulls'] == 21_000_000
+    assert families[2]['sizes'] == ['300m']
+    assert robot.classify_library(families[2]) == ('emb', False)
+    assert ollama_library.parse_library('<html>no models</html>') == []
+
+
+@pytest.mark.asyncio
+async def test_registry_gives_the_sizes_and_drops_tags_that_do_not_exist(monkeypatch):
+    from open_webui.my_local_ia import ollama_library
+    from open_webui.my_local_ia.catalog import CatalogEntries
+
+    async def fake_fetch_library():
+        return ollama_library.parse_library(NEW_LAYOUT_PAGE)
+
+    registry = {
+        'gemma3': ['latest', '1b', '4b', '12b', '27b', '4b-it-qat', '12b-it-q8_0'],
+        'embeddinggemma': ['latest', '300m'],
+    }
+
+    async def fake_registry_sizes(name):
+        if name not in registry:
+            return None  # gpt-oss: registry list not available, page sizes stay
+        return [t for t in registry[name] if ollama_library.SIZE_TAG.fullmatch(t)]
+
+    manifests = {'gemma3:1b': 0.8, 'gemma3:4b': 3.3, 'gemma3:12b': 8.1, 'gemma3:27b': 17.4, 'embeddinggemma:300m': 0.6}
+
+    async def fake_download_gb(name, tag):
+        if name == 'gpt-oss' and tag == '120b':
+            return ollama_library.MISSING
+        return manifests.get(f'{name}:{tag}')
+
+    async def fake_hardware():
+        return VM
+
+    monkeypatch.setattr(ollama_library, 'fetch_library', fake_fetch_library)
+    monkeypatch.setattr(ollama_library, 'registry_sizes', fake_registry_sizes)
+    monkeypatch.setattr(ollama_library, 'download_gb', fake_download_gb)
+    monkeypatch.setattr(robot, 'get_hardware', fake_hardware)
+    await CatalogEntries.ensure_table()
+    await CatalogEntries.seed_curated()
+
+    found = await robot.find_library_models()
+    tags = {m['ollama']: m for m in found}
+    # Sizes come from the registry, even the ones the page did not show; quantization tags are left out.
+    assert {'gemma3:1b', 'gemma3:4b', 'gemma3:12b', 'gemma3:27b', 'embeddinggemma:300m'} <= set(tags)
+    assert not any('qat' in t or 'q8_0' in t for t in tags)
+    assert tags['gemma3:27b']['size_gb'] == 17.4
+    assert tags['gemma3:27b']['category'] == 'vis'
+    # gpt-oss:120b is not in the registry: dropped; 20b stays with its estimated size.
+    assert 'gpt-oss:120b' not in tags
+    assert tags['gpt-oss:20b']['size_gb'] == 12.0

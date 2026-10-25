@@ -34,7 +34,7 @@ log = logging.getLogger(__name__)
 
 API = 'https://huggingface.co/api/models'
 STATUS_KEY = 'my_local_ia.robot.status'  # {last_run, added, total, error, version}
-VERSION = 2  # bumped when the sources change, so an update runs the robot again right away
+VERSION = 3  # bumped when the sources change, so an update runs the robot again right away
 TIMEOUT = aiohttp.ClientTimeout(total=60)
 
 # Hugging Face task → catalog category
@@ -317,12 +317,20 @@ async def find_library_models() -> list[dict]:
     """Every size of every family of the Ollama library, most popular families first."""
     families = await ollama_library.fetch_library()
     if not families:
-        raise RuntimeError('the Ollama library page had no models (its format may have changed)')
+        raise RuntimeError('the Ollama library page had no model links (its format may have changed)')
+    await ollama_library.fill_sizes(families)
     variants = [(family, tag) for family in families for tag in family['sizes'] if tag != 'cloud']
+    if not variants:
+        raise RuntimeError(
+            f'the Ollama library listed {len(families)} models, but no sizes could be read '
+            '(neither on the page nor in the Ollama registry)'
+        )
     sizes = await ollama_library.with_sizes(variants)
     found = []
     for rank, ((family, tag), download_gb) in enumerate(zip(variants, sizes)):
         total_b, active_b = ollama_library.size_params(tag)
+        if download_gb == ollama_library.MISSING:
+            continue  # the page mentioned a size the registry does not have
         if download_gb is None and total_b is None:
             continue  # neither the registry nor the tag tells the size
         size_gb = download_gb or round(total_b * ollama_library.GB_PER_BILLION, 1)
