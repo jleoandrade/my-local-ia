@@ -20,6 +20,11 @@ TIGHT_VRAM_PENALTY = 0.7
 # Scores for models measured by fit rather than tokens per second.
 FIT_SCORE = {'img': 40, 'vid': 40, 'stt': 85, 'tts': 85, 'emb': 85}
 SPILL_SCORE = 10
+# Reading the prompt (prefill) processes many tokens per pass, so it is limited by
+# compute rather than bandwidth. Without the GPU's FLOPS, it is approximated as a
+# multiple of the generation speed: rough, but in the right order of magnitude.
+PREFILL_FACTOR = {'vram': 30, 'vram+ram': 8, 'ram': 3}
+PREFILL_RANGE = (5.0, 5000.0)
 
 # smooth: comfortable to use; usable: works, with waits; heavy: very slow; wont_run: does not load.
 # The interface translates these into the user's language.
@@ -30,6 +35,7 @@ class Estimate(BaseModel):
     size_gb: float
     placement: Literal['vram', 'vram+ram', 'ram', 'wont_load']
     tps: Optional[float] = None  # tokens per second; None for models that don't write text
+    prefill_tps: Optional[float] = None  # tokens per second when reading the prompt and attachments
     score: int
     level: Level
     tight_vram: bool = False
@@ -88,10 +94,15 @@ def estimate(size_gb: float, active_ratio: float, category: str, hw: Hardware) -
     if tight:
         score = min(score, 59)  # fast, but little room left for the conversation
     level = level_for(score)
+    prefill = None
+    if tps > 0:
+        low, high = PREFILL_RANGE
+        prefill = round(min(high, max(low, tps * PREFILL_FACTOR[placement])), 1)
     return Estimate(
         size_gb=size_gb,
         placement=placement,
         tps=round(tps, 1),
+        prefill_tps=prefill,
         score=score,
         level=level,
         tight_vram=tight,

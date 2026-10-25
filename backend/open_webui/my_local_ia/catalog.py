@@ -172,11 +172,3 @@ async def set_overrides(updates: dict) -> dict:
 async def get_hardware() -> Hardware:
     """Detected hardware with the admin's overrides applied: what estimates are based on."""
     return apply_overrides(await get_detected_hardware(), await get_overrides())
-
-
-async def startup() -> None:
-    await CatalogEntries.ensure_table()
-    count = await CatalogEntries.seed_curated()
-    log.info(f'my-local-ia: {count} curated models loaded')
-    if not await Config.get(HARDWARE_DETECTED_KEY):
-        await detect_hardware()

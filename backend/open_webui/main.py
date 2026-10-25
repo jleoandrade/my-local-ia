@@ -186,7 +186,7 @@ from open_webui.routers import (
     utils,
 )
 from open_webui.routers import my_local_ia
-from open_webui.my_local_ia.catalog import startup as my_local_ia_startup
+from open_webui.my_local_ia.service import startup as my_local_ia_startup
 from open_webui.routers.retrieval import (
     get_ef,
     get_embedding_function,
