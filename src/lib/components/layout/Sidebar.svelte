@@ -93,9 +93,11 @@
 	import CheckIcon from '../icons/Check.svelte';
 	import MoreHorizontalIcon from './Sidebar/icons/MoreHorizontal.svelte';
 	import MobileSwipePanel from '../common/MobileSwipePanel.svelte';
+	import ChipIcon from '$lib/components/my-local-ia/icons/Chip.svelte';
+	import DiskMeter from '$lib/components/my-local-ia/DiskMeter.svelte';
 
 	const BREAKPOINT = 768;
-	const DEFAULT_PINNED_ITEMS = ['notes', 'workspace'];
+	const DEFAULT_PINNED_ITEMS = ['my-local-ia', 'notes', 'workspace'];
 
 	let scrollTop = 0;
 
@@ -184,6 +186,8 @@
 				);
 			case 'playground':
 				return $user?.role === 'admin';
+			case 'my-local-ia':
+				return !!$user;
 			default:
 				return false;
 		}
@@ -195,7 +199,8 @@
 			workspace: { label: $i18n.t('Workspace'), href: '/workspace', iconType: 'workspace' },
 			automations: { label: $i18n.t('Automations'), href: '/automations', iconType: 'automations' },
 			calendar: { label: $i18n.t('Calendar'), href: '/calendar', iconType: 'calendar' },
-			playground: { label: $i18n.t('Playground'), href: '/playground', iconType: 'playground' }
+			playground: { label: $i18n.t('Playground'), href: '/playground', iconType: 'playground' },
+			'my-local-ia': { label: 'my-local-ia', href: '/my-local-ia', iconType: 'my-local-ia' }
 		};
 		return items[id];
 	};
@@ -205,7 +210,8 @@
 		workspace: '/workspace',
 		calendar: '/calendar',
 		automations: '/automations',
-		playground: '/playground'
+		playground: '/playground',
+		'my-local-ia': '/my-local-ia'
 	};
 
 	const getActiveMenuItemId = (pathname) => {
@@ -1069,6 +1075,8 @@
 												<CalendarIcon className="size-4" strokeWidth="1.5" />
 											{:else if itemId === 'playground'}
 												<CodeIcon className="size-4" strokeWidth="1.5" />
+											{:else if itemId === 'my-local-ia'}
+												<ChipIcon className="size-4" strokeWidth="1.5" />
 											{/if}
 										</div>
 									</a>
@@ -1291,6 +1299,8 @@
 													<CalendarIcon className="size-4" strokeWidth="1.5" />
 												{:else if itemId === 'playground'}
 													<CodeIcon className="size-4" strokeWidth="1.5" />
+												{:else if itemId === 'my-local-ia'}
+													<ChipIcon className="size-4" strokeWidth="1.5" />
 												{/if}
 											</div>
 
@@ -1722,6 +1732,7 @@
 						class=" sidebar-bg-gradient-to-t bg-linear-to-t from-gray-50 dark:from-gray-950 to-transparent from-50% pointer-events-none absolute inset-0 -z-10 -mt-6"
 					></div>
 					<div class="flex flex-col">
+						<DiskMeter />
 						{#if $user !== undefined && $user !== null}
 							<UserMenu
 								role={$user?.role}

@@ -2,7 +2,7 @@
 
 [English](../en/TROUBLESHOOTING.md) · [Español](../es/TROUBLESHOOTING.md) · Instalação: [INSTALL.md](INSTALL.md)
 
-Cada problema abaixo traz o **sintoma** (o que você vê), a **causa** e a **solução**. Os comandos marcados como *Linux* rodam no terminal do servidor (com `sudo` quando necessário); os marcados como *Windows* rodam no PowerShell aberto como administrador.
+Cada problema abaixo traz o **sintoma** (o que você vê), a **causa** e a **solução**. Os comandos marcados como _Linux_ rodam no terminal do servidor (com `sudo` quando necessário); os marcados como _Windows_ rodam no PowerShell aberto como administrador.
 
 ---
 
@@ -76,7 +76,7 @@ A maioria dos problemas aparece na primeira linha marcada com ✖ no resultado d
 ### Windows: os acentos aparecem quebrados (Ã©, Ã§…)
 
 - **Causa:** o arquivo foi salvo de novo por um editor em outra codificação. O script é salvo como UTF-8 com BOM, que o Windows PowerShell exige.
-- **Solução:** copie o arquivo original de novo. Se for editar, salve como **UTF-8 com BOM** (no Bloco de Notas: *Salvar como → Codificação: UTF-8 com BOM*).
+- **Solução:** copie o arquivo original de novo. Se for editar, salve como **UTF-8 com BOM** (no Bloco de Notas: _Salvar como → Codificação: UTF-8 com BOM_).
 
 ### "Esta distribuição não é suportada pela instalação automática do Docker"
 
@@ -88,7 +88,7 @@ A maioria dos problemas aparece na primeira linha marcada com ✖ no resultado d
 - **Causa:** sem internet, falha de DNS, ou um proxy/firewall bloqueando o `ghcr.io`.
 - **Solução:**
   1. Teste: `curl -I https://ghcr.io/v2/` (a resposta `401` é normal e significa que funciona).
-  2. Se a rede usa **proxy**, o Docker também precisa dele. *Linux:* crie `/etc/systemd/system/docker.service.d/http-proxy.conf`:
+  2. Se a rede usa **proxy**, o Docker também precisa dele. _Linux:_ crie `/etc/systemd/system/docker.service.d/http-proxy.conf`:
 
      ```ini
      [Service]
@@ -97,7 +97,7 @@ A maioria dos problemas aparece na primeira linha marcada com ✖ no resultado d
      Environment="NO_PROXY=localhost,127.0.0.1"
      ```
 
-     e depois `sudo systemctl daemon-reload && sudo systemctl restart docker`. *Windows:* Docker Desktop → Settings → Resources → Proxies.
+     e depois `sudo systemctl daemon-reload && sudo systemctl restart docker`. _Windows:_ Docker Desktop → Settings → Resources → Proxies.
 
 ### A instalação parou quando a conexão SSH caiu
 
@@ -123,7 +123,7 @@ A maioria dos problemas aparece na primeira linha marcada com ✖ no resultado d
   - Debian, Fedora, RHEL e outras: instale o driver pelos repositórios da distribuição ou pela NVIDIA (<https://www.nvidia.com/Download/index.aspx>) e reinicie.
   - Confira com `nvidia-smi`.
 - **Solução (Windows):** instale o driver mais recente em <https://www.nvidia.com/Download/index.aspx> e reinicie.
-- **Máquina virtual:** a placa precisa ser repassada para a VM (*GPU passthrough*) no hipervisor (Proxmox, VMware ESXi, Hyper-V DDA…). Se `lspci | grep -i nvidia` (Linux) não mostra nada, a VM ainda não enxerga a placa.
+- **Máquina virtual:** a placa precisa ser repassada para a VM (_GPU passthrough_) no hipervisor (Proxmox, VMware ESXi, Hyper-V DDA…). Se `lspci | grep -i nvidia` (Linux) não mostra nada, a VM ainda não enxerga a placa.
 
 ### "A placa de vídeo NÃO aparece dentro dos contêineres"
 
@@ -139,6 +139,7 @@ A maioria dos problemas aparece na primeira linha marcada com ✖ no resultado d
   ```
 
   Se o `nvidia-ctk` não existir, rode o instalador de novo (a etapa 4 instala) ou siga <https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html>.
+
 - **Causa (Windows):** driver NVIDIA antigo, WSL antigo, ou o Docker Desktop sem usar o motor WSL 2.
 - **Solução (Windows):** atualize o driver NVIDIA; rode `wsl --update`; no Docker Desktop → Settings → General, ative **Use the WSL 2 based engine**; reinicie o Docker Desktop.
 
@@ -180,8 +181,8 @@ A maioria dos problemas aparece na primeira linha marcada com ✖ no resultado d
 ### Windows: o Docker Desktop não inicia
 
 - **Causas e soluções:**
-  - **Virtualização desativada:** ative *Intel VT-x* / *AMD-V (SVM)* na BIOS/UEFI. Gerenciador de Tarefas → Desempenho → CPU precisa mostrar *Virtualização: Habilitado*.
-  - **O Windows é uma máquina virtual:** ative a virtualização aninhada no hipervisor. Hyper-V (no host, com a VM desligada): `Set-VMProcessor -VMName <nome> -ExposeVirtualizationExtensions $true`. VMware: *Expose hardware assisted virtualization to the guest OS*.
+  - **Virtualização desativada:** ative _Intel VT-x_ / _AMD-V (SVM)_ na BIOS/UEFI. Gerenciador de Tarefas → Desempenho → CPU precisa mostrar _Virtualização: Habilitado_.
+  - **O Windows é uma máquina virtual:** ative a virtualização aninhada no hipervisor. Hyper-V (no host, com a VM desligada): `Set-VMProcessor -VMName <nome> -ExposeVirtualizationExtensions $true`. VMware: _Expose hardware assisted virtualization to the guest OS_.
   - **WSL antigo:** `wsl --update` e reinicie.
   - **Windows Server:** não é suportado pelo Docker Desktop. Use Windows 10/11 ou um servidor Linux.
 
@@ -240,9 +241,11 @@ A maioria dos problemas aparece na primeira linha marcada com ✖ no resultado d
      ```
 
      e `sudo systemctl restart ollama`.
+
   2. No my-local-ia, defina o endereço como `http://IP-DESSE-COMPUTADOR:11434` (pergunta do instalador, ou **Painel do admin → Configurações → Conexões**).
   3. Libere a porta 11434 no firewall desse computador **só** para o servidor do my-local-ia.
-- **Windows:** aceite a oferta do instalador para definir o `OLLAMA_HOST`, ou faça à mão: *Configurações → Sistema → Sobre → Configurações avançadas do sistema → Variáveis de Ambiente* → nova variável de usuário `OLLAMA_HOST` = `0.0.0.0:11434`; feche o Ollama (ícone ao lado do relógio → Quit) e abra de novo.
+
+- **Windows:** aceite a oferta do instalador para definir o `OLLAMA_HOST`, ou faça à mão: _Configurações → Sistema → Sobre → Configurações avançadas do sistema → Variáveis de Ambiente_ → nova variável de usuário `OLLAMA_HOST` = `0.0.0.0:11434`; feche o Ollama (ícone ao lado do relógio → Quit) e abra de novo.
 - Mais detalhes sobre as configurações do Ollama: <https://github.com/ollama/ollama/blob/main/docs/faq.md>
 
 ### A lista de modelos no my-local-ia está vazia
@@ -263,9 +266,9 @@ A maioria dos problemas aparece na primeira linha marcada com ✖ no resultado d
 3. **Firewall:**
    - Linux com ufw: `sudo ufw status` precisa mostrar `4000/tcp ALLOW <sua rede>`. Para acrescentar: `sudo ufw allow from 192.168.1.0/24 to any port 4000 proto tcp`.
    - Linux com firewalld: `sudo firewall-cmd --list-all`. Para acrescentar: `sudo firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=192.168.1.0/24 port port=4000 protocol=tcp accept' && sudo firewall-cmd --reload`.
-   - Windows: a regra "my-local-ia (TCP 4000)" precisa existir em *Firewall do Windows Defender → Configurações avançadas → Regras de Entrada*, e a rede precisa ser **Privada** (*Configurações → Rede e Internet*).
+   - Windows: a regra "my-local-ia (TCP 4000)" precisa existir em _Firewall do Windows Defender → Configurações avançadas → Regras de Entrada_, e a rede precisa ser **Privada** (_Configurações → Rede e Internet_).
 4. **Isolamento de rede:** redes Wi-Fi de visitantes e alguns roteadores ("isolamento de AP", "isolamento de clientes") bloqueiam o acesso entre dispositivos. Teste de um computador ligado por cabo no mesmo roteador.
-5. **Servidor com IP público:** nesse caso o instalador não libera a porta. Veja *Publicar na internet* no guia de instalação.
+5. **Servidor com IP público:** nesse caso o instalador não libera a porta. Veja _Publicar na internet_ no guia de instalação.
 
 ---
 
@@ -278,7 +281,7 @@ A maioria dos problemas aparece na primeira linha marcada com ✖ no resultado d
 ### Novos usuários não conseguem entrar
 
 - **Causa:** novos cadastros ficam **pendentes**.
-- **Solução:** **Painel do admin → Usuários** → mude a função da pessoa de *pending* para *user*. Para mudar o padrão: **Painel do admin → Configurações → Geral → Função padrão do usuário**.
+- **Solução:** **Painel do admin → Usuários** → mude a função da pessoa de _pending_ para _user_. Para mudar o padrão: **Painel do admin → Configurações → Geral → Função padrão do usuário**.
 
 ### O link de cadastro não aparece na tela de login
 

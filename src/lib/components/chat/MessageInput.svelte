@@ -90,6 +90,7 @@
 	import RichTextInput from '../common/RichTextInput.svelte';
 	import Tooltip from '../common/Tooltip.svelte';
 	import FileItem from '../common/FileItem.svelte';
+	import BeforeSendNotice from '$lib/components/my-local-ia/BeforeSendNotice.svelte';
 	import Image from '../common/Image.svelte';
 	import Spinner from '../common/Spinner.svelte';
 
@@ -2133,6 +2134,7 @@
 										{/if}
 									{/each}
 								</div>
+								<BeforeSendNotice {files} modelId={selectedModelIds?.[0]} />
 							{/if}
 
 							<div class="px-2 relative">

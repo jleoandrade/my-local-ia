@@ -17,6 +17,7 @@
 	import { toast } from 'svelte-sonner';
 	import Tag from '$lib/components/icons/Tag.svelte';
 	import Label from '$lib/components/icons/Label.svelte';
+	import ModelLevelBadge from '$lib/components/my-local-ia/ModelLevelBadge.svelte';
 
 	const i18n = getContext<typeof import('$lib/i18n').default>('i18n');
 
@@ -122,6 +123,7 @@
 
 			<div class="flex shrink-0 items-center gap-1.5">
 				{#if item.model.owned_by === 'ollama'}
+					<ModelLevelBadge modelId={item.value} />
 					{#if (item.model.ollama?.details?.parameter_size ?? '') !== ''}
 						<div class="flex items-center translate-y-[0.5px]">
 							<Tooltip

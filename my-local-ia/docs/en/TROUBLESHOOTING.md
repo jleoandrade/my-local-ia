@@ -2,7 +2,7 @@
 
 [Português](../pt-BR/TROUBLESHOOTING.md) · [Español](../es/TROUBLESHOOTING.md) · Installation: [INSTALL.md](INSTALL.md)
 
-Each problem below has the **symptom** (what you see), the **cause** and the **solution**. Commands marked *Linux* run in the server terminal (with `sudo` when needed); commands marked *Windows* run in PowerShell opened as administrator.
+Each problem below has the **symptom** (what you see), the **cause** and the **solution**. Commands marked _Linux_ run in the server terminal (with `sudo` when needed); commands marked _Windows_ run in PowerShell opened as administrator.
 
 ---
 
@@ -76,7 +76,7 @@ Most problems are identified by the first line marked ✖ in the Verify output. 
 ### Windows: accented letters appear broken (Ã©, Ã§…)
 
 - **Cause:** the file was saved again by an editor in another encoding. The script is saved as UTF-8 with BOM, which Windows PowerShell needs.
-- **Solution:** copy the original file again. If you edit it, save it as **UTF-8 with BOM** (in Notepad: *Save as → Encoding: UTF-8 with BOM*).
+- **Solution:** copy the original file again. If you edit it, save it as **UTF-8 with BOM** (in Notepad: _Save as → Encoding: UTF-8 with BOM_).
 
 ### "This distribution is not supported by the automatic Docker installation"
 
@@ -88,7 +88,7 @@ Most problems are identified by the first line marked ✖ in the Verify output. 
 - **Cause:** no internet, DNS failure, or a proxy/firewall blocking `ghcr.io`.
 - **Solution:**
   1. Test: `curl -I https://ghcr.io/v2/` (an answer `401` is normal and means it works).
-  2. If the network uses a **proxy**, Docker also needs it. *Linux:* create `/etc/systemd/system/docker.service.d/http-proxy.conf`:
+  2. If the network uses a **proxy**, Docker also needs it. _Linux:_ create `/etc/systemd/system/docker.service.d/http-proxy.conf`:
 
      ```ini
      [Service]
@@ -97,7 +97,7 @@ Most problems are identified by the first line marked ✖ in the Verify output. 
      Environment="NO_PROXY=localhost,127.0.0.1"
      ```
 
-     then `sudo systemctl daemon-reload && sudo systemctl restart docker`. *Windows:* Docker Desktop → Settings → Resources → Proxies.
+     then `sudo systemctl daemon-reload && sudo systemctl restart docker`. _Windows:_ Docker Desktop → Settings → Resources → Proxies.
 
 ### The installation stopped when the SSH connection dropped
 
@@ -123,7 +123,7 @@ Most problems are identified by the first line marked ✖ in the Verify output. 
   - Debian, Fedora, RHEL and others: install the driver from the distribution's repositories or from NVIDIA (<https://www.nvidia.com/Download/index.aspx>) and restart.
   - Check with `nvidia-smi`.
 - **Solution (Windows):** install the latest driver from <https://www.nvidia.com/Download/index.aspx> and restart.
-- **Virtual machine:** the GPU must be passed through to the VM (*GPU passthrough*) in the hypervisor (Proxmox, VMware ESXi, Hyper-V DDA…). If `lspci | grep -i nvidia` (Linux) shows nothing, the VM does not see the card yet.
+- **Virtual machine:** the GPU must be passed through to the VM (_GPU passthrough_) in the hypervisor (Proxmox, VMware ESXi, Hyper-V DDA…). If `lspci | grep -i nvidia` (Linux) shows nothing, the VM does not see the card yet.
 
 ### "The GPU is NOT visible inside containers"
 
@@ -139,6 +139,7 @@ Most problems are identified by the first line marked ✖ in the Verify output. 
   ```
 
   If `nvidia-ctk` does not exist, run the installer again (step 4 installs it) or follow <https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html>.
+
 - **Cause (Windows):** old NVIDIA driver, old WSL, or Docker Desktop not using the WSL 2 engine.
 - **Solution (Windows):** update the NVIDIA driver; run `wsl --update`; in Docker Desktop → Settings → General, enable **Use the WSL 2 based engine**; restart Docker Desktop.
 
@@ -180,8 +181,8 @@ Most problems are identified by the first line marked ✖ in the Verify output. 
 ### Windows: Docker Desktop does not start
 
 - **Causes and solutions:**
-  - **Virtualization disabled:** enable *Intel VT-x* / *AMD-V (SVM)* in the BIOS/UEFI. Task Manager → Performance → CPU must show *Virtualization: Enabled*.
-  - **Windows is a virtual machine:** enable nested virtualization in the hypervisor. Hyper-V (on the host, with the VM off): `Set-VMProcessor -VMName <name> -ExposeVirtualizationExtensions $true`. VMware: *Expose hardware assisted virtualization to the guest OS*.
+  - **Virtualization disabled:** enable _Intel VT-x_ / _AMD-V (SVM)_ in the BIOS/UEFI. Task Manager → Performance → CPU must show _Virtualization: Enabled_.
+  - **Windows is a virtual machine:** enable nested virtualization in the hypervisor. Hyper-V (on the host, with the VM off): `Set-VMProcessor -VMName <name> -ExposeVirtualizationExtensions $true`. VMware: _Expose hardware assisted virtualization to the guest OS_.
   - **Old WSL:** `wsl --update` and restart.
   - **Windows Server:** not supported by Docker Desktop. Use Windows 10/11 or a Linux server.
 
@@ -240,9 +241,11 @@ Most problems are identified by the first line marked ✖ in the Verify output. 
      ```
 
      and `sudo systemctl restart ollama`.
+
   2. In my-local-ia, set the address to `http://IP-OF-THAT-COMPUTER:11434` (installer question, or **Admin Panel → Settings → Connections**).
   3. Allow port 11434 in that computer's firewall **only** for the my-local-ia server.
-- **Windows:** accept the installer's offer to set `OLLAMA_HOST`, or do it by hand: *Settings → System → About → Advanced system settings → Environment Variables* → new user variable `OLLAMA_HOST` = `0.0.0.0:11434`; quit Ollama (icon next to the clock → Quit) and open it again.
+
+- **Windows:** accept the installer's offer to set `OLLAMA_HOST`, or do it by hand: _Settings → System → About → Advanced system settings → Environment Variables_ → new user variable `OLLAMA_HOST` = `0.0.0.0:11434`; quit Ollama (icon next to the clock → Quit) and open it again.
 - More details about Ollama settings: <https://github.com/ollama/ollama/blob/main/docs/faq.md>
 
 ### The model list in my-local-ia is empty
@@ -263,9 +266,9 @@ Most problems are identified by the first line marked ✖ in the Verify output. 
 3. **Firewall:**
    - Linux with ufw: `sudo ufw status` must show `4000/tcp ALLOW <your network>`. To add: `sudo ufw allow from 192.168.1.0/24 to any port 4000 proto tcp`.
    - Linux with firewalld: `sudo firewall-cmd --list-all`. To add: `sudo firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=192.168.1.0/24 port port=4000 protocol=tcp accept' && sudo firewall-cmd --reload`.
-   - Windows: the rule "my-local-ia (TCP 4000)" must exist in *Windows Defender Firewall → Advanced settings → Inbound rules*, and the network must be **Private** (*Settings → Network & internet*).
+   - Windows: the rule "my-local-ia (TCP 4000)" must exist in _Windows Defender Firewall → Advanced settings → Inbound rules_, and the network must be **Private** (_Settings → Network & internet_).
 4. **Network isolation:** guest Wi-Fi networks and some routers ("AP isolation", "client isolation") block access between devices. Test from a computer connected by cable to the same router.
-5. **Server with a public IP:** the installer does not open the port in that case. See *Publishing on the internet* in the installation guide.
+5. **Server with a public IP:** the installer does not open the port in that case. See _Publishing on the internet_ in the installation guide.
 
 ---
 
@@ -278,7 +281,7 @@ Most problems are identified by the first line marked ✖ in the Verify output. 
 ### New users cannot log in
 
 - **Cause:** new sign-ups stay **pending**.
-- **Solution:** **Admin Panel → Users** → change the role of the person from *pending* to *user*. To change the default: **Admin Panel → Settings → General → Default user role**.
+- **Solution:** **Admin Panel → Users** → change the role of the person from _pending_ to _user_. To change the default: **Admin Panel → Settings → General → Default user role**.
 
 ### The sign-up link does not appear on the login page
 

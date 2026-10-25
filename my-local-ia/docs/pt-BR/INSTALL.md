@@ -61,29 +61,29 @@ Este guia instala o **my-local-ia** em um servidor que já roda o **Ollama**. Vo
 
 ### Servidor Linux (instalador: `install-my-local-ia.sh`)
 
-| Item | Requisito |
-|---|---|
-| Sistema | Ubuntu 20.04 ou mais novo, Debian 11 ou mais novo e derivados (Linux Mint, Pop!_OS…), Fedora, RHEL / Rocky / AlmaLinux / CentOS Stream 8 ou mais novos. 64 bits (x86_64). |
-| Acesso | Um usuário que possa usar `sudo`. |
-| Placa de vídeo | Placa NVIDIA com o driver instalado (`nvidia-smi` precisa funcionar). Sem placa, a instalação funciona, mas em modo CPU. |
-| Ollama | Instalado e rodando no mesmo servidor. |
-| Disco | Pelo menos **30 GB livres** (a imagem com GPU tem uns 6 GB; os modelos são à parte). |
-| RAM | Mínimo de 8 GB, recomendado 16 GB ou mais. |
-| Internet | Necessária durante a instalação e as atualizações (para baixar o Docker e a imagem). |
+| Item           | Requisito                                                                                                                                                                  |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sistema        | Ubuntu 20.04 ou mais novo, Debian 11 ou mais novo e derivados (Linux Mint, Pop!\_OS…), Fedora, RHEL / Rocky / AlmaLinux / CentOS Stream 8 ou mais novos. 64 bits (x86_64). |
+| Acesso         | Um usuário que possa usar `sudo`.                                                                                                                                          |
+| Placa de vídeo | Placa NVIDIA com o driver instalado (`nvidia-smi` precisa funcionar). Sem placa, a instalação funciona, mas em modo CPU.                                                   |
+| Ollama         | Instalado e rodando no mesmo servidor.                                                                                                                                     |
+| Disco          | Pelo menos **30 GB livres** (a imagem com GPU tem uns 6 GB; os modelos são à parte).                                                                                       |
+| RAM            | Mínimo de 8 GB, recomendado 16 GB ou mais.                                                                                                                                 |
+| Internet       | Necessária durante a instalação e as atualizações (para baixar o Docker e a imagem).                                                                                       |
 
 O Docker e o NVIDIA Container Toolkit **não precisam estar instalados**: o instalador instala o que faltar (depois de perguntar).
 
 ### Computador Windows (instalador: `install-my-local-ia.ps1`)
 
-| Item | Requisito |
-|---|---|
-| Sistema | Windows 10 versão 2004 (build 19041) ou mais novo, ou Windows 11 — Home, Pro ou Enterprise. **O Windows Server não é suportado** (o Docker Desktop não roda nele). |
-| Acesso | Uma conta com permissão de administrador. |
-| Virtualização | Ativada na BIOS/UEFI. Se o próprio Windows for uma máquina virtual, a *virtualização aninhada* precisa estar ativada no hipervisor. |
-| Placa de vídeo | Placa NVIDIA com o driver do Windows atualizado. |
-| Ollama | Ollama para Windows, instalado e rodando. |
-| Disco | Pelo menos **30 GB livres** no C:. |
-| Internet | Necessária durante a instalação e as atualizações. |
+| Item           | Requisito                                                                                                                                                          |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Sistema        | Windows 10 versão 2004 (build 19041) ou mais novo, ou Windows 11 — Home, Pro ou Enterprise. **O Windows Server não é suportado** (o Docker Desktop não roda nele). |
+| Acesso         | Uma conta com permissão de administrador.                                                                                                                          |
+| Virtualização  | Ativada na BIOS/UEFI. Se o próprio Windows for uma máquina virtual, a _virtualização aninhada_ precisa estar ativada no hipervisor.                                |
+| Placa de vídeo | Placa NVIDIA com o driver do Windows atualizado.                                                                                                                   |
+| Ollama         | Ollama para Windows, instalado e rodando.                                                                                                                          |
+| Disco          | Pelo menos **30 GB livres** no C:.                                                                                                                                 |
+| Internet       | Necessária durante a instalação e as atualizações.                                                                                                                 |
 
 O Docker Desktop e o WSL 2 são instalados pelo instalador se faltarem (nesse caso o Windows precisa reiniciar uma vez).
 
@@ -184,7 +184,7 @@ Depois escolha o idioma e **1) Instalar**, como no Linux.
 - **WSL 2 e Docker Desktop.** Se faltarem, o instalador instala pelo `winget` e pede para **reiniciar o Windows**. Depois de reiniciar, rode o mesmo comando de novo e escolha **Instalar**: ele continua com as respostas já dadas.
 - **Termos do Docker Desktop.** Na primeira vez que o Docker Desktop abre, aparece uma janela com os termos dele. Aceite; o instalador espera até 5 minutos o Docker ficar pronto.
 - **Ollama e Docker.** Por padrão, o Ollama no Windows só aceita conexões do próprio computador. Se o contêiner não conseguir falar com ele, o instalador oferece definir `OLLAMA_HOST=0.0.0.0:11434` para o seu usuário e reiniciar o Ollama.
-- **Firewall e tipo de rede.** O instalador cria uma regra no firewall do Windows para a porta, válida para redes **Privadas** e de **Domínio**. Se o Windows classificar sua rede como **Pública**, a regra não vale: mude em *Configurações → Rede e Internet → (sua conexão) → Rede privada*.
+- **Firewall e tipo de rede.** O instalador cria uma regra no firewall do Windows para a porta, válida para redes **Privadas** e de **Domínio**. Se o Windows classificar sua rede como **Pública**, a regra não vale: mude em _Configurações → Rede e Internet → (sua conexão) → Rede privada_.
 - **Porta dentro do contêiner.** No Windows, o contêiner escuta na 8080 e o Docker publica na porta escolhida (4000 por padrão). No Linux, ele escuta direto na porta escolhida.
 
 ---
@@ -193,19 +193,19 @@ Depois escolha o idioma e **1) Instalar**, como no Linux.
 
 A instalação tem 11 etapas numeradas. Tudo o que muda o sistema é mostrado (linhas começando com `$` ou `>`) e confirmado com você antes.
 
-| Etapa | O que acontece | Muda o sistema? |
-|---|---|---|
-| 1. Verificando este servidor | Mostra sistema, processador, RAM, disco livre, acesso à internet, placa de vídeo e driver, Ollama (versão, quantidade de modelos, pasta dos modelos), Docker e a rede (IP local ou público). | Não |
-| 2. Perguntas | Versão (oficial ou my-local-ia), porta (padrão **4000**), endereço do Ollama, pasta de modelos do Ollama. Depois, um resumo e uma confirmação. | Salva suas respostas |
-| 3. Docker | Instala o Docker pelo repositório oficial do Docker se faltar (Linux) ou o Docker Desktop (Windows). | Sim, se faltar |
-| 4. Suporte à placa de vídeo | Linux: instala e configura o NVIDIA Container Toolkit se faltar. Nos dois: roda um contêiner de teste que precisa enxergar a placa. | Sim, se faltar |
-| 5. Arquivos de configuração | Cria a configuração e uma **chave secreta** aleatória (usada para assinar os logins). Ela é mantida nas atualizações, para ninguém ser deslogado. | Sim |
-| 6. Baixando a imagem | Baixa a imagem (oficial: `ghcr.io/open-webui/open-webui:cuda`). | Sim |
-| 7. Iniciando | Inicia o contêiner **acessível só pelo próprio servidor** e espera ele responder. | Sim |
-| 8. Conta de administrador | Pergunta nome, e-mail e senha (oculta, digitada duas vezes) e cria o primeiro usuário, que vira administrador. Pulada se já existirem usuários. | Sim |
-| 9. Liberando para a rede | Reinicia o contêiner para que outros computadores consigam acessar. | Sim |
-| 10. Firewall | Rede local: libera a porta só para a sua rede local (ufw, firewalld ou firewall do Windows). IP público: **não** libera a porta. | Sim, se confirmar |
-| 11. Testes finais | Contêiner rodando, interface web respondendo, placa de vídeo visível no contêiner, conexão com o Ollama, quantidade de modelos. | Não |
+| Etapa                        | O que acontece                                                                                                                                                                               | Muda o sistema?      |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| 1. Verificando este servidor | Mostra sistema, processador, RAM, disco livre, acesso à internet, placa de vídeo e driver, Ollama (versão, quantidade de modelos, pasta dos modelos), Docker e a rede (IP local ou público). | Não                  |
+| 2. Perguntas                 | Versão (oficial ou my-local-ia), porta (padrão **4000**), endereço do Ollama, pasta de modelos do Ollama. Depois, um resumo e uma confirmação.                                               | Salva suas respostas |
+| 3. Docker                    | Instala o Docker pelo repositório oficial do Docker se faltar (Linux) ou o Docker Desktop (Windows).                                                                                         | Sim, se faltar       |
+| 4. Suporte à placa de vídeo  | Linux: instala e configura o NVIDIA Container Toolkit se faltar. Nos dois: roda um contêiner de teste que precisa enxergar a placa.                                                          | Sim, se faltar       |
+| 5. Arquivos de configuração  | Cria a configuração e uma **chave secreta** aleatória (usada para assinar os logins). Ela é mantida nas atualizações, para ninguém ser deslogado.                                            | Sim                  |
+| 6. Baixando a imagem         | Baixa a imagem (oficial: `ghcr.io/open-webui/open-webui:cuda`).                                                                                                                              | Sim                  |
+| 7. Iniciando                 | Inicia o contêiner **acessível só pelo próprio servidor** e espera ele responder.                                                                                                            | Sim                  |
+| 8. Conta de administrador    | Pergunta nome, e-mail e senha (oculta, digitada duas vezes) e cria o primeiro usuário, que vira administrador. Pulada se já existirem usuários.                                              | Sim                  |
+| 9. Liberando para a rede     | Reinicia o contêiner para que outros computadores consigam acessar.                                                                                                                          | Sim                  |
+| 10. Firewall                 | Rede local: libera a porta só para a sua rede local (ufw, firewalld ou firewall do Windows). IP público: **não** libera a porta.                                                             | Sim, se confirmar    |
+| 11. Testes finais            | Contêiner rodando, interface web respondendo, placa de vídeo visível no contêiner, conexão com o Ollama, quantidade de modelos.                                                              | Não                  |
 
 **Por que as etapas 7 e 9 são separadas:** a primeira pessoa que cria uma conta vira administradora. Entre iniciar o contêiner e criar a sua conta, o instalador deixa o my-local-ia acessível só pelo próprio servidor, para ninguém da rede pegar a conta de administrador antes.
 
@@ -222,7 +222,7 @@ A instalação tem 11 etapas numeradas. Tudo o que muda o sistema é mostrado (l
 **Adicionando pessoas**
 
 - **Painel do admin → Usuários → +**: crie a conta você mesmo e passe a senha para a pessoa; ou
-- deixe as pessoas se cadastrarem na tela de login. Novas contas ficam **pendentes** até um administrador aprovar em **Painel do admin → Usuários** (mude a função de *pending* para *user*). A opção de cadastro e a função padrão ficam em **Painel do admin → Configurações → Geral**.
+- deixe as pessoas se cadastrarem na tela de login. Novas contas ficam **pendentes** até um administrador aprovar em **Painel do admin → Usuários** (mude a função de _pending_ para _user_). A opção de cadastro e a função padrão ficam em **Painel do admin → Configurações → Geral**.
 
 **Conferindo a conexão com o Ollama:** **Painel do admin → Configurações → Conexões**. O endereço do Ollama precisa ser o que o instalador mostrou (`http://127.0.0.1:11434` no Linux, `http://host.docker.internal:11434` no Windows).
 
@@ -232,15 +232,15 @@ A instalação tem 11 etapas numeradas. Tudo o que muda o sistema é mostrado (l
 
 Rode o instalador de novo sempre que precisar de uma destas opções. Ele lembra das suas respostas anteriores.
 
-| Opção | O que faz |
-|---|---|
-| **1) Instalar** | Instala, ou recria o contêiner mantendo todos os dados. |
-| **2) Atualizar ou trocar de versão** | Baixa a imagem mais nova (mesma versão, oficial ou my-local-ia), oferece um **backup**, troca o contêiner e testa. Se a versão nova não iniciar, **volta sozinho para a anterior**. |
-| **3) Verificar** | Só diagnóstico: confere tudo e salva um arquivo de **relatório** para mandar ao pedir ajuda. Não muda nada. |
-| **4) Fazer backup dos dados agora** | Salva usuários, conversas, configurações e arquivos enviados em um arquivo `.tar.gz`. O my-local-ia para por alguns segundos. Ficam os 5 backups mais recentes. |
-| **5) Restaurar um backup** | Lista os backups e restaura o que você escolher (substitui os dados atuais, depois de confirmar). |
-| **6) Redefinir a senha de um usuário** | Define uma senha nova para qualquer usuário, inclusive o administrador. |
-| **7) Desinstalar** | Remove o contêiner e a regra de firewall. Os dados só são apagados se você confirmar e digitar `DELETE`, e um backup é oferecido antes. Docker, Ollama e seus modelos nunca são removidos. |
+| Opção                                  | O que faz                                                                                                                                                                                  |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **1) Instalar**                        | Instala, ou recria o contêiner mantendo todos os dados.                                                                                                                                    |
+| **2) Atualizar ou trocar de versão**   | Baixa a imagem mais nova (mesma versão, oficial ou my-local-ia), oferece um **backup**, troca o contêiner e testa. Se a versão nova não iniciar, **volta sozinho para a anterior**.        |
+| **3) Verificar**                       | Só diagnóstico: confere tudo e salva um arquivo de **relatório** para mandar ao pedir ajuda. Não muda nada.                                                                                |
+| **4) Fazer backup dos dados agora**    | Salva usuários, conversas, configurações e arquivos enviados em um arquivo `.tar.gz`. O my-local-ia para por alguns segundos. Ficam os 5 backups mais recentes.                            |
+| **5) Restaurar um backup**             | Lista os backups e restaura o que você escolher (substitui os dados atuais, depois de confirmar).                                                                                          |
+| **6) Redefinir a senha de um usuário** | Define uma senha nova para qualquer usuário, inclusive o administrador.                                                                                                                    |
+| **7) Desinstalar**                     | Remove o contêiner e a regra de firewall. Os dados só são apagados se você confirmar e digitar `DELETE`, e um backup é oferecido antes. Docker, Ollama e seus modelos nunca são removidos. |
 
 ---
 
@@ -258,15 +258,15 @@ O instalador baixa `ghcr.io/<usuario-github>/my-local-ia:cuda`, mantém todos os
 
 ## 10. Onde tudo fica guardado
 
-| O quê | Linux | Windows |
-|---|---|---|
-| Dados (usuários, conversas, configurações, arquivos) | Volume Docker `my-local-ia-data` | Volume Docker `my-local-ia-data` |
-| Respostas do instalador | `/etc/my-local-ia/installer.conf` | `C:\ProgramData\my-local-ia\installer.json` |
-| Configuração do contêiner e chave secreta | `/etc/my-local-ia/my-local-ia.env` (só root) | `C:\ProgramData\my-local-ia\my-local-ia.env` (só administradores) |
-| Log do instalador | `/var/log/my-local-ia-install.log` | `C:\ProgramData\my-local-ia\logs\install.log` |
-| Relatórios de diagnóstico | `/var/log/my-local-ia-report-*.txt` | `C:\ProgramData\my-local-ia\logs\report-*.txt` |
-| Backups | `/var/backups/my-local-ia/` | `C:\ProgramData\my-local-ia\backups\` |
-| Modelos do Ollama (só leitura para o my-local-ia) | normalmente `/usr/share/ollama/.ollama/models` | normalmente `C:\Users\<você>\.ollama\models` |
+| O quê                                                | Linux                                          | Windows                                                           |
+| ---------------------------------------------------- | ---------------------------------------------- | ----------------------------------------------------------------- |
+| Dados (usuários, conversas, configurações, arquivos) | Volume Docker `my-local-ia-data`               | Volume Docker `my-local-ia-data`                                  |
+| Respostas do instalador                              | `/etc/my-local-ia/installer.conf`              | `C:\ProgramData\my-local-ia\installer.json`                       |
+| Configuração do contêiner e chave secreta            | `/etc/my-local-ia/my-local-ia.env` (só root)   | `C:\ProgramData\my-local-ia\my-local-ia.env` (só administradores) |
+| Log do instalador                                    | `/var/log/my-local-ia-install.log`             | `C:\ProgramData\my-local-ia\logs\install.log`                     |
+| Relatórios de diagnóstico                            | `/var/log/my-local-ia-report-*.txt`            | `C:\ProgramData\my-local-ia\logs\report-*.txt`                    |
+| Backups                                              | `/var/backups/my-local-ia/`                    | `C:\ProgramData\my-local-ia\backups\`                             |
+| Modelos do Ollama (só leitura para o my-local-ia)    | normalmente `/usr/share/ollama/.ollama/models` | normalmente `C:\Users\<você>\.ollama\models`                      |
 
 As senhas **nunca** são gravadas no log, na tela ou nos arquivos de configuração.
 
@@ -297,7 +297,7 @@ O instalador só prepara o acesso pela **rede local**. Se você decidir deixar o
 
 Nos dois casos, antes de publicar:
 
-1. Desative o cadastro aberto (**Painel do admin → Configurações → Geral**) ou mantenha novos usuários como *pendentes*.
+1. Desative o cadastro aberto (**Painel do admin → Configurações → Geral**) ou mantenha novos usuários como _pendentes_.
 2. Use senhas fortes em todas as contas, principalmente nas de administrador.
 3. Mantenha o my-local-ia atualizado (opção **Atualizar**).
 4. Nunca exponha a porta do Ollama (11434) na internet: o Ollama não tem login.

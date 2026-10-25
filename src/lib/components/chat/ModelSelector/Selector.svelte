@@ -52,6 +52,13 @@
 	import TagSelector from '$lib/components/workspace/common/TagSelector.svelte';
 
 	import ModelItem from './ModelItem.svelte';
+	import HeavyModelWarning from '$lib/components/my-local-ia/HeavyModelWarning.svelte';
+	import {
+		bestAlternative,
+		findInstalled,
+		installedModels,
+		shouldWarn
+	} from '$lib/components/my-local-ia/store';
 
 	const i18n: any = getContext('i18n');
 	const dispatch = createEventDispatcher();
@@ -407,7 +414,29 @@
 		}
 	};
 
-	const selectItem = (item, index: number) => {
+	// my-local-ia: warn before picking a model that runs badly on this server.
+	let heavyWarning: { show: boolean; model: any; alternative: any; item: any; index: number } = {
+		show: false,
+		model: null,
+		alternative: null,
+		item: null,
+		index: -1
+	};
+
+	const selectItem = (item, index: number, confirmed = false) => {
+		const installedInfo = findInstalled($installedModels, item.value);
+		if (!confirmed && !compareEnabled && shouldWarn(installedInfo)) {
+			show = false;
+			heavyWarning = {
+				show: true,
+				model: installedInfo,
+				alternative: bestAlternative($installedModels, installedInfo),
+				item,
+				index
+			};
+			return;
+		}
+
 		selectedModelIdx = index;
 
 		if (values) {
@@ -1269,3 +1298,16 @@
 		</div>
 	{/if}
 </div>
+
+<HeavyModelWarning
+	bind:show={heavyWarning.show}
+	model={heavyWarning.model}
+	alternative={heavyWarning.alternative}
+	onUse={() => selectItem(heavyWarning.item, heavyWarning.index, true)}
+	onSwap={(name) => {
+		const index = items.findIndex(
+			(item) => findInstalled($installedModels, item.value)?.name === name
+		);
+		if (index !== -1) selectItem(items[index], index, true);
+	}}
+/>

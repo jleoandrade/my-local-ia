@@ -61,29 +61,29 @@ This guide installs **my-local-ia** on a server that already runs **Ollama**. Yo
 
 ### Linux server (installer: `install-my-local-ia.sh`)
 
-| Item | Requirement |
-|---|---|
-| System | Ubuntu 20.04 or newer, Debian 11 or newer and derivatives (Linux Mint, Pop!_OS…), Fedora, RHEL / Rocky / AlmaLinux / CentOS Stream 8 or newer. 64-bit (x86_64). |
-| Access | A user that can run `sudo`. |
-| GPU | NVIDIA card with the driver installed (`nvidia-smi` must work). Without a GPU it still installs, but in CPU mode. |
-| Ollama | Installed and running on the same server. |
-| Disk | At least **30 GB free** (the GPU image is about 6 GB; models are extra). |
-| RAM | 8 GB minimum, 16 GB or more recommended. |
-| Internet | Needed during installation and updates (to download Docker and the image). |
+| Item     | Requirement                                                                                                                                                      |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| System   | Ubuntu 20.04 or newer, Debian 11 or newer and derivatives (Linux Mint, Pop!\_OS…), Fedora, RHEL / Rocky / AlmaLinux / CentOS Stream 8 or newer. 64-bit (x86_64). |
+| Access   | A user that can run `sudo`.                                                                                                                                      |
+| GPU      | NVIDIA card with the driver installed (`nvidia-smi` must work). Without a GPU it still installs, but in CPU mode.                                                |
+| Ollama   | Installed and running on the same server.                                                                                                                        |
+| Disk     | At least **30 GB free** (the GPU image is about 6 GB; models are extra).                                                                                         |
+| RAM      | 8 GB minimum, 16 GB or more recommended.                                                                                                                         |
+| Internet | Needed during installation and updates (to download Docker and the image).                                                                                       |
 
 Docker and the NVIDIA Container Toolkit **do not need to be installed**: the installer installs them if they are missing (after asking).
 
 ### Windows computer (installer: `install-my-local-ia.ps1`)
 
-| Item | Requirement |
-|---|---|
-| System | Windows 10 version 2004 (build 19041) or newer, or Windows 11 — Home, Pro or Enterprise. **Windows Server is not supported** (Docker Desktop does not run on it). |
-| Access | An account with administrator rights. |
-| Virtualization | Enabled in the BIOS/UEFI. If Windows itself is a virtual machine, *nested virtualization* must be enabled in the hypervisor. |
-| GPU | NVIDIA card with an up-to-date Windows driver. |
-| Ollama | Ollama for Windows, installed and running. |
-| Disk | At least **30 GB free** on C:. |
-| Internet | Needed during installation and updates. |
+| Item           | Requirement                                                                                                                                                       |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| System         | Windows 10 version 2004 (build 19041) or newer, or Windows 11 — Home, Pro or Enterprise. **Windows Server is not supported** (Docker Desktop does not run on it). |
+| Access         | An account with administrator rights.                                                                                                                             |
+| Virtualization | Enabled in the BIOS/UEFI. If Windows itself is a virtual machine, _nested virtualization_ must be enabled in the hypervisor.                                      |
+| GPU            | NVIDIA card with an up-to-date Windows driver.                                                                                                                    |
+| Ollama         | Ollama for Windows, installed and running.                                                                                                                        |
+| Disk           | At least **30 GB free** on C:.                                                                                                                                    |
+| Internet       | Needed during installation and updates.                                                                                                                           |
 
 Docker Desktop and WSL 2 are installed by the installer if they are missing (Windows has to restart once in that case).
 
@@ -184,7 +184,7 @@ Then choose the language and **1) Install**, as on Linux.
 - **WSL 2 and Docker Desktop.** If they are missing, the installer installs them with `winget` and asks you to **restart Windows**. After the restart, run the same command again and choose **Install**: it continues with the answers you already gave.
 - **Docker Desktop terms.** The first time Docker Desktop opens, it shows a window with its terms. Accept them; the installer waits up to 5 minutes for Docker to be ready.
 - **Ollama and Docker.** By default, Ollama on Windows only accepts connections from the computer itself. If the container cannot reach it, the installer offers to set `OLLAMA_HOST=0.0.0.0:11434` for your user and restart Ollama.
-- **Firewall and network type.** The installer creates a Windows firewall rule for the port, valid for **Private** and **Domain** networks. If Windows classifies your network as **Public**, the rule does not apply: change it in *Settings → Network & internet → (your connection) → Private network*.
+- **Firewall and network type.** The installer creates a Windows firewall rule for the port, valid for **Private** and **Domain** networks. If Windows classifies your network as **Public**, the rule does not apply: change it in _Settings → Network & internet → (your connection) → Private network_.
 - **Port inside the container.** On Windows, the container listens on 8080 and Docker publishes it on the port you choose (4000 by default). On Linux, it listens directly on the chosen port.
 
 ---
@@ -193,19 +193,19 @@ Then choose the language and **1) Install**, as on Linux.
 
 The installation has 11 numbered steps. Everything that changes the system is shown (lines starting with `$` or `>`) and confirmed with you first.
 
-| Step | What happens | Changes the system? |
-|---|---|---|
-| 1. Checking this server | Shows system, CPU, RAM, free disk, internet access, GPU and driver, Ollama (version, number of models, models folder), Docker and the network (local IP or public IP). | No |
-| 2. Questions | Version (official or my-local-ia), port (default **4000**), Ollama address, Ollama models folder. Then a summary and a confirmation. | Saves your answers |
-| 3. Docker | Installs Docker from the official Docker repository if missing (Linux) or Docker Desktop (Windows). | Yes, if missing |
-| 4. GPU support | Linux: installs and configures the NVIDIA Container Toolkit if missing. Both: runs a test container that must see the GPU. | Yes, if missing |
-| 5. Configuration files | Creates the configuration and a random **secret key** (used to sign logins). Kept on updates so nobody is logged out. | Yes |
-| 6. Downloading the image | Downloads the image (official: `ghcr.io/open-webui/open-webui:cuda`). | Yes |
-| 7. Starting | Starts the container **reachable only from the server itself** and waits until it answers. | Yes |
-| 8. Administrator account | Asks name, e-mail and password (hidden, typed twice) and creates the first user, who becomes administrator. Skipped if users already exist. | Yes |
-| 9. Opening to the network | Restarts the container so other computers can access it. | Yes |
-| 10. Firewall | Local network: allows the port only for your local network (ufw, firewalld or Windows firewall). Public IP: does **not** open the port. | Yes, if confirmed |
-| 11. Final tests | Container running, web interface answering, GPU visible in the container, connection to Ollama, number of models. | No |
+| Step                      | What happens                                                                                                                                                           | Changes the system? |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| 1. Checking this server   | Shows system, CPU, RAM, free disk, internet access, GPU and driver, Ollama (version, number of models, models folder), Docker and the network (local IP or public IP). | No                  |
+| 2. Questions              | Version (official or my-local-ia), port (default **4000**), Ollama address, Ollama models folder. Then a summary and a confirmation.                                   | Saves your answers  |
+| 3. Docker                 | Installs Docker from the official Docker repository if missing (Linux) or Docker Desktop (Windows).                                                                    | Yes, if missing     |
+| 4. GPU support            | Linux: installs and configures the NVIDIA Container Toolkit if missing. Both: runs a test container that must see the GPU.                                             | Yes, if missing     |
+| 5. Configuration files    | Creates the configuration and a random **secret key** (used to sign logins). Kept on updates so nobody is logged out.                                                  | Yes                 |
+| 6. Downloading the image  | Downloads the image (official: `ghcr.io/open-webui/open-webui:cuda`).                                                                                                  | Yes                 |
+| 7. Starting               | Starts the container **reachable only from the server itself** and waits until it answers.                                                                             | Yes                 |
+| 8. Administrator account  | Asks name, e-mail and password (hidden, typed twice) and creates the first user, who becomes administrator. Skipped if users already exist.                            | Yes                 |
+| 9. Opening to the network | Restarts the container so other computers can access it.                                                                                                               | Yes                 |
+| 10. Firewall              | Local network: allows the port only for your local network (ufw, firewalld or Windows firewall). Public IP: does **not** open the port.                                | Yes, if confirmed   |
+| 11. Final tests           | Container running, web interface answering, GPU visible in the container, connection to Ollama, number of models.                                                      | No                  |
 
 **Why steps 7 and 9 are separate:** the first person who creates an account becomes administrator. Between starting the container and creating your account, the installer keeps my-local-ia reachable only from the server itself, so nobody else on the network can take the administrator account first.
 
@@ -222,7 +222,7 @@ The installation has 11 numbered steps. Everything that changes the system is sh
 **Adding people**
 
 - **Admin Panel → Users → +**: create the account yourself and give the password to the person; or
-- let people sign up on the login page. New accounts stay **pending** until an administrator approves them in **Admin Panel → Users** (change the role from *pending* to *user*). The sign-up switch and the default role are in **Admin Panel → Settings → General**.
+- let people sign up on the login page. New accounts stay **pending** until an administrator approves them in **Admin Panel → Users** (change the role from _pending_ to _user_). The sign-up switch and the default role are in **Admin Panel → Settings → General**.
 
 **Checking the connection to Ollama:** **Admin Panel → Settings → Connections**. The Ollama address must be the one shown by the installer (`http://127.0.0.1:11434` on Linux, `http://host.docker.internal:11434` on Windows).
 
@@ -232,15 +232,15 @@ The installation has 11 numbered steps. Everything that changes the system is sh
 
 Run the installer again whenever you need one of these options. It remembers your previous answers.
 
-| Option | What it does |
-|---|---|
-| **1) Install** | Installs, or recreates the container keeping all data. |
+| Option                          | What it does                                                                                                                                                                                                         |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1) Install**                  | Installs, or recreates the container keeping all data.                                                                                                                                                               |
 | **2) Update or switch version** | Downloads the newest image (same version, official or my-local-ia), offers a **backup**, replaces the container and tests it. If the new version does not start, it **goes back to the previous one automatically**. |
-| **3) Verify** | Diagnostics only: checks everything and saves a **report** file to send when asking for help. Changes nothing. |
-| **4) Back up data now** | Saves users, chats, settings and uploaded files to a `.tar.gz` file. my-local-ia stops for a few seconds. The 5 newest backups are kept. |
-| **5) Restore a backup** | Lists the backups and restores the one you choose (replaces the current data, after confirmation). |
-| **6) Reset a user's password** | Sets a new password for any user, including the administrator. |
-| **7) Uninstall** | Removes the container and the firewall rule. Data is deleted only if you confirm and type `DELETE`, and a backup is offered first. Docker, Ollama and your models are never removed. |
+| **3) Verify**                   | Diagnostics only: checks everything and saves a **report** file to send when asking for help. Changes nothing.                                                                                                       |
+| **4) Back up data now**         | Saves users, chats, settings and uploaded files to a `.tar.gz` file. my-local-ia stops for a few seconds. The 5 newest backups are kept.                                                                             |
+| **5) Restore a backup**         | Lists the backups and restores the one you choose (replaces the current data, after confirmation).                                                                                                                   |
+| **6) Reset a user's password**  | Sets a new password for any user, including the administrator.                                                                                                                                                       |
+| **7) Uninstall**                | Removes the container and the firewall rule. Data is deleted only if you confirm and type `DELETE`, and a backup is offered first. Docker, Ollama and your models are never removed.                                 |
 
 ---
 
@@ -258,15 +258,15 @@ The installer downloads `ghcr.io/<github-user>/my-local-ia:cuda`, keeps all your
 
 ## 10. Where everything is stored
 
-| What | Linux | Windows |
-|---|---|---|
-| Data (users, chats, settings, uploads) | Docker volume `my-local-ia-data` | Docker volume `my-local-ia-data` |
-| Installer answers | `/etc/my-local-ia/installer.conf` | `C:\ProgramData\my-local-ia\installer.json` |
-| Container settings and secret key | `/etc/my-local-ia/my-local-ia.env` (root only) | `C:\ProgramData\my-local-ia\my-local-ia.env` (administrators only) |
-| Installer log | `/var/log/my-local-ia-install.log` | `C:\ProgramData\my-local-ia\logs\install.log` |
-| Diagnostic reports | `/var/log/my-local-ia-report-*.txt` | `C:\ProgramData\my-local-ia\logs\report-*.txt` |
-| Backups | `/var/backups/my-local-ia/` | `C:\ProgramData\my-local-ia\backups\` |
-| Ollama models (read-only for my-local-ia) | usually `/usr/share/ollama/.ollama/models` | usually `C:\Users\<you>\.ollama\models` |
+| What                                      | Linux                                          | Windows                                                            |
+| ----------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------ |
+| Data (users, chats, settings, uploads)    | Docker volume `my-local-ia-data`               | Docker volume `my-local-ia-data`                                   |
+| Installer answers                         | `/etc/my-local-ia/installer.conf`              | `C:\ProgramData\my-local-ia\installer.json`                        |
+| Container settings and secret key         | `/etc/my-local-ia/my-local-ia.env` (root only) | `C:\ProgramData\my-local-ia\my-local-ia.env` (administrators only) |
+| Installer log                             | `/var/log/my-local-ia-install.log`             | `C:\ProgramData\my-local-ia\logs\install.log`                      |
+| Diagnostic reports                        | `/var/log/my-local-ia-report-*.txt`            | `C:\ProgramData\my-local-ia\logs\report-*.txt`                     |
+| Backups                                   | `/var/backups/my-local-ia/`                    | `C:\ProgramData\my-local-ia\backups\`                              |
+| Ollama models (read-only for my-local-ia) | usually `/usr/share/ollama/.ollama/models`     | usually `C:\Users\<you>\.ollama\models`                            |
 
 Passwords are **never** written to the log, the screen or the configuration files.
 
@@ -297,7 +297,7 @@ The installer only prepares access from the **local network**. If you decide to 
 
 In both cases, before publishing:
 
-1. Turn off public sign-up (**Admin Panel → Settings → General**) or keep new users as *pending*.
+1. Turn off public sign-up (**Admin Panel → Settings → General**) or keep new users as _pending_.
 2. Use strong passwords for every account, especially administrators.
 3. Keep my-local-ia updated (**Update** option).
 4. Never expose Ollama's port (11434) to the internet: Ollama has no login.

@@ -263,3 +263,12 @@ async def test_robot_run_saves_new_models(monkeypatch):
     assert 'Licença mit: permite uso comercial' in entry.description['pt-BR']
     # A second run with the same results adds nothing new.
     assert (await robot.run(Settings(robot_sources=['unsloth'])))['added'] == 0
+
+
+def test_pulled_at_reads_ollama_dates():
+    from open_webui.my_local_ia.installed import pulled_at
+
+    assert pulled_at({'modified_at': '2026-10-20T10:00:00Z'}) == 1792490400
+    assert pulled_at({'modified_at': '2026-10-20T07:00:00.123456789-03:00'}) == 1792490400
+    assert pulled_at({'modified_at': 'yesterday'}) is None
+    assert pulled_at({}) is None

@@ -7,6 +7,7 @@ capabilities and MoE expert counts come from Ollama itself (/api/tags and
 
 import logging
 import time
+from datetime import datetime
 from typing import Optional
 
 from open_webui.internal.db import get_async_db
@@ -139,6 +140,14 @@ async def protected_reason(name: str) -> Optional[str]:
     return None
 
 
+def pulled_at(tag: dict) -> Optional[int]:
+    """When Ollama downloaded the model (its modified_at), as a Unix timestamp."""
+    try:
+        return int(datetime.fromisoformat(tag['modified_at'].replace('Z', '+00:00')).timestamp())
+    except (KeyError, TypeError, ValueError):
+        return None
+
+
 async def list_installed() -> list[InstalledModel]:
     """Installed models with estimates and usage, largest first."""
     tags = await ollama.list_models()
@@ -173,7 +182,8 @@ async def list_installed() -> list[InstalledModel]:
         suggestion = None
         if protected:
             pass
-        elif model_last is None or now - model_last > settings.unused_days * 86400:
+        elif now - (model_last or pulled_at(tag) or 0) > settings.unused_days * 86400:
+            # A model nobody used yet only counts as unused once it is older than the window.
             suggestion = 'unused'
         elif est.level in ('heavy', 'wont_run'):
             suggestion = 'heavy'

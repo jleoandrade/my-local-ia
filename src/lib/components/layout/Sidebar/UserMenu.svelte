@@ -31,6 +31,7 @@
 	import UserIcon from './icons/User.svelte';
 	import WorkspaceIcon from './icons/Workspace.svelte';
 	import XMarkIcon from './icons/XMark.svelte';
+	import ChipIcon from '$lib/components/my-local-ia/icons/Chip.svelte';
 	import { updateUserStatus, updateUserSettings } from '$lib/apis/users';
 	import { toast } from 'svelte-sonner';
 
@@ -52,7 +53,7 @@
 
 	const dispatch = createEventDispatcher();
 
-	const DEFAULT_PINNED_ITEMS = ['notes', 'workspace'];
+	const DEFAULT_PINNED_ITEMS = ['my-local-ia', 'notes', 'workspace'];
 
 	$: pinnedItems = $settings?.pinnedMenuItems ?? DEFAULT_PINNED_ITEMS;
 
@@ -424,6 +425,50 @@
 					{/if}
 				</div>
 			{/if}
+
+			<div
+				class="user-menu-row flex items-center w-full rounded-xl hover:bg-gray-50/60 dark:hover:bg-gray-800/60 transition-colors"
+			>
+				<a
+					href="/my-local-ia"
+					draggable="false"
+					class="flex flex-1 min-w-0 h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[0.8125rem] cursor-pointer select-none"
+					on:click={async (e) => {
+						if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
+						e.preventDefault();
+						show = false;
+						goto('/my-local-ia');
+						if ($mobile) {
+							await tick();
+							showSidebar.set(false);
+						}
+					}}
+				>
+					<div class="self-center">
+						<ChipIcon className="size-3.5" strokeWidth="1.5" />
+					</div>
+					<div class="self-center truncate">my-local-ia</div>
+				</a>
+				{#if shiftKey}
+					<Tooltip
+						content={pinnedItems.includes('my-local-ia')
+							? $i18n.t('Unpin from Sidebar')
+							: $i18n.t('Pin to Sidebar')}
+					>
+						<button
+							type="button"
+							class="p-1 mr-1 rounded-lg hover:bg-gray-100/60 dark:hover:bg-gray-700/60 transition"
+							on:click|preventDefault|stopPropagation={() => togglePin('my-local-ia')}
+						>
+							{#if pinnedItems.includes('my-local-ia')}
+								<PinSlashIcon className="size-3.5" strokeWidth="1.5" />
+							{:else}
+								<PinIcon className="size-3.5" strokeWidth="1.5" />
+							{/if}
+						</button>
+					</Tooltip>
+				{/if}
+			</div>
 
 			{#if role === 'admin'}
 				<div

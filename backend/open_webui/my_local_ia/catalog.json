@@ -1,2631 +1,2631 @@
 {
- "version": 2,
- "source": "roda-na-minha-gpu/site.js (descriptions made hardware-neutral and translated)",
- "models": [
-  {
-   "id": "phi-4-mini-reasoning",
-   "name": "Phi-4 Mini Reasoning",
-   "category": "chat",
-   "size_gb": 2.4,
-   "active_ratio": 1.0,
-   "reasoning": true,
-   "description": {
-    "en": "Small Microsoft model trained to reason step by step, mainly in math.",
-    "pt-BR": "Modelo pequeno da Microsoft treinado para raciocinar passo a passo, principalmente em matemática.",
-    "es": "Modelo pequeño de Microsoft entrenado para razonar paso a paso, sobre todo en matemáticas."
-   },
-   "use_for": {
-    "en": "Math, logic, study exercises",
-    "pt-BR": "Matemática, lógica, exercícios de estudo",
-    "es": "Matemáticas, lógica, ejercicios de estudio"
-   },
-   "unsure": false,
-   "ollama": "phi4-mini-reasoning",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 105,
-    "score_rtx3060": 95
-   }
-  },
-  {
-   "id": "llama-3-2-3b",
-   "name": "Llama 3.2 3B",
-   "category": "chat",
-   "size_gb": 2.0,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Compact Llama from Meta, well supported by almost every tool.",
-    "pt-BR": "Llama compacto da Meta, bem suportado em praticamente todas as ferramentas.",
-    "es": "Llama compacto de Meta, con buen soporte en casi todas las herramientas."
-   },
-   "use_for": {
-    "en": "Simple chat, summaries, offline assistant",
-    "pt-BR": "Chat simples, resumos, assistente offline",
-    "es": "Chat sencillo, resúmenes, asistente sin conexión"
-   },
-   "unsure": false,
-   "ollama": "llama3.2:3b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 126,
-    "score_rtx3060": 94
-   }
-  },
-  {
-   "id": "smollm3-3b",
-   "name": "SmolLM3 3B",
-   "category": "chat",
-   "size_gb": 2.0,
-   "active_ratio": 1.0,
-   "reasoning": true,
-   "description": {
-    "en": "Small, fully open model from Hugging Face, with a reasoning mode and long context.",
-    "pt-BR": "Modelo pequeno e totalmente aberto da Hugging Face, com modo de raciocínio e contexto longo.",
-    "es": "Modelo pequeño y totalmente abierto de Hugging Face, con modo de razonamiento y contexto largo."
-   },
-   "use_for": {
-    "en": "Tests, prototypes, light tasks",
-    "pt-BR": "Testes, protótipos, tarefas leves",
-    "es": "Pruebas, prototipos, tareas ligeras"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 126,
-    "score_rtx3060": 94
-   }
-  },
-  {
-   "id": "granite-4-1-3b",
-   "name": "Granite 4.1 3B",
-   "category": "chat",
-   "size_gb": 2.0,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "IBM's enterprise-focused line, efficient and good at following instructions.",
-    "pt-BR": "Linha da IBM voltada a empresas, eficiente e boa em seguir instruções.",
-    "es": "Línea de IBM orientada a empresas, eficiente y buena siguiendo instrucciones."
-   },
-   "use_for": {
-    "en": "RAG, data extraction, tool use",
-    "pt-BR": "RAG, extração de dados, uso de ferramentas",
-    "es": "RAG, extracción de datos, uso de herramientas"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 126,
-    "score_rtx3060": 94
-   }
-  },
-  {
-   "id": "ministral-3-3b",
-   "name": "Ministral 3 3B",
-   "category": "chat",
-   "size_gb": 2.0,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Smallest model of Mistral's Ministral 3 line, designed to run on devices.",
-    "pt-BR": "Menor modelo da linha Ministral 3 da Mistral, pensado para rodar em dispositivos.",
-    "es": "El modelo más pequeño de la línea Ministral 3 de Mistral, pensado para ejecutarse en dispositivos."
-   },
-   "use_for": {
-    "en": "Light assistant, classification, edge",
-    "pt-BR": "Assistente leve, classificação, edge",
-    "es": "Asistente ligero, clasificación, edge"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 126,
-    "score_rtx3060": 94
-   }
-  },
-  {
-   "id": "gemma-3-4b",
-   "name": "Gemma 3 4B",
-   "category": "chat",
-   "size_gb": 2.5,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Small Gemma from Google, multilingual and able to read images.",
-    "pt-BR": "Gemma pequeno do Google, multilíngue e capaz de ler imagens.",
-    "es": "Gemma pequeño de Google, multilingüe y capaz de leer imágenes."
-   },
-   "use_for": {
-    "en": "Multilingual chat, describing images",
-    "pt-BR": "Chat multilíngue, descrever imagens",
-    "es": "Chat multilingüe, describir imágenes"
-   },
-   "unsure": false,
-   "ollama": "gemma3:4b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 101,
-    "score_rtx3060": 94
-   }
-  },
-  {
-   "id": "qwen3-vl-4b",
-   "name": "Qwen3-VL 4B",
-   "category": "vis",
-   "size_gb": 2.8,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Light version of Qwen's vision-language model: understands images and text.",
-    "pt-BR": "Versão leve do modelo de visão e linguagem da Qwen: entende imagens e texto.",
-    "es": "Versión ligera del modelo de visión y lenguaje de Qwen: entiende imágenes y texto."
-   },
-   "use_for": {
-    "en": "OCR, reading screenshots and documents",
-    "pt-BR": "OCR, ler prints e documentos",
-    "es": "OCR, leer capturas y documentos"
-   },
-   "unsure": false,
-   "ollama": "qwen3-vl:4b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 90,
-    "score_rtx3060": 94
-   }
-  },
-  {
-   "id": "qwen-2-5-coder-1-5b",
-   "name": "Qwen 2.5 Coder 1.5B",
-   "category": "code",
-   "size_gb": 1.3,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Tiny code model, fast enough to autocomplete while you type.",
-    "pt-BR": "Mini modelo de código, rápido o bastante para autocompletar enquanto você digita.",
-    "es": "Mini modelo de código, lo bastante rápido para autocompletar mientras escribes."
-   },
-   "use_for": {
-    "en": "Editor autocomplete (Continue, Tabby)",
-    "pt-BR": "Autocomplete no editor (Continue, Tabby)",
-    "es": "Autocompletado en el editor (Continue, Tabby)"
-   },
-   "unsure": false,
-   "ollama": "qwen2.5-coder:1.5b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 194,
-    "score_rtx3060": 93
-   }
-  },
-  {
-   "id": "deepseek-r1-1-5b",
-   "name": "DeepSeek R1 1.5B",
-   "category": "chat",
-   "size_gb": 1.3,
-   "active_ratio": 1.0,
-   "reasoning": true,
-   "description": {
-    "en": "Tiny distillation of DeepSeek R1: shows its reasoning, but makes many mistakes.",
-    "pt-BR": "Destilado minúsculo do DeepSeek R1: mostra o raciocínio, mas erra bastante.",
-    "es": "Destilado diminuto de DeepSeek R1: muestra su razonamiento, pero se equivoca bastante."
-   },
-   "use_for": {
-    "en": "Trying out reasoning models",
-    "pt-BR": "Experimentar modelos de raciocínio",
-    "es": "Probar modelos de razonamiento"
-   },
-   "unsure": false,
-   "ollama": "deepseek-r1:1.5b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 194,
-    "score_rtx3060": 93
-   }
-  },
-  {
-   "id": "qwen-3-5-2b",
-   "name": "Qwen 3.5 2B",
-   "category": "chat",
-   "size_gb": 2.5,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Pocket-size Qwen 3.5, fast for simple tasks.",
-    "pt-BR": "Qwen 3.5 de bolso, rápido para tarefas simples.",
-    "es": "Qwen 3.5 de bolsillo, rápido para tareas sencillas."
-   },
-   "use_for": {
-    "en": "Quick answers, drafts, extraction",
-    "pt-BR": "Respostas rápidas, rascunhos, extração",
-    "es": "Respuestas rápidas, borradores, extracción"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 101,
-    "score_rtx3060": 93
-   }
-  },
-  {
-   "id": "qwen-3-5-0-8b",
-   "name": "Qwen 3.5 0.8B",
-   "category": "chat",
-   "size_gb": 1.3,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "The smallest Qwen 3.5; handles well-defined tasks.",
-    "pt-BR": "O menor Qwen 3.5; resolve tarefas bem delimitadas.",
-    "es": "El Qwen 3.5 más pequeño; resuelve tareas bien delimitadas."
-   },
-   "use_for": {
-    "en": "Classification, extraction, routing",
-    "pt-BR": "Classificação, extração, roteamento",
-    "es": "Clasificación, extracción, enrutamiento"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 194,
-    "score_rtx3060": 92
-   }
-  },
-  {
-   "id": "llama-3-2-1b",
-   "name": "Llama 3.2 1B",
-   "category": "chat",
-   "size_gb": 1.0,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Ultralight model from Meta that even runs on phones. Only for very simple tasks.",
-    "pt-BR": "Ultraleve da Meta, roda até em celular. Só para tarefas muito simples.",
-    "es": "Ultraligero de Meta, funciona hasta en un móvil. Solo para tareas muy sencillas."
-   },
-   "use_for": {
-    "en": "Classifying texts, completing sentences",
-    "pt-BR": "Classificar textos, completar frases",
-    "es": "Clasificar textos, completar frases"
-   },
-   "unsure": false,
-   "ollama": "llama3.2:1b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 252,
-    "score_rtx3060": 92
-   }
-  },
-  {
-   "id": "gemma-3-1b",
-   "name": "Gemma 3 1B",
-   "category": "chat",
-   "size_gb": 1.0,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "The smallest Gemma, text only, with short and fast answers.",
-    "pt-BR": "Menor Gemma, só texto, com respostas curtas e rápidas.",
-    "es": "El Gemma más pequeño, solo texto, con respuestas cortas y rápidas."
-   },
-   "use_for": {
-    "en": "Simple tasks, pipeline tests",
-    "pt-BR": "Tarefas simples, testes de pipeline",
-    "es": "Tareas sencillas, pruebas de pipeline"
-   },
-   "unsure": false,
-   "ollama": "gemma3:1b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 252,
-    "score_rtx3060": 92
-   }
-  },
-  {
-   "id": "qwen-2-5-coder-7b",
-   "name": "Qwen 2.5 Coder 7B",
-   "category": "code",
-   "size_gb": 4.1,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Well-established code model; writes, explains and fixes code locally.",
-    "pt-BR": "Modelo de código consagrado; gera, explica e corrige código localmente.",
-    "es": "Modelo de código consolidado; genera, explica y corrige código en local."
-   },
-   "use_for": {
-    "en": "Programming, explaining code, scripts",
-    "pt-BR": "Programação, explicar código, scripts",
-    "es": "Programación, explicar código, scripts"
-   },
-   "unsure": false,
-   "ollama": "qwen2.5-coder:7b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 61,
-    "score_rtx3060": 85
-   }
-  },
-  {
-   "id": "deepseek-r1-distill-7b",
-   "name": "DeepSeek R1 Distill 7B",
-   "category": "chat",
-   "size_gb": 4.1,
-   "active_ratio": 1.0,
-   "reasoning": true,
-   "description": {
-    "en": "Qwen 7B trained on DeepSeek R1's reasoning: thinks before answering.",
-    "pt-BR": "Qwen 7B treinado com o raciocínio do DeepSeek R1: pensa antes de responder.",
-    "es": "Qwen 7B entrenado con el razonamiento de DeepSeek R1: piensa antes de responder."
-   },
-   "use_for": {
-    "en": "Logic and math problems",
-    "pt-BR": "Problemas de lógica e matemática",
-    "es": "Problemas de lógica y matemáticas"
-   },
-   "unsure": false,
-   "ollama": "deepseek-r1:7b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 61,
-    "score_rtx3060": 85
-   }
-  },
-  {
-   "id": "llama-3-1-8b",
-   "name": "Llama 3.1 8B",
-   "category": "chat",
-   "size_gb": 4.6,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Meta's classic, the base of thousands of fine-tunes.",
-    "pt-BR": "Clássico da Meta, base de milhares de fine-tunes.",
-    "es": "Clásico de Meta, base de miles de ajustes finos."
-   },
-   "use_for": {
-    "en": "General chat, base for fine-tuning",
-    "pt-BR": "Chat geral, base para ajuste fino",
-    "es": "Chat general, base para ajuste fino"
-   },
-   "unsure": false,
-   "ollama": "llama3.1:8b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 55,
-    "score_rtx3060": 82
-   }
-  },
-  {
-   "id": "qwen-3-8b",
-   "name": "Qwen 3 8B",
-   "category": "chat",
-   "size_gb": 4.6,
-   "active_ratio": 1.0,
-   "reasoning": true,
-   "description": {
-    "en": "Qwen 3 with think / no-think modes; great value.",
-    "pt-BR": "Qwen 3 com modo pensar/não pensar; ótimo custo-benefício.",
-    "es": "Qwen 3 con modo pensar / no pensar; excelente relación calidad-precio."
-   },
-   "use_for": {
-    "en": "General assistant, agents, multilingual",
-    "pt-BR": "Assistente geral, agentes, português",
-    "es": "Asistente general, agentes, multilingüe"
-   },
-   "unsure": false,
-   "ollama": "qwen3:8b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 55,
-    "score_rtx3060": 82
-   }
-  },
-  {
-   "id": "granite-4-1-8b",
-   "name": "Granite 4.1 8B",
-   "category": "chat",
-   "size_gb": 4.6,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Mid-size Granite from IBM, focused on business use.",
-    "pt-BR": "Granite intermediário da IBM, focado em uso corporativo.",
-    "es": "Granite intermedio de IBM, enfocado en uso empresarial."
-   },
-   "use_for": {
-    "en": "RAG, summaries, function calling",
-    "pt-BR": "RAG, resumos, chamadas de função",
-    "es": "RAG, resúmenes, llamadas a funciones"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 55,
-    "score_rtx3060": 82
-   }
-  },
-  {
-   "id": "ministral-8b",
-   "name": "Ministral 8B",
-   "category": "chat",
-   "size_gb": 4.6,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Mistral's 8B model for local use.",
-    "pt-BR": "Modelo de 8B da Mistral para uso local.",
-    "es": "Modelo de 8B de Mistral para uso local."
-   },
-   "use_for": {
-    "en": "Chat, simple agents, function calling",
-    "pt-BR": "Chat, agentes simples, chamadas de função",
-    "es": "Chat, agentes sencillos, llamadas a funciones"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 55,
-    "score_rtx3060": 82
-   }
-  },
-  {
-   "id": "qwen-3-5-4b",
-   "name": "Qwen 3.5 4B",
-   "category": "chat",
-   "size_gb": 4.6,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Small Qwen 3.5 with a good balance between speed and quality.",
-    "pt-BR": "Qwen 3.5 pequeno com bom equilíbrio entre velocidade e qualidade.",
-    "es": "Qwen 3.5 pequeño con buen equilibrio entre velocidad y calidad."
-   },
-   "use_for": {
-    "en": "Everyday assistant",
-    "pt-BR": "Assistente do dia a dia",
-    "es": "Asistente del día a día"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 55,
-    "score_rtx3060": 80
-   }
-  },
-  {
-   "id": "qwen3-vl-8b",
-   "name": "Qwen3-VL 8B",
-   "category": "vis",
-   "size_gb": 5.0,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Qwen's vision-language model: understands images, screenshots and documents and talks about them.",
-    "pt-BR": "Modelo de visão e linguagem da Qwen: entende imagens, prints e documentos e conversa sobre eles.",
-    "es": "Modelo de visión y lenguaje de Qwen: entiende imágenes, capturas y documentos y conversa sobre ellos."
-   },
-   "use_for": {
-    "en": "OCR, analyzing screenshots, charts and PDFs",
-    "pt-BR": "OCR, análise de prints, gráficos e PDFs",
-    "es": "OCR, análisis de capturas, gráficos y PDF"
-   },
-   "unsure": false,
-   "ollama": "qwen3-vl:8b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 50,
-    "score_rtx3060": 79
-   }
-  },
-  {
-   "id": "glm-4-9b",
-   "name": "GLM-4 9B",
-   "category": "chat",
-   "size_gb": 5.1,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Model from Zhipu (Z.ai), good at function calling.",
-    "pt-BR": "Modelo da Zhipu (Z.ai), bom em chamadas de função.",
-    "es": "Modelo de Zhipu (Z.ai), bueno en llamadas a funciones."
-   },
-   "use_for": {
-    "en": "Chat, tools, translation",
-    "pt-BR": "Chat, ferramentas, tradução",
-    "es": "Chat, herramientas, traducción"
-   },
-   "unsure": false,
-   "ollama": "glm4:9b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 49,
-    "score_rtx3060": 78
-   }
-  },
-  {
-   "id": "nemotron-nano-9b-v2",
-   "name": "Nemotron Nano 9B v2",
-   "category": "chat",
-   "size_gb": 5.1,
-   "active_ratio": 1.0,
-   "reasoning": true,
-   "description": {
-    "en": "NVIDIA model with a hybrid architecture (Mamba + Transformer), quick at reasoning.",
-    "pt-BR": "Modelo da NVIDIA de arquitetura híbrida (Mamba + Transformer), ágil em raciocínio.",
-    "es": "Modelo de NVIDIA con arquitectura híbrida (Mamba + Transformer), ágil en razonamiento."
-   },
-   "use_for": {
-    "en": "Reasoning, agents, long context",
-    "pt-BR": "Raciocínio, agentes, contexto longo",
-    "es": "Razonamiento, agentes, contexto largo"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 49,
-    "score_rtx3060": 78
-   }
-  },
-  {
-   "id": "ornith-1-0-9b",
-   "name": "Ornith 1.0 9B",
-   "category": "chat",
-   "size_gb": 5.1,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "9B version of the Ornith family.",
-    "pt-BR": "Versão de 9B da família Ornith.",
-    "es": "Versión de 9B de la familia Ornith."
-   },
-   "use_for": {
-    "en": "General chat",
-    "pt-BR": "Chat geral",
-    "es": "Chat general"
-   },
-   "unsure": true,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 49,
-    "score_rtx3060": 78
-   }
-  },
-  {
-   "id": "gemma-4-e2b-it",
-   "name": "Gemma 4 E2B IT",
-   "category": "chat",
-   "size_gb": 5.6,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Gemma 4 for devices (about 2B effective parameters), multimodal.",
-    "pt-BR": "Gemma 4 para dispositivos (cerca de 2B efetivos), multimodal.",
-    "es": "Gemma 4 para dispositivos (unos 2B efectivos), multimodal."
-   },
-   "use_for": {
-    "en": "Light assistant with images",
-    "pt-BR": "Assistente leve com imagem",
-    "es": "Asistente ligero con imágenes"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 45,
-    "score_rtx3060": 73
-   }
-  },
-  {
-   "id": "gemma-3-12b",
-   "name": "Gemma 3 12B",
-   "category": "chat",
-   "size_gb": 6.6,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Mid-size Gemma, multimodal and very good in Portuguese and other languages.",
-    "pt-BR": "Gemma de porte médio, multimodal e muito bom em português.",
-    "es": "Gemma de tamaño medio, multimodal y muy bueno en español, portugués y otros idiomas."
-   },
-   "use_for": {
-    "en": "Writing, summaries, image analysis",
-    "pt-BR": "Escrita, resumo, análise de imagens",
-    "es": "Redacción, resúmenes, análisis de imágenes"
-   },
-   "unsure": false,
-   "ollama": "gemma3:12b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 38,
-    "score_rtx3060": 68
-   }
-  },
-  {
-   "id": "mistral-nemo-12b",
-   "name": "Mistral Nemo 12B",
-   "category": "chat",
-   "size_gb": 6.6,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Made by Mistral with NVIDIA, 128K-token context.",
-    "pt-BR": "Feito pela Mistral com a NVIDIA, contexto de 128 mil tokens.",
-    "es": "Hecho por Mistral con NVIDIA, contexto de 128 mil tokens."
-   },
-   "use_for": {
-    "en": "Creative writing, roleplay, chat",
-    "pt-BR": "Escrita criativa, roleplay, chat",
-    "es": "Escritura creativa, roleplay, chat"
-   },
-   "unsure": false,
-   "ollama": "mistral-nemo:12b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 38,
-    "score_rtx3060": 68
-   }
-  },
-  {
-   "id": "gemma-4-12b-it",
-   "name": "Gemma 4 12B IT",
-   "category": "chat",
-   "size_gb": 6.6,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Mid-size Gemma 4, tuned to follow instructions.",
-    "pt-BR": "Gemma 4 de porte médio, ajustado para seguir instruções.",
-    "es": "Gemma 4 de tamaño medio, ajustado para seguir instrucciones."
-   },
-   "use_for": {
-    "en": "General assistant",
-    "pt-BR": "Assistente geral",
-    "es": "Asistente general"
-   },
-   "unsure": true,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 38,
-    "score_rtx3060": 68
-   }
-  },
-  {
-   "id": "phi-4-14b",
-   "name": "Phi-4 14B",
-   "category": "chat",
-   "size_gb": 7.7,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Microsoft model that is strong at math and reasoning for its size.",
-    "pt-BR": "Modelo da Microsoft forte em matemática e raciocínio para o tamanho.",
-    "es": "Modelo de Microsoft fuerte en matemáticas y razonamiento para su tamaño."
-   },
-   "use_for": {
-    "en": "Reasoning, STEM, study",
-    "pt-BR": "Raciocínio, STEM, estudo",
-    "es": "Razonamiento, STEM, estudio"
-   },
-   "unsure": false,
-   "ollama": "phi4:14b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 33,
-    "score_rtx3060": 61
-   }
-  },
-  {
-   "id": "qwen-3-14b",
-   "name": "Qwen 3 14B",
-   "category": "chat",
-   "size_gb": 7.7,
-   "active_ratio": 1.0,
-   "reasoning": true,
-   "description": {
-    "en": "Mid-size Qwen 3: much better overall quality than the smaller versions.",
-    "pt-BR": "Qwen 3 de porte médio: qualidade geral bem melhor que as versões menores.",
-    "es": "Qwen 3 de tamaño medio: calidad general mucho mejor que las versiones pequeñas."
-   },
-   "use_for": {
-    "en": "High-quality general assistant, agents",
-    "pt-BR": "Assistente geral de qualidade, agentes",
-    "es": "Asistente general de calidad, agentes"
-   },
-   "unsure": false,
-   "ollama": "qwen3:14b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 33,
-    "score_rtx3060": 61
-   }
-  },
-  {
-   "id": "deepseek-r1-distill-14b",
-   "name": "DeepSeek R1 Distill 14B",
-   "category": "chat",
-   "size_gb": 7.7,
-   "active_ratio": 1.0,
-   "reasoning": true,
-   "description": {
-    "en": "14B distillation of R1; much more solid reasoning than the 7B.",
-    "pt-BR": "Destilado do R1 em 14B; raciocínio bem mais sólido que o 7B.",
-    "es": "Destilado de R1 en 14B; razonamiento mucho más sólido que el de 7B."
-   },
-   "use_for": {
-    "en": "Logic, math, planning",
-    "pt-BR": "Lógica, matemática, planejamento",
-    "es": "Lógica, matemáticas, planificación"
-   },
-   "unsure": false,
-   "ollama": "deepseek-r1:14b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 33,
-    "score_rtx3060": 61
-   }
-  },
-  {
-   "id": "ministral-3-14b",
-   "name": "Ministral 3 14B",
-   "category": "chat",
-   "size_gb": 7.7,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Largest model of the Ministral 3 line, with image support.",
-    "pt-BR": "Maior modelo da linha Ministral 3, com suporte a imagens.",
-    "es": "El modelo más grande de la línea Ministral 3, con soporte de imágenes."
-   },
-   "use_for": {
-    "en": "Chat, documents, images",
-    "pt-BR": "Chat, documentos, imagens",
-    "es": "Chat, documentos, imágenes"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 33,
-    "score_rtx3060": 61
-   }
-  },
-  {
-   "id": "gemma-4-e4b-it",
-   "name": "Gemma 4 E4B IT",
-   "category": "chat",
-   "size_gb": 8.7,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Gemma 4 for devices (about 4B effective parameters), multimodal.",
-    "pt-BR": "Gemma 4 para dispositivos (cerca de 4B efetivos), multimodal.",
-    "es": "Gemma 4 para dispositivos (unos 4B efectivos), multimodal."
-   },
-   "use_for": {
-    "en": "On-device assistant with images",
-    "pt-BR": "Assistente com imagem no dispositivo",
-    "es": "Asistente con imágenes en el dispositivo"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 29,
-    "score_rtx3060": 53
-   }
-  },
-  {
-   "id": "gpt-oss-20b",
-   "name": "GPT-OSS 20B",
-   "category": "chat",
-   "size_gb": 11.3,
-   "active_ratio": 0.171,
-   "reasoning": true,
-   "description": {
-    "en": "OpenAI's open MoE model: only a fraction of the parameters works on each token, which makes it very fast.",
-    "pt-BR": "Modelo aberto da OpenAI em MoE: só uma fração dos parâmetros trabalha por token, por isso é tão rápido.",
-    "es": "Modelo abierto de OpenAI en MoE: solo una fracción de los parámetros trabaja por token, por eso es tan rápido."
-   },
-   "use_for": {
-    "en": "Reasoning, tools, general assistant",
-    "pt-BR": "Raciocínio, ferramentas, assistente geral",
-    "es": "Razonamiento, herramientas, asistente general"
-   },
-   "unsure": false,
-   "ollama": "gpt-oss:20b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 130,
-    "score_rtx3060": 50
-   }
-  },
-  {
-   "id": "qwen-3-5-9b",
-   "name": "Qwen 3.5 9B",
-   "category": "chat",
-   "size_gb": 9.7,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "General-purpose model of the Qwen 3.5 family, balancing quality and size.",
-    "pt-BR": "Generalista da família Qwen 3.5, equilibrando qualidade e tamanho.",
-    "es": "Generalista de la familia Qwen 3.5, que equilibra calidad y tamaño."
-   },
-   "use_for": {
-    "en": "Chat, summaries, agents",
-    "pt-BR": "Chat, resumo, agentes",
-    "es": "Chat, resúmenes, agentes"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 26,
-    "score_rtx3060": 48
-   }
-  },
-  {
-   "id": "lfm2-24b",
-   "name": "LFM2 24B",
-   "category": "chat",
-   "size_gb": 12.8,
-   "active_ratio": 0.096,
-   "reasoning": false,
-   "description": {
-    "en": "Liquid AI MoE model with few active parameters, hence its high speed.",
-    "pt-BR": "Modelo da Liquid AI em MoE com poucos parâmetros ativos, daí a velocidade alta.",
-    "es": "Modelo de Liquid AI en MoE con pocos parámetros activos, de ahí su alta velocidad."
-   },
-   "use_for": {
-    "en": "Fast chat, extraction, light agents",
-    "pt-BR": "Chat rápido, extração, agentes leves",
-    "es": "Chat rápido, extracción, agentes ligeros"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 126,
-    "score_rtx3060": 48
-   }
-  },
-  {
-   "id": "diffusiongemma-26b-a4b-it",
-   "name": "DiffusionGemma 26B-A4B IT",
-   "category": "chat",
-   "size_gb": 13.8,
-   "active_ratio": 0.154,
-   "reasoning": false,
-   "description": {
-    "en": "Gemma variant (MoE, ~4B active) that seems to generate text by diffusion instead of token by token.",
-    "pt-BR": "Variante do Gemma (MoE, ~4B ativos) que parece gerar texto por difusão em vez de token a token.",
-    "es": "Variante de Gemma (MoE, ~4B activos) que parece generar texto por difusión en lugar de token a token."
-   },
-   "use_for": {
-    "en": "Experiments",
-    "pt-BR": "Experimentos",
-    "es": "Experimentos"
-   },
-   "unsure": true,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 59,
-    "score_rtx3060": 35
-   }
-  },
-  {
-   "id": "qwen3-vl-30b-a3b",
-   "name": "Qwen3-VL 30B-A3B",
-   "category": "vis",
-   "size_gb": 16.4,
-   "active_ratio": 0.1,
-   "reasoning": false,
-   "description": {
-    "en": "Larger MoE version of Qwen3-VL (3B active): more precise vision and still fast.",
-    "pt-BR": "Versão MoE maior do Qwen3-VL (3B ativos): visão mais precisa e ainda rápida.",
-    "es": "Versión MoE más grande de Qwen3-VL (3B activos): visión más precisa y aún rápida."
-   },
-   "use_for": {
-    "en": "Complex documents, charts, OCR",
-    "pt-BR": "Documentos complexos, gráficos, OCR",
-    "es": "Documentos complejos, gráficos, OCR"
-   },
-   "unsure": false,
-   "ollama": "qwen3-vl:30b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 51,
-    "score_rtx3060": 34
-   }
-  },
-  {
-   "id": "nemotron-3-nano-30b",
-   "name": "Nemotron 3 Nano 30B",
-   "category": "chat",
-   "size_gb": 15.9,
-   "active_ratio": 0.111,
-   "reasoning": false,
-   "description": {
-    "en": "NVIDIA MoE with few active parameters; stays fast even when part of it goes to system RAM.",
-    "pt-BR": "MoE da NVIDIA com poucos parâmetros ativos; continua rápido mesmo quando parte vai para a RAM.",
-    "es": "MoE de NVIDIA con pocos parámetros activos; sigue siendo rápido aunque parte pase a la RAM."
-   },
-   "use_for": {
-    "en": "Agents, reasoning, long context",
-    "pt-BR": "Agentes, raciocínio, contexto longo",
-    "es": "Agentes, razonamiento, contexto largo"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 53,
-    "score_rtx3060": 34
-   }
-  },
-  {
-   "id": "north-mini-code",
-   "name": "North Mini Code",
-   "category": "code",
-   "size_gb": 15.9,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Compact code model.",
-    "pt-BR": "Modelo de código compacto.",
-    "es": "Modelo de código compacto."
-   },
-   "use_for": {
-    "en": "Programming",
-    "pt-BR": "Programação",
-    "es": "Programación"
-   },
-   "unsure": true,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 53,
-    "score_rtx3060": 34
-   }
-  },
-  {
-   "id": "agents-a1-35b-a3b",
-   "name": "Agents-A1 35B-A3B",
-   "category": "chat",
-   "size_gb": 18.4,
-   "active_ratio": 0.086,
-   "reasoning": false,
-   "description": {
-    "en": "35B MoE with ~3B active; the name suggests a focus on agent workflows.",
-    "pt-BR": "MoE de 35B com ~3B ativos; o nome indica foco em fluxos de agente.",
-    "es": "MoE de 35B con ~3B activos; el nombre indica un enfoque en flujos de agentes."
-   },
-   "use_for": {
-    "en": "Agents, tool use",
-    "pt-BR": "Agentes, uso de ferramentas",
-    "es": "Agentes, uso de herramientas"
-   },
-   "unsure": true,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 43,
-    "score_rtx3060": 33
-   }
-  },
-  {
-   "id": "ornith-1-0-35b-a3b",
-   "name": "Ornith 1.0 35B-A3B",
-   "category": "chat",
-   "size_gb": 18.4,
-   "active_ratio": 0.086,
-   "reasoning": false,
-   "description": {
-    "en": "35B MoE with ~3B active, from the Ornith family.",
-    "pt-BR": "MoE de 35B com ~3B ativos da família Ornith.",
-    "es": "MoE de 35B con ~3B activos de la familia Ornith."
-   },
-   "use_for": {
-    "en": "General chat",
-    "pt-BR": "Chat geral",
-    "es": "Chat general"
-   },
-   "unsure": true,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 43,
-    "score_rtx3060": 33
-   }
-  },
-  {
-   "id": "qwen-3-6-35b-a3b",
-   "name": "Qwen 3.6 35B-A3B",
-   "category": "chat",
-   "size_gb": 18.9,
-   "active_ratio": 0.086,
-   "reasoning": false,
-   "description": {
-    "en": "35B Qwen MoE with ~3B active, the newest generation of the family.",
-    "pt-BR": "Qwen MoE de 35B com ~3B ativos, geração mais nova da família.",
-    "es": "Qwen MoE de 35B con ~3B activos, la generación más nueva de la familia."
-   },
-   "use_for": {
-    "en": "Chat, code, agents",
-    "pt-BR": "Chat, código, agentes",
-    "es": "Chat, código, agentes"
-   },
-   "unsure": true,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 42,
-    "score_rtx3060": 33
-   }
-  },
-  {
-   "id": "qwen-3-next-80b-a3b",
-   "name": "Qwen 3 Next 80B-A3B",
-   "category": "chat",
-   "size_gb": 41.5,
-   "active_ratio": 0.037,
-   "reasoning": false,
-   "description": {
-    "en": "Experimental Qwen with hybrid attention and only 3B active: huge, but fast for its size.",
-    "pt-BR": "Qwen experimental com atenção híbrida e só 3B ativos: enorme, mas rápido para o tamanho.",
-    "es": "Qwen experimental con atención híbrida y solo 3B activos: enorme, pero rápido para su tamaño."
-   },
-   "use_for": {
-    "en": "Long context, general assistant",
-    "pt-BR": "Contexto longo, assistente geral",
-    "es": "Contexto largo, asistente general"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 25,
-    "score_rtx3060": 27
-   }
-  },
-  {
-   "id": "qwen-3-coder-next-80b-a3b",
-   "name": "Qwen 3 Coder Next 80B-A3B",
-   "category": "code",
-   "size_gb": 41.5,
-   "active_ratio": 0.037,
-   "reasoning": false,
-   "description": {
-    "en": "Code version of Qwen 3 Next, built for coding agents.",
-    "pt-BR": "Versão de código do Qwen 3 Next, feita para agentes de programação.",
-    "es": "Versión de código de Qwen 3 Next, hecha para agentes de programación."
-   },
-   "use_for": {
-    "en": "Coding agents, refactoring",
-    "pt-BR": "Agentes de código, refatoração",
-    "es": "Agentes de código, refactorización"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 25,
-    "score_rtx3060": 27
-   }
-  },
-  {
-   "id": "devstral-small-2-24b",
-   "name": "Devstral Small 2 24B",
-   "category": "code",
-   "size_gb": 12.8,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Mistral's coding agent, built to work on whole repositories.",
-    "pt-BR": "Agente de programação da Mistral, feito para trabalhar em repositórios inteiros.",
-    "es": "Agente de programación de Mistral, hecho para trabajar en repositorios completos."
-   },
-   "use_for": {
-    "en": "Coding agents (OpenHands, Cline)",
-    "pt-BR": "Agentes de código (OpenHands, Cline)",
-    "es": "Agentes de código (OpenHands, Cline)"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 12,
-    "score_rtx3060": 23
-   }
-  },
-  {
-   "id": "mistral-small-3-1-24b",
-   "name": "Mistral Small 3.1 24B",
-   "category": "chat",
-   "size_gb": 12.8,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Mistral's multimodal general-purpose model.",
-    "pt-BR": "Generalista multimodal da Mistral.",
-    "es": "Generalista multimodal de Mistral."
-   },
-   "use_for": {
-    "en": "Chat, documents, images",
-    "pt-BR": "Chat, documentos, imagens",
-    "es": "Chat, documentos, imágenes"
-   },
-   "unsure": false,
-   "ollama": "mistral-small3.1:24b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 12,
-    "score_rtx3060": 23
-   }
-  },
-  {
-   "id": "qwen-3-5-35b-a3b",
-   "name": "Qwen 3.5 35B-A3B",
-   "category": "chat",
-   "size_gb": 36.4,
-   "active_ratio": 0.086,
-   "reasoning": false,
-   "description": {
-    "en": "Qwen 3.5 MoE with ~3B active, in a larger quantization (36 GB).",
-    "pt-BR": "MoE do Qwen 3.5 com ~3B ativos, numa quantização maior (36 GB).",
-    "es": "MoE de Qwen 3.5 con ~3B activos, en una cuantización mayor (36 GB)."
-   },
-   "use_for": {
-    "en": "High-quality general assistant",
-    "pt-BR": "Assistente geral de qualidade",
-    "es": "Asistente general de calidad"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 13,
-    "score_rtx3060": 20
-   }
-  },
-  {
-   "id": "gemma-4-26b-a4b-it",
-   "name": "Gemma 4 26B-A4B IT",
-   "category": "chat",
-   "size_gb": 28.2,
-   "active_ratio": 0.154,
-   "reasoning": false,
-   "description": {
-    "en": "Google's multimodal MoE (~4B active).",
-    "pt-BR": "MoE multimodal do Google (~4B ativos).",
-    "es": "MoE multimodal de Google (~4B activos)."
-   },
-   "use_for": {
-    "en": "Chat, images, documents",
-    "pt-BR": "Chat, imagens, documentos",
-    "es": "Chat, imágenes, documentos"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 11,
-    "score_rtx3060": 18
-   }
-  },
-  {
-   "id": "mixtral-8x7b",
-   "name": "Mixtral 8x7B",
-   "category": "chat",
-   "size_gb": 24.6,
-   "active_ratio": 0.276,
-   "reasoning": false,
-   "description": {
-    "en": "Mistral's pioneering MoE (2023), now outperformed by smaller models.",
-    "pt-BR": "MoE pioneiro da Mistral (2023), hoje superado por modelos menores.",
-    "es": "MoE pionero de Mistral (2023), hoy superado por modelos más pequeños."
-   },
-   "use_for": {
-    "en": "Legacy use",
-    "pt-BR": "Uso legado",
-    "es": "Uso heredado"
-   },
-   "unsure": false,
-   "ollama": "mixtral:8x7b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 8,
-    "score_rtx3060": 16
-   }
-  },
-  {
-   "id": "hunyuanimage-3-0-instruct",
-   "name": "HunyuanImage 3.0 Instruct",
-   "category": "img",
-   "size_gb": 45.4,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Large image generator from Tencent, with instruction-based editing.",
-    "pt-BR": "Gerador de imagens de grande porte da Tencent, com edição por instrução.",
-    "es": "Generador de imágenes de gran tamaño de Tencent, con edición por instrucciones."
-   },
-   "use_for": {
-    "en": "Text-to-image, editing",
-    "pt-BR": "Imagens a partir de texto, edição",
-    "es": "Imágenes a partir de texto, edición"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 14
-   }
-  },
-  {
-   "id": "hunyuanimage-3-0",
-   "name": "HunyuanImage 3.0",
-   "category": "img",
-   "size_gb": 45.4,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Large image generator from Tencent.",
-    "pt-BR": "Gerador de imagens de grande porte da Tencent.",
-    "es": "Generador de imágenes de gran tamaño de Tencent."
-   },
-   "use_for": {
-    "en": "Text-to-image",
-    "pt-BR": "Imagens a partir de texto",
-    "es": "Imágenes a partir de texto"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 14
-   }
-  },
-  {
-   "id": "qwen-3-8-27b",
-   "name": "Qwen 3.8 27B",
-   "category": "chat",
-   "size_gb": 14.3,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Dense 27B Qwen: every parameter works on each token, so it is slower than a MoE of the same size.",
-    "pt-BR": "Qwen denso de 27B: todos os parâmetros trabalham em cada token, por isso é mais lento que um MoE do mesmo tamanho.",
-    "es": "Qwen denso de 27B: todos los parámetros trabajan en cada token, por eso es más lento que un MoE del mismo tamaño."
-   },
-   "use_for": {
-    "en": "General assistant",
-    "pt-BR": "Assistente geral",
-    "es": "Asistente general"
-   },
-   "unsure": true,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 7,
-    "score_rtx3060": 13
-   }
-  },
-  {
-   "id": "minimax-h3",
-   "name": "MiniMax H3",
-   "category": "vid",
-   "size_gb": 31.7,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Video generator from MiniMax.",
-    "pt-BR": "Gerador de vídeo da MiniMax.",
-    "es": "Generador de video de MiniMax."
-   },
-   "use_for": {
-    "en": "Short videos",
-    "pt-BR": "Vídeos curtos",
-    "es": "Videos cortos"
-   },
-   "unsure": true,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 13
-   }
-  },
-  {
-   "id": "glm-4-5-air",
-   "name": "GLM-4.5 Air",
-   "category": "chat",
-   "size_gb": 54.8,
-   "active_ratio": 0.113,
-   "reasoning": false,
-   "description": {
-    "en": "Zhipu MoE, good at code and agents.",
-    "pt-BR": "MoE da Zhipu, bom em código e agentes.",
-    "es": "MoE de Zhipu, bueno en código y agentes."
-   },
-   "use_for": {
-    "en": "Code, agents",
-    "pt-BR": "Código, agentes",
-    "es": "Código, agentes"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 6,
-    "score_rtx3060": 13
-   }
-  },
-  {
-   "id": "ltx-2-3",
-   "name": "LTX 2.3",
-   "category": "vid",
-   "size_gb": 14.1,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Video generator from Lightricks, fast and with audio.",
-    "pt-BR": "Gerador de vídeo da Lightricks, rápido e com áudio.",
-    "es": "Generador de video de Lightricks, rápido y con audio."
-   },
-   "use_for": {
-    "en": "Short clips, text or image to video",
-    "pt-BR": "Clipes curtos, texto ou imagem para vídeo",
-    "es": "Clips cortos, texto o imagen a video"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 12
-   }
-  },
-  {
-   "id": "qwen-image-2512",
-   "name": "Qwen Image 2512",
-   "category": "img",
-   "size_gb": 31.5,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Image generator from Qwen, strong at readable text inside the image.",
-    "pt-BR": "Gerador de imagens da Qwen, forte em texto legível dentro da imagem.",
-    "es": "Generador de imágenes de Qwen, fuerte en texto legible dentro de la imagen."
-   },
-   "use_for": {
-    "en": "Posters, banners, images with text",
-    "pt-BR": "Pôsteres, banners, imagens com texto",
-    "es": "Pósteres, banners, imágenes con texto"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 12
-   }
-  },
-  {
-   "id": "wan-2-2-t2v-a14b",
-   "name": "Wan 2.2 T2V A14B",
-   "category": "vid",
-   "size_gb": 30.1,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Text-to-video from Alibaba (MoE), with a cinematic look.",
-    "pt-BR": "Texto para vídeo da Alibaba (MoE), com visual cinematográfico.",
-    "es": "Texto a video de Alibaba (MoE), con aspecto cinematográfico."
-   },
-   "use_for": {
-    "en": "Short videos from text",
-    "pt-BR": "Vídeos curtos a partir de texto",
-    "es": "Videos cortos a partir de texto"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 12
-   }
-  },
-  {
-   "id": "muse-glimmer-30b",
-   "name": "Muse Glimmer 30B",
-   "category": "chat",
-   "size_gb": 15.9,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Dense 30B model.",
-    "pt-BR": "Modelo denso de 30B.",
-    "es": "Modelo denso de 30B."
-   },
-   "use_for": {
-    "en": "General chat",
-    "pt-BR": "Chat geral",
-    "es": "Chat general"
-   },
-   "unsure": true,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 5,
-    "score_rtx3060": 11
-   }
-  },
-  {
-   "id": "llama-4-scout-17b",
-   "name": "Llama 4 Scout 17B",
-   "category": "chat",
-   "size_gb": 56.3,
-   "active_ratio": 0.156,
-   "reasoning": false,
-   "description": {
-    "en": "Meta's multimodal MoE (17B active, 109B total), with a very long context.",
-    "pt-BR": "MoE multimodal da Meta (17B ativos, 109B no total), com contexto muito longo.",
-    "es": "MoE multimodal de Meta (17B activos, 109B en total), con contexto muy largo."
-   },
-   "use_for": {
-    "en": "Huge documents, images",
-    "pt-BR": "Documentos enormes, imagens",
-    "es": "Documentos enormes, imágenes"
-   },
-   "unsure": false,
-   "ollama": "llama4:scout",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 4,
-    "score_rtx3060": 11
-   }
-  },
-  {
-   "id": "flux-2-klein-9b",
-   "name": "FLUX.2 Klein 9B",
-   "category": "img",
-   "size_gb": 25.6,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Compact 9B version of FLUX.2, from Black Forest Labs.",
-    "pt-BR": "Versão compacta de 9B do FLUX.2, da Black Forest Labs.",
-    "es": "Versión compacta de 9B de FLUX.2, de Black Forest Labs."
-   },
-   "use_for": {
-    "en": "Generating and editing images",
-    "pt-BR": "Gerar e editar imagens",
-    "es": "Generar y editar imágenes"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 11
-   }
-  },
-  {
-   "id": "granite-4-1-30b",
-   "name": "Granite 4.1 30B",
-   "category": "chat",
-   "size_gb": 15.9,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "IBM's largest Granite 4.1; dense, so every parameter works on each token.",
-    "pt-BR": "Maior Granite 4.1 da IBM; denso, então todos os parâmetros trabalham em cada token.",
-    "es": "El Granite 4.1 más grande de IBM; denso, así que todos los parámetros trabajan en cada token."
-   },
-   "use_for": {
-    "en": "Business RAG, summaries",
-    "pt-BR": "RAG corporativo, resumos",
-    "es": "RAG empresarial, resúmenes"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 5,
-    "score_rtx3060": 11
-   }
-  },
-  {
-   "id": "qwen-3-32b",
-   "name": "Qwen 3 32B",
-   "category": "chat",
-   "size_gb": 16.9,
-   "active_ratio": 1.0,
-   "reasoning": true,
-   "description": {
-    "en": "Dense 32B Qwen 3: high quality, but slower than the MoE models.",
-    "pt-BR": "Qwen 3 denso de 32B: qualidade alta, mas mais lento que os MoE.",
-    "es": "Qwen 3 denso de 32B: alta calidad, pero más lento que los MoE."
-   },
-   "use_for": {
-    "en": "Quality answers without hurry",
-    "pt-BR": "Respostas de qualidade sem pressa",
-    "es": "Respuestas de calidad sin prisa"
-   },
-   "unsure": false,
-   "ollama": "qwen3:32b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 5,
-    "score_rtx3060": 11
-   }
-  },
-  {
-   "id": "deepseek-r1-distill-32b",
-   "name": "DeepSeek R1 Distill 32B",
-   "category": "chat",
-   "size_gb": 16.9,
-   "active_ratio": 1.0,
-   "reasoning": true,
-   "description": {
-    "en": "The best R1 distillation; strong reasoning, but heavy.",
-    "pt-BR": "Melhor destilado do R1; raciocínio forte, mas pesado.",
-    "es": "El mejor destilado de R1; razonamiento fuerte, pero pesado."
-   },
-   "use_for": {
-    "en": "Heavy reasoning",
-    "pt-BR": "Raciocínio pesado",
-    "es": "Razonamiento exigente"
-   },
-   "unsure": false,
-   "ollama": "deepseek-r1:32b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 5,
-    "score_rtx3060": 11
-   }
-  },
-  {
-   "id": "olmo-2-32b",
-   "name": "OLMo 2 32B",
-   "category": "chat",
-   "size_gb": 16.9,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "100% open model from the Allen Institute (weights, data and code).",
-    "pt-BR": "Modelo 100% aberto do Allen Institute (pesos, dados e código).",
-    "es": "Modelo 100 % abierto del Allen Institute (pesos, datos y código)."
-   },
-   "use_for": {
-    "en": "Research, studying LLMs",
-    "pt-BR": "Pesquisa, estudo de LLMs",
-    "es": "Investigación, estudio de LLM"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 5,
-    "score_rtx3060": 11
-   }
-  },
-  {
-   "id": "wan-2-2-ti2v-5b",
-   "name": "Wan 2.2 TI2V 5B",
-   "category": "vid",
-   "size_gb": 21.2,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Compact version of Wan 2.2: text or image to video.",
-    "pt-BR": "Versão compacta do Wan 2.2: texto ou imagem para vídeo.",
-    "es": "Versión compacta de Wan 2.2: texto o imagen a video."
-   },
-   "use_for": {
-    "en": "Animating images, short clips",
-    "pt-BR": "Animar imagens, clipes curtos",
-    "es": "Animar imágenes, clips cortos"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 10
-   }
-  },
-  {
-   "id": "z-image-turbo",
-   "name": "Z-Image Turbo",
-   "category": "img",
-   "size_gb": 15.7,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Fast image generator (few steps), focused on photorealism.",
-    "pt-BR": "Gerador de imagens rápido (poucos passos), focado em fotorrealismo.",
-    "es": "Generador de imágenes rápido (pocos pasos), enfocado en fotorrealismo."
-   },
-   "use_for": {
-    "en": "Realistic photos, quick iterations",
-    "pt-BR": "Fotos realistas, iterações rápidas",
-    "es": "Fotos realistas, iteraciones rápidas"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 10
-   }
-  },
-  {
-   "id": "hunyuanvideo-1-5",
-   "name": "HunyuanVideo 1.5",
-   "category": "vid",
-   "size_gb": 13.7,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Lighter version of Tencent's video generator.",
-    "pt-BR": "Gerador de vídeo da Tencent em versão mais leve.",
-    "es": "Versión más ligera del generador de video de Tencent."
-   },
-   "use_for": {
-    "en": "Text or image to video",
-    "pt-BR": "Texto ou imagem para vídeo",
-    "es": "Texto o imagen a video"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 10
-   }
-  },
-  {
-   "id": "gemma-4-31b",
-   "name": "Gemma 4 31B",
-   "category": "chat",
-   "size_gb": 17.4,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "The largest dense Gemma 4.",
-    "pt-BR": "Maior Gemma 4 denso.",
-    "es": "El Gemma 4 denso más grande."
-   },
-   "use_for": {
-    "en": "High-quality general assistant",
-    "pt-BR": "Assistente geral de qualidade",
-    "es": "Asistente general de calidad"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 4,
-    "score_rtx3060": 10
-   }
-  },
-  {
-   "id": "command-r-35b",
-   "name": "Command R 35B",
-   "category": "chat",
-   "size_gb": 18.4,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Cohere model built for RAG with citations.",
-    "pt-BR": "Modelo da Cohere feito para RAG com citações.",
-    "es": "Modelo de Cohere hecho para RAG con citas."
-   },
-   "use_for": {
-    "en": "Searching and answering from documents",
-    "pt-BR": "Buscar e responder em documentos",
-    "es": "Buscar y responder en documentos"
-   },
-   "unsure": false,
-   "ollama": "command-r:35b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 4,
-    "score_rtx3060": 10
-   }
-  },
-  {
-   "id": "flux-2-klein-4b",
-   "name": "FLUX.2 Klein 4B",
-   "category": "img",
-   "size_gb": 14.6,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Small version of FLUX.2 to generate and edit images quickly.",
-    "pt-BR": "Versão pequena do FLUX.2 para gerar e editar imagens rápido.",
-    "es": "Versión pequeña de FLUX.2 para generar y editar imágenes rápido."
-   },
-   "use_for": {
-    "en": "Quick images, editing",
-    "pt-BR": "Imagens rápidas, edição",
-    "es": "Imágenes rápidas, edición"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 9
-   }
-  },
-  {
-   "id": "wan-2-1-t2v-1-3b",
-   "name": "Wan 2.1 T2V 1.3B",
-   "category": "vid",
-   "size_gb": 17.0,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Light version of Wan 2.1 for text-to-video.",
-    "pt-BR": "Versão leve do Wan 2.1 para texto para vídeo.",
-    "es": "Versión ligera de Wan 2.1 para texto a video."
-   },
-   "use_for": {
-    "en": "Short low-resolution videos",
-    "pt-BR": "Vídeos curtos em baixa resolução",
-    "es": "Videos cortos en baja resolución"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 8
-   }
-  },
-  {
-   "id": "qwen-3-5-27b",
-   "name": "Qwen 3.5 27B",
-   "category": "chat",
-   "size_gb": 29.0,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Dense 27B Qwen 3.5, in a larger quantization.",
-    "pt-BR": "Qwen 3.5 denso de 27B, numa quantização maior.",
-    "es": "Qwen 3.5 denso de 27B, en una cuantización mayor."
-   },
-   "use_for": {
-    "en": "General assistant",
-    "pt-BR": "Assistente geral",
-    "es": "Asistente general"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 2,
-    "score_rtx3060": 8
-   }
-  },
-  {
-   "id": "llama-3-3-70b",
-   "name": "Llama 3.3 70B",
-   "category": "chat",
-   "size_gb": 36.4,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "70B Llama: very good, but it needs a lot of memory to run well.",
-    "pt-BR": "Llama de 70B: muito bom, mas precisa de muita memória para rodar bem.",
-    "es": "Llama de 70B: muy bueno, pero necesita mucha memoria para funcionar bien."
-   },
-   "use_for": {
-    "en": "High quality, without hurry",
-    "pt-BR": "Qualidade alta, sem pressa",
-    "es": "Alta calidad, sin prisa"
-   },
-   "unsure": false,
-   "ollama": "llama3.3:70b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 1,
-    "score_rtx3060": 8
-   }
-  },
-  {
-   "id": "gemma-4-31b-it",
-   "name": "Gemma 4 31B IT",
-   "category": "chat",
-   "size_gb": 34.3,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Instruction-tuned Gemma 4 31B, in a larger quantization.",
-    "pt-BR": "Gemma 4 31B ajustado para instruções, em quantização maior.",
-    "es": "Gemma 4 31B ajustado para instrucciones, en una cuantización mayor."
-   },
-   "use_for": {
-    "en": "General assistant",
-    "pt-BR": "Assistente geral",
-    "es": "Asistente general"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 1,
-    "score_rtx3060": 7
-   }
-  },
-  {
-   "id": "flux-2-dev",
-   "name": "FLUX.2 Dev",
-   "category": "img",
-   "size_gb": 69.1,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Black Forest Labs' top-of-the-line image model.",
-    "pt-BR": "Modelo de imagem topo de linha da Black Forest Labs.",
-    "es": "Modelo de imagen de gama alta de Black Forest Labs."
-   },
-   "use_for": {
-    "en": "High-quality images",
-    "pt-BR": "Imagens de alta qualidade",
-    "es": "Imágenes de alta calidad"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 0
-   }
-  },
-  {
-   "id": "gpt-oss-120b",
-   "name": "GPT-OSS 120B",
-   "category": "chat",
-   "size_gb": 60.4,
-   "active_ratio": 0.044,
-   "reasoning": true,
-   "description": {
-    "en": "The bigger sibling of GPT-OSS; needs about 60 GB.",
-    "pt-BR": "Irmão maior do GPT-OSS; exige cerca de 60 GB.",
-    "es": "El hermano mayor de GPT-OSS; requiere unos 60 GB."
-   },
-   "use_for": {
-    "en": "Advanced reasoning",
-    "pt-BR": "Raciocínio avançado",
-    "es": "Razonamiento avanzado"
-   },
-   "unsure": false,
-   "ollama": "gpt-oss:120b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 0
-   }
-  },
-  {
-   "id": "mistral-small-4-119b",
-   "name": "Mistral Small 4 119B",
-   "category": "chat",
-   "size_gb": 61.5,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Mistral's 119B MoE model.",
-    "pt-BR": "Modelo MoE de 119B da Mistral.",
-    "es": "Modelo MoE de 119B de Mistral."
-   },
-   "use_for": {
-    "en": "Advanced assistant",
-    "pt-BR": "Assistente avançado",
-    "es": "Asistente avanzado"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 0
-   }
-  },
-  {
-   "id": "qwen-3-vl-235b-a22b",
-   "name": "Qwen 3 VL 235B-A22B",
-   "category": "vis",
-   "size_gb": 120.9,
-   "active_ratio": 0.094,
-   "reasoning": false,
-   "description": {
-    "en": "The largest Qwen3-VL; state-of-the-art vision, for servers.",
-    "pt-BR": "Maior Qwen3-VL; visão de ponta, para servidores.",
-    "es": "El Qwen3-VL más grande; visión de vanguardia, para servidores."
-   },
-   "use_for": {
-    "en": "Advanced vision",
-    "pt-BR": "Visão avançada",
-    "es": "Visión avanzada"
-   },
-   "unsure": false,
-   "ollama": "qwen3-vl:235b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 0
-   }
-  },
-  {
-   "id": "hy3",
-   "name": "Hy3",
-   "category": "chat",
-   "size_gb": 151.6,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Large model from Tencent Hunyuan.",
-    "pt-BR": "Modelo grande da Tencent Hunyuan.",
-    "es": "Modelo grande de Tencent Hunyuan."
-   },
-   "use_for": {
-    "en": "Server use",
-    "pt-BR": "Uso em servidor",
-    "es": "Uso en servidor"
-   },
-   "unsure": true,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 0
-   }
-  },
-  {
-   "id": "minimax-m3",
-   "name": "MiniMax M3",
-   "category": "chat",
-   "size_gb": 219.7,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Large model from MiniMax.",
-    "pt-BR": "Modelo grande da MiniMax.",
-    "es": "Modelo grande de MiniMax."
-   },
-   "use_for": {
-    "en": "Server use",
-    "pt-BR": "Uso em servidor",
-    "es": "Uso en servidor"
-   },
-   "unsure": true,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 0
-   }
-  },
-  {
-   "id": "glm-5-3",
-   "name": "GLM-5.3",
-   "category": "chat",
-   "size_gb": 386.2,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Frontier model from Z.ai (Zhipu).",
-    "pt-BR": "Modelo de fronteira da Z.ai (Zhipu).",
-    "es": "Modelo de frontera de Z.ai (Zhipu)."
-   },
-   "use_for": {
-    "en": "Server use",
-    "pt-BR": "Uso em servidor",
-    "es": "Uso en servidor"
-   },
-   "unsure": true,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 0
-   }
-  },
-  {
-   "id": "longcat-2-0",
-   "name": "LongCat 2.0",
-   "category": "chat",
-   "size_gb": 820.1,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Giant model from Meituan.",
-    "pt-BR": "Modelo gigante da Meituan.",
-    "es": "Modelo gigante de Meituan."
-   },
-   "use_for": {
-    "en": "Server use",
-    "pt-BR": "Uso em servidor",
-    "es": "Uso en servidor"
-   },
-   "unsure": true,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 0
-   }
-  },
-  {
-   "id": "deepseek-v4-pro",
-   "name": "DeepSeek V4 Pro",
-   "category": "chat",
-   "size_gb": 820.1,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Top of the DeepSeek V4 line; made for clusters.",
-    "pt-BR": "Topo da linha DeepSeek V4; feito para clusters.",
-    "es": "Lo más alto de la línea DeepSeek V4; hecho para clústeres."
-   },
-   "use_for": {
-    "en": "Server use",
-    "pt-BR": "Uso em servidor",
-    "es": "Uso en servidor"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 0
-   }
-  },
-  {
-   "id": "qwen-3-8-2-4t-a95b",
-   "name": "Qwen 3.8 2.4T-A95B",
-   "category": "chat",
-   "size_gb": 1229.8,
-   "active_ratio": 0.04,
-   "reasoning": false,
-   "description": {
-    "en": "2.4-trillion-parameter MoE (95B active).",
-    "pt-BR": "MoE de 2,4 trilhões de parâmetros (95B ativos).",
-    "es": "MoE de 2,4 billones de parámetros (95B activos)."
-   },
-   "use_for": {
-    "en": "Server use",
-    "pt-BR": "Uso em servidor",
-    "es": "Uso en servidor"
-   },
-   "unsure": true,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 0
-   }
-  },
-  {
-   "id": "kimi-k3",
-   "name": "Kimi K3",
-   "category": "chat",
-   "size_gb": 1424.5,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Giant model from Moonshot AI.",
-    "pt-BR": "Modelo gigante da Moonshot AI.",
-    "es": "Modelo gigante de Moonshot AI."
-   },
-   "use_for": {
-    "en": "Server use",
-    "pt-BR": "Uso em servidor",
-    "es": "Uso en servidor"
-   },
-   "unsure": true,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 0
-   }
-  },
-  {
-   "id": "qwen-3-5-122b-a10b",
-   "name": "Qwen 3.5 122B-A10B",
-   "category": "chat",
-   "size_gb": 125.5,
-   "active_ratio": 0.082,
-   "reasoning": false,
-   "description": {
-    "en": "Qwen 3.5 MoE with 10B active.",
-    "pt-BR": "MoE do Qwen 3.5 com 10B ativos.",
-    "es": "MoE de Qwen 3.5 con 10B activos."
-   },
-   "use_for": {
-    "en": "Server use",
-    "pt-BR": "Uso em servidor",
-    "es": "Uso en servidor"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 0
-   }
-  },
-  {
-   "id": "deepseek-v4-flash",
-   "name": "DeepSeek V4 Flash",
-   "category": "chat",
-   "size_gb": 81.4,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Faster, lighter version of DeepSeek V4.",
-    "pt-BR": "Versão mais rápida e leve do DeepSeek V4.",
-    "es": "Versión más rápida y ligera de DeepSeek V4."
-   },
-   "use_for": {
-    "en": "Server use",
-    "pt-BR": "Uso em servidor",
-    "es": "Uso en servidor"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 0
-   }
-  },
-  {
-   "id": "qwen-3-235b-a22b",
-   "name": "Qwen 3 235B-A22B",
-   "category": "chat",
-   "size_gb": 120.9,
-   "active_ratio": 0.094,
-   "reasoning": true,
-   "description": {
-    "en": "The largest Qwen 3 MoE (22B active).",
-    "pt-BR": "Maior Qwen 3 MoE (22B ativos).",
-    "es": "El Qwen 3 MoE más grande (22B activos)."
-   },
-   "use_for": {
-    "en": "Server use",
-    "pt-BR": "Uso em servidor",
-    "es": "Uso en servidor"
-   },
-   "unsure": false,
-   "ollama": "qwen3:235b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 0
-   }
-  },
-  {
-   "id": "glm-4-6",
-   "name": "GLM-4.6",
-   "category": "chat",
-   "size_gb": 183.4,
-   "active_ratio": 0.09,
-   "reasoning": false,
-   "description": {
-    "en": "Zhipu model that is strong at code and agents.",
-    "pt-BR": "Modelo da Zhipu forte em código e agentes.",
-    "es": "Modelo de Zhipu fuerte en código y agentes."
-   },
-   "use_for": {
-    "en": "Server use",
-    "pt-BR": "Uso em servidor",
-    "es": "Uso en servidor"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 0
-   }
-  },
-  {
-   "id": "qwen-3-5-397b-a17b",
-   "name": "Qwen 3.5 397B-A17B",
-   "category": "chat",
-   "size_gb": 203.9,
-   "active_ratio": 0.043,
-   "reasoning": false,
-   "description": {
-    "en": "Top of the Qwen 3.5 line.",
-    "pt-BR": "Topo da linha Qwen 3.5.",
-    "es": "Lo más alto de la línea Qwen 3.5."
-   },
-   "use_for": {
-    "en": "Server use",
-    "pt-BR": "Uso em servidor",
-    "es": "Uso en servidor"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 0
-   }
-  },
-  {
-   "id": "llama-4-maverick-17b-128e",
-   "name": "Llama 4 Maverick 17B-128E",
-   "category": "chat",
-   "size_gb": 205.4,
-   "active_ratio": 0.043,
-   "reasoning": false,
-   "description": {
-    "en": "Meta MoE with 128 experts (~400B total).",
-    "pt-BR": "MoE da Meta com 128 especialistas (~400B no total).",
-    "es": "MoE de Meta con 128 expertos (~400B en total)."
-   },
-   "use_for": {
-    "en": "Server use",
-    "pt-BR": "Uso em servidor",
-    "es": "Uso en servidor"
-   },
-   "unsure": false,
-   "ollama": "llama4:maverick",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 0
-   }
-  },
-  {
-   "id": "qwen-3-coder-480b",
-   "name": "Qwen 3 Coder 480B",
-   "category": "code",
-   "size_gb": 246.4,
-   "active_ratio": 0.073,
-   "reasoning": false,
-   "description": {
-    "en": "The largest Qwen for code, on par with commercial tools.",
-    "pt-BR": "Maior Qwen de código, no nível de ferramentas comerciais.",
-    "es": "El Qwen de código más grande, al nivel de herramientas comerciales."
-   },
-   "use_for": {
-    "en": "Coding agents on servers",
-    "pt-BR": "Agentes de código em servidor",
-    "es": "Agentes de código en servidor"
-   },
-   "unsure": false,
-   "ollama": "qwen3-coder:480b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 0
-   }
-  },
-  {
-   "id": "deepseek-r1",
-   "name": "DeepSeek R1",
-   "category": "chat",
-   "size_gb": 344.2,
-   "active_ratio": 0.055,
-   "reasoning": true,
-   "description": {
-    "en": "The original 671B R1, which made reasoning models popular.",
-    "pt-BR": "O R1 original de 671B, que popularizou os modelos de raciocínio.",
-    "es": "El R1 original de 671B, que popularizó los modelos de razonamiento."
-   },
-   "use_for": {
-    "en": "Server use",
-    "pt-BR": "Uso em servidor",
-    "es": "Uso en servidor"
-   },
-   "unsure": false,
-   "ollama": "deepseek-r1:671b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 0
-   }
-  },
-  {
-   "id": "deepseek-v3-2",
-   "name": "DeepSeek V3.2",
-   "category": "chat",
-   "size_gb": 351.4,
-   "active_ratio": 0.055,
-   "reasoning": false,
-   "description": {
-    "en": "DeepSeek general-purpose model with sparse attention.",
-    "pt-BR": "Generalista da DeepSeek com atenção esparsa.",
-    "es": "Generalista de DeepSeek con atención dispersa."
-   },
-   "use_for": {
-    "en": "Server use",
-    "pt-BR": "Uso em servidor",
-    "es": "Uso en servidor"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 0
-   }
-  },
-  {
-   "id": "whisper-large-v3-turbo",
-   "name": "Whisper Large v3 Turbo",
-   "category": "stt",
-   "size_gb": 1.6,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "OpenAI transcription, a faster version of Large v3: almost the same accuracy, much faster. Very good in Portuguese and Spanish.",
-    "pt-BR": "Transcrição da OpenAI, versão acelerada do Large v3: quase a mesma precisão, bem mais rápida. Muito boa em português.",
-    "es": "Transcripción de OpenAI, versión acelerada de Large v3: casi la misma precisión, mucho más rápida. Muy buena en español y portugués."
-   },
-   "use_for": {
-    "en": "Transcribing meetings, videos, subtitles",
-    "pt-BR": "Transcrever reuniões, vídeos, legendas",
-    "es": "Transcribir reuniones, videos, subtítulos"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": "turbo",
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 85
-   }
-  },
-  {
-   "id": "whisper-large-v3",
-   "name": "Whisper Large v3",
-   "category": "stt",
-   "size_gb": 3.1,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "The most accurate Whisper, supporting about 100 languages.",
-    "pt-BR": "O Whisper mais preciso, com suporte a cerca de 100 idiomas.",
-    "es": "El Whisper más preciso, compatible con unos 100 idiomas."
-   },
-   "use_for": {
-    "en": "High-accuracy transcription, translation to English",
-    "pt-BR": "Transcrição de alta precisão, tradução para inglês",
-    "es": "Transcripción de alta precisión, traducción al inglés"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": "large-v3",
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 85
-   }
-  },
-  {
-   "id": "whisper-small",
-   "name": "Whisper Small",
-   "category": "stt",
-   "size_gb": 0.5,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Light Whisper, good for dictation and real-time transcription.",
-    "pt-BR": "Whisper leve, bom para ditado e transcrição em tempo real.",
-    "es": "Whisper ligero, bueno para dictado y transcripción en tiempo real."
-   },
-   "use_for": {
-    "en": "Dictation, quick transcription",
-    "pt-BR": "Ditado, transcrição rápida",
-    "es": "Dictado, transcripción rápida"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": "small",
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 85
-   }
-  },
-  {
-   "id": "kokoro-82m",
-   "name": "Kokoro 82M",
-   "category": "tts",
-   "size_gb": 0.3,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Tiny, high-quality synthetic voice, with Brazilian Portuguese voices.",
-    "pt-BR": "Voz sintética minúscula e de ótima qualidade, com vozes em português do Brasil.",
-    "es": "Voz sintética diminuta y de gran calidad, con voces en portugués de Brasil y español."
-   },
-   "use_for": {
-    "en": "Narration, reading texts, voice assistants",
-    "pt-BR": "Narração, leitura de textos, assistentes de voz",
-    "es": "Narración, lectura de textos, asistentes de voz"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 85
-   }
-  },
-  {
-   "id": "piper",
-   "name": "Piper",
-   "category": "tts",
-   "size_gb": 0.1,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Ultralight synthetic voice that runs even without a GPU, with voices in many languages.",
-    "pt-BR": "Voz sintética ultraleve que roda até sem GPU, com vozes em pt-BR.",
-    "es": "Voz sintética ultraligera que funciona incluso sin GPU, con voces en español y otros idiomas."
-   },
-   "use_for": {
-    "en": "Voice assistants, home automation",
-    "pt-BR": "Assistentes de voz, automação residencial",
-    "es": "Asistentes de voz, domótica"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 85
-   }
-  },
-  {
-   "id": "xtts-v2",
-   "name": "XTTS v2",
-   "category": "tts",
-   "size_gb": 1.9,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Coqui voice model that clones a voice from a few seconds of audio; license for non-commercial use only.",
-    "pt-BR": "Voz da Coqui que clona uma voz a partir de poucos segundos de áudio; licença só para uso não comercial.",
-    "es": "Voz de Coqui que clona una voz a partir de pocos segundos de audio; licencia solo para uso no comercial."
-   },
-   "use_for": {
-    "en": "Voice cloning, dubbing",
-    "pt-BR": "Clonar voz, dublagem",
-    "es": "Clonar voz, doblaje"
-   },
-   "unsure": false,
-   "ollama": null,
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 85
-   }
-  },
-  {
-   "id": "bge-m3",
-   "name": "BGE-M3",
-   "category": "emb",
-   "size_gb": 1.1,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Multilingual embeddings from BAAI, for texts up to 8K tokens.",
-    "pt-BR": "Embeddings multilíngues da BAAI, bons em português, para textos de até 8 mil tokens.",
-    "es": "Embeddings multilingües de BAAI, buenos en español, para textos de hasta 8 mil tokens."
-   },
-   "use_for": {
-    "en": "Document search, RAG",
-    "pt-BR": "Busca em documentos, RAG",
-    "es": "Búsqueda en documentos, RAG"
-   },
-   "unsure": false,
-   "ollama": "bge-m3",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 85
-   }
-  },
-  {
-   "id": "qwen3-embedding-0-6b",
-   "name": "Qwen3-Embedding 0.6B",
-   "category": "emb",
-   "size_gb": 1.2,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Light, multilingual embeddings from Qwen.",
-    "pt-BR": "Embeddings leves e multilíngues da Qwen.",
-    "es": "Embeddings ligeros y multilingües de Qwen."
-   },
-   "use_for": {
-    "en": "RAG, semantic search",
-    "pt-BR": "RAG, busca semântica",
-    "es": "RAG, búsqueda semántica"
-   },
-   "unsure": false,
-   "ollama": "qwen3-embedding:0.6b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 85
-   }
-  },
-  {
-   "id": "qwen3-embedding-8b",
-   "name": "Qwen3-Embedding 8B",
-   "category": "emb",
-   "size_gb": 4.7,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Large version of Qwen's embeddings, among the best multilingual ones (in Q4).",
-    "pt-BR": "Versão grande dos embeddings da Qwen, entre os melhores multilíngues (em Q4).",
-    "es": "Versión grande de los embeddings de Qwen, entre los mejores multilingües (en Q4)."
-   },
-   "use_for": {
-    "en": "High-quality RAG",
-    "pt-BR": "RAG de alta qualidade",
-    "es": "RAG de alta calidad"
-   },
-   "unsure": false,
-   "ollama": "qwen3-embedding:8b",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 85
-   }
-  },
-  {
-   "id": "nomic-embed-text-v1-5",
-   "name": "nomic-embed-text v1.5",
-   "category": "emb",
-   "size_gb": 0.3,
-   "active_ratio": 1.0,
-   "reasoning": false,
-   "description": {
-    "en": "Small embeddings, popular in Ollama; best in English.",
-    "pt-BR": "Embeddings pequenos e populares no Ollama; melhores em inglês.",
-    "es": "Embeddings pequeños y populares en Ollama; mejores en inglés."
-   },
-   "use_for": {
-    "en": "Light RAG, semantic search",
-    "pt-BR": "RAG leve, busca semântica",
-    "es": "RAG ligero, búsqueda semántica"
-   },
-   "unsure": false,
-   "ollama": "nomic-embed-text",
-   "whisper": null,
-   "reference": {
-    "tps_rtx3060": 0,
-    "score_rtx3060": 85
-   }
-  }
- ]
+	"version": 2,
+	"source": "roda-na-minha-gpu/site.js (descriptions made hardware-neutral and translated)",
+	"models": [
+		{
+			"id": "phi-4-mini-reasoning",
+			"name": "Phi-4 Mini Reasoning",
+			"category": "chat",
+			"size_gb": 2.4,
+			"active_ratio": 1.0,
+			"reasoning": true,
+			"description": {
+				"en": "Small Microsoft model trained to reason step by step, mainly in math.",
+				"pt-BR": "Modelo pequeno da Microsoft treinado para raciocinar passo a passo, principalmente em matemática.",
+				"es": "Modelo pequeño de Microsoft entrenado para razonar paso a paso, sobre todo en matemáticas."
+			},
+			"use_for": {
+				"en": "Math, logic, study exercises",
+				"pt-BR": "Matemática, lógica, exercícios de estudo",
+				"es": "Matemáticas, lógica, ejercicios de estudio"
+			},
+			"unsure": false,
+			"ollama": "phi4-mini-reasoning",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 105,
+				"score_rtx3060": 95
+			}
+		},
+		{
+			"id": "llama-3-2-3b",
+			"name": "Llama 3.2 3B",
+			"category": "chat",
+			"size_gb": 2.0,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Compact Llama from Meta, well supported by almost every tool.",
+				"pt-BR": "Llama compacto da Meta, bem suportado em praticamente todas as ferramentas.",
+				"es": "Llama compacto de Meta, con buen soporte en casi todas las herramientas."
+			},
+			"use_for": {
+				"en": "Simple chat, summaries, offline assistant",
+				"pt-BR": "Chat simples, resumos, assistente offline",
+				"es": "Chat sencillo, resúmenes, asistente sin conexión"
+			},
+			"unsure": false,
+			"ollama": "llama3.2:3b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 126,
+				"score_rtx3060": 94
+			}
+		},
+		{
+			"id": "smollm3-3b",
+			"name": "SmolLM3 3B",
+			"category": "chat",
+			"size_gb": 2.0,
+			"active_ratio": 1.0,
+			"reasoning": true,
+			"description": {
+				"en": "Small, fully open model from Hugging Face, with a reasoning mode and long context.",
+				"pt-BR": "Modelo pequeno e totalmente aberto da Hugging Face, com modo de raciocínio e contexto longo.",
+				"es": "Modelo pequeño y totalmente abierto de Hugging Face, con modo de razonamiento y contexto largo."
+			},
+			"use_for": {
+				"en": "Tests, prototypes, light tasks",
+				"pt-BR": "Testes, protótipos, tarefas leves",
+				"es": "Pruebas, prototipos, tareas ligeras"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 126,
+				"score_rtx3060": 94
+			}
+		},
+		{
+			"id": "granite-4-1-3b",
+			"name": "Granite 4.1 3B",
+			"category": "chat",
+			"size_gb": 2.0,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "IBM's enterprise-focused line, efficient and good at following instructions.",
+				"pt-BR": "Linha da IBM voltada a empresas, eficiente e boa em seguir instruções.",
+				"es": "Línea de IBM orientada a empresas, eficiente y buena siguiendo instrucciones."
+			},
+			"use_for": {
+				"en": "RAG, data extraction, tool use",
+				"pt-BR": "RAG, extração de dados, uso de ferramentas",
+				"es": "RAG, extracción de datos, uso de herramientas"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 126,
+				"score_rtx3060": 94
+			}
+		},
+		{
+			"id": "ministral-3-3b",
+			"name": "Ministral 3 3B",
+			"category": "chat",
+			"size_gb": 2.0,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Smallest model of Mistral's Ministral 3 line, designed to run on devices.",
+				"pt-BR": "Menor modelo da linha Ministral 3 da Mistral, pensado para rodar em dispositivos.",
+				"es": "El modelo más pequeño de la línea Ministral 3 de Mistral, pensado para ejecutarse en dispositivos."
+			},
+			"use_for": {
+				"en": "Light assistant, classification, edge",
+				"pt-BR": "Assistente leve, classificação, edge",
+				"es": "Asistente ligero, clasificación, edge"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 126,
+				"score_rtx3060": 94
+			}
+		},
+		{
+			"id": "gemma-3-4b",
+			"name": "Gemma 3 4B",
+			"category": "chat",
+			"size_gb": 2.5,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Small Gemma from Google, multilingual and able to read images.",
+				"pt-BR": "Gemma pequeno do Google, multilíngue e capaz de ler imagens.",
+				"es": "Gemma pequeño de Google, multilingüe y capaz de leer imágenes."
+			},
+			"use_for": {
+				"en": "Multilingual chat, describing images",
+				"pt-BR": "Chat multilíngue, descrever imagens",
+				"es": "Chat multilingüe, describir imágenes"
+			},
+			"unsure": false,
+			"ollama": "gemma3:4b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 101,
+				"score_rtx3060": 94
+			}
+		},
+		{
+			"id": "qwen3-vl-4b",
+			"name": "Qwen3-VL 4B",
+			"category": "vis",
+			"size_gb": 2.8,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Light version of Qwen's vision-language model: understands images and text.",
+				"pt-BR": "Versão leve do modelo de visão e linguagem da Qwen: entende imagens e texto.",
+				"es": "Versión ligera del modelo de visión y lenguaje de Qwen: entiende imágenes y texto."
+			},
+			"use_for": {
+				"en": "OCR, reading screenshots and documents",
+				"pt-BR": "OCR, ler prints e documentos",
+				"es": "OCR, leer capturas y documentos"
+			},
+			"unsure": false,
+			"ollama": "qwen3-vl:4b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 90,
+				"score_rtx3060": 94
+			}
+		},
+		{
+			"id": "qwen-2-5-coder-1-5b",
+			"name": "Qwen 2.5 Coder 1.5B",
+			"category": "code",
+			"size_gb": 1.3,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Tiny code model, fast enough to autocomplete while you type.",
+				"pt-BR": "Mini modelo de código, rápido o bastante para autocompletar enquanto você digita.",
+				"es": "Mini modelo de código, lo bastante rápido para autocompletar mientras escribes."
+			},
+			"use_for": {
+				"en": "Editor autocomplete (Continue, Tabby)",
+				"pt-BR": "Autocomplete no editor (Continue, Tabby)",
+				"es": "Autocompletado en el editor (Continue, Tabby)"
+			},
+			"unsure": false,
+			"ollama": "qwen2.5-coder:1.5b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 194,
+				"score_rtx3060": 93
+			}
+		},
+		{
+			"id": "deepseek-r1-1-5b",
+			"name": "DeepSeek R1 1.5B",
+			"category": "chat",
+			"size_gb": 1.3,
+			"active_ratio": 1.0,
+			"reasoning": true,
+			"description": {
+				"en": "Tiny distillation of DeepSeek R1: shows its reasoning, but makes many mistakes.",
+				"pt-BR": "Destilado minúsculo do DeepSeek R1: mostra o raciocínio, mas erra bastante.",
+				"es": "Destilado diminuto de DeepSeek R1: muestra su razonamiento, pero se equivoca bastante."
+			},
+			"use_for": {
+				"en": "Trying out reasoning models",
+				"pt-BR": "Experimentar modelos de raciocínio",
+				"es": "Probar modelos de razonamiento"
+			},
+			"unsure": false,
+			"ollama": "deepseek-r1:1.5b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 194,
+				"score_rtx3060": 93
+			}
+		},
+		{
+			"id": "qwen-3-5-2b",
+			"name": "Qwen 3.5 2B",
+			"category": "chat",
+			"size_gb": 2.5,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Pocket-size Qwen 3.5, fast for simple tasks.",
+				"pt-BR": "Qwen 3.5 de bolso, rápido para tarefas simples.",
+				"es": "Qwen 3.5 de bolsillo, rápido para tareas sencillas."
+			},
+			"use_for": {
+				"en": "Quick answers, drafts, extraction",
+				"pt-BR": "Respostas rápidas, rascunhos, extração",
+				"es": "Respuestas rápidas, borradores, extracción"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 101,
+				"score_rtx3060": 93
+			}
+		},
+		{
+			"id": "qwen-3-5-0-8b",
+			"name": "Qwen 3.5 0.8B",
+			"category": "chat",
+			"size_gb": 1.3,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "The smallest Qwen 3.5; handles well-defined tasks.",
+				"pt-BR": "O menor Qwen 3.5; resolve tarefas bem delimitadas.",
+				"es": "El Qwen 3.5 más pequeño; resuelve tareas bien delimitadas."
+			},
+			"use_for": {
+				"en": "Classification, extraction, routing",
+				"pt-BR": "Classificação, extração, roteamento",
+				"es": "Clasificación, extracción, enrutamiento"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 194,
+				"score_rtx3060": 92
+			}
+		},
+		{
+			"id": "llama-3-2-1b",
+			"name": "Llama 3.2 1B",
+			"category": "chat",
+			"size_gb": 1.0,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Ultralight model from Meta that even runs on phones. Only for very simple tasks.",
+				"pt-BR": "Ultraleve da Meta, roda até em celular. Só para tarefas muito simples.",
+				"es": "Ultraligero de Meta, funciona hasta en un móvil. Solo para tareas muy sencillas."
+			},
+			"use_for": {
+				"en": "Classifying texts, completing sentences",
+				"pt-BR": "Classificar textos, completar frases",
+				"es": "Clasificar textos, completar frases"
+			},
+			"unsure": false,
+			"ollama": "llama3.2:1b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 252,
+				"score_rtx3060": 92
+			}
+		},
+		{
+			"id": "gemma-3-1b",
+			"name": "Gemma 3 1B",
+			"category": "chat",
+			"size_gb": 1.0,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "The smallest Gemma, text only, with short and fast answers.",
+				"pt-BR": "Menor Gemma, só texto, com respostas curtas e rápidas.",
+				"es": "El Gemma más pequeño, solo texto, con respuestas cortas y rápidas."
+			},
+			"use_for": {
+				"en": "Simple tasks, pipeline tests",
+				"pt-BR": "Tarefas simples, testes de pipeline",
+				"es": "Tareas sencillas, pruebas de pipeline"
+			},
+			"unsure": false,
+			"ollama": "gemma3:1b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 252,
+				"score_rtx3060": 92
+			}
+		},
+		{
+			"id": "qwen-2-5-coder-7b",
+			"name": "Qwen 2.5 Coder 7B",
+			"category": "code",
+			"size_gb": 4.1,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Well-established code model; writes, explains and fixes code locally.",
+				"pt-BR": "Modelo de código consagrado; gera, explica e corrige código localmente.",
+				"es": "Modelo de código consolidado; genera, explica y corrige código en local."
+			},
+			"use_for": {
+				"en": "Programming, explaining code, scripts",
+				"pt-BR": "Programação, explicar código, scripts",
+				"es": "Programación, explicar código, scripts"
+			},
+			"unsure": false,
+			"ollama": "qwen2.5-coder:7b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 61,
+				"score_rtx3060": 85
+			}
+		},
+		{
+			"id": "deepseek-r1-distill-7b",
+			"name": "DeepSeek R1 Distill 7B",
+			"category": "chat",
+			"size_gb": 4.1,
+			"active_ratio": 1.0,
+			"reasoning": true,
+			"description": {
+				"en": "Qwen 7B trained on DeepSeek R1's reasoning: thinks before answering.",
+				"pt-BR": "Qwen 7B treinado com o raciocínio do DeepSeek R1: pensa antes de responder.",
+				"es": "Qwen 7B entrenado con el razonamiento de DeepSeek R1: piensa antes de responder."
+			},
+			"use_for": {
+				"en": "Logic and math problems",
+				"pt-BR": "Problemas de lógica e matemática",
+				"es": "Problemas de lógica y matemáticas"
+			},
+			"unsure": false,
+			"ollama": "deepseek-r1:7b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 61,
+				"score_rtx3060": 85
+			}
+		},
+		{
+			"id": "llama-3-1-8b",
+			"name": "Llama 3.1 8B",
+			"category": "chat",
+			"size_gb": 4.6,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Meta's classic, the base of thousands of fine-tunes.",
+				"pt-BR": "Clássico da Meta, base de milhares de fine-tunes.",
+				"es": "Clásico de Meta, base de miles de ajustes finos."
+			},
+			"use_for": {
+				"en": "General chat, base for fine-tuning",
+				"pt-BR": "Chat geral, base para ajuste fino",
+				"es": "Chat general, base para ajuste fino"
+			},
+			"unsure": false,
+			"ollama": "llama3.1:8b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 55,
+				"score_rtx3060": 82
+			}
+		},
+		{
+			"id": "qwen-3-8b",
+			"name": "Qwen 3 8B",
+			"category": "chat",
+			"size_gb": 4.6,
+			"active_ratio": 1.0,
+			"reasoning": true,
+			"description": {
+				"en": "Qwen 3 with think / no-think modes; great value.",
+				"pt-BR": "Qwen 3 com modo pensar/não pensar; ótimo custo-benefício.",
+				"es": "Qwen 3 con modo pensar / no pensar; excelente relación calidad-precio."
+			},
+			"use_for": {
+				"en": "General assistant, agents, multilingual",
+				"pt-BR": "Assistente geral, agentes, português",
+				"es": "Asistente general, agentes, multilingüe"
+			},
+			"unsure": false,
+			"ollama": "qwen3:8b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 55,
+				"score_rtx3060": 82
+			}
+		},
+		{
+			"id": "granite-4-1-8b",
+			"name": "Granite 4.1 8B",
+			"category": "chat",
+			"size_gb": 4.6,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Mid-size Granite from IBM, focused on business use.",
+				"pt-BR": "Granite intermediário da IBM, focado em uso corporativo.",
+				"es": "Granite intermedio de IBM, enfocado en uso empresarial."
+			},
+			"use_for": {
+				"en": "RAG, summaries, function calling",
+				"pt-BR": "RAG, resumos, chamadas de função",
+				"es": "RAG, resúmenes, llamadas a funciones"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 55,
+				"score_rtx3060": 82
+			}
+		},
+		{
+			"id": "ministral-8b",
+			"name": "Ministral 8B",
+			"category": "chat",
+			"size_gb": 4.6,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Mistral's 8B model for local use.",
+				"pt-BR": "Modelo de 8B da Mistral para uso local.",
+				"es": "Modelo de 8B de Mistral para uso local."
+			},
+			"use_for": {
+				"en": "Chat, simple agents, function calling",
+				"pt-BR": "Chat, agentes simples, chamadas de função",
+				"es": "Chat, agentes sencillos, llamadas a funciones"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 55,
+				"score_rtx3060": 82
+			}
+		},
+		{
+			"id": "qwen-3-5-4b",
+			"name": "Qwen 3.5 4B",
+			"category": "chat",
+			"size_gb": 4.6,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Small Qwen 3.5 with a good balance between speed and quality.",
+				"pt-BR": "Qwen 3.5 pequeno com bom equilíbrio entre velocidade e qualidade.",
+				"es": "Qwen 3.5 pequeño con buen equilibrio entre velocidad y calidad."
+			},
+			"use_for": {
+				"en": "Everyday assistant",
+				"pt-BR": "Assistente do dia a dia",
+				"es": "Asistente del día a día"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 55,
+				"score_rtx3060": 80
+			}
+		},
+		{
+			"id": "qwen3-vl-8b",
+			"name": "Qwen3-VL 8B",
+			"category": "vis",
+			"size_gb": 5.0,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Qwen's vision-language model: understands images, screenshots and documents and talks about them.",
+				"pt-BR": "Modelo de visão e linguagem da Qwen: entende imagens, prints e documentos e conversa sobre eles.",
+				"es": "Modelo de visión y lenguaje de Qwen: entiende imágenes, capturas y documentos y conversa sobre ellos."
+			},
+			"use_for": {
+				"en": "OCR, analyzing screenshots, charts and PDFs",
+				"pt-BR": "OCR, análise de prints, gráficos e PDFs",
+				"es": "OCR, análisis de capturas, gráficos y PDF"
+			},
+			"unsure": false,
+			"ollama": "qwen3-vl:8b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 50,
+				"score_rtx3060": 79
+			}
+		},
+		{
+			"id": "glm-4-9b",
+			"name": "GLM-4 9B",
+			"category": "chat",
+			"size_gb": 5.1,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Model from Zhipu (Z.ai), good at function calling.",
+				"pt-BR": "Modelo da Zhipu (Z.ai), bom em chamadas de função.",
+				"es": "Modelo de Zhipu (Z.ai), bueno en llamadas a funciones."
+			},
+			"use_for": {
+				"en": "Chat, tools, translation",
+				"pt-BR": "Chat, ferramentas, tradução",
+				"es": "Chat, herramientas, traducción"
+			},
+			"unsure": false,
+			"ollama": "glm4:9b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 49,
+				"score_rtx3060": 78
+			}
+		},
+		{
+			"id": "nemotron-nano-9b-v2",
+			"name": "Nemotron Nano 9B v2",
+			"category": "chat",
+			"size_gb": 5.1,
+			"active_ratio": 1.0,
+			"reasoning": true,
+			"description": {
+				"en": "NVIDIA model with a hybrid architecture (Mamba + Transformer), quick at reasoning.",
+				"pt-BR": "Modelo da NVIDIA de arquitetura híbrida (Mamba + Transformer), ágil em raciocínio.",
+				"es": "Modelo de NVIDIA con arquitectura híbrida (Mamba + Transformer), ágil en razonamiento."
+			},
+			"use_for": {
+				"en": "Reasoning, agents, long context",
+				"pt-BR": "Raciocínio, agentes, contexto longo",
+				"es": "Razonamiento, agentes, contexto largo"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 49,
+				"score_rtx3060": 78
+			}
+		},
+		{
+			"id": "ornith-1-0-9b",
+			"name": "Ornith 1.0 9B",
+			"category": "chat",
+			"size_gb": 5.1,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "9B version of the Ornith family.",
+				"pt-BR": "Versão de 9B da família Ornith.",
+				"es": "Versión de 9B de la familia Ornith."
+			},
+			"use_for": {
+				"en": "General chat",
+				"pt-BR": "Chat geral",
+				"es": "Chat general"
+			},
+			"unsure": true,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 49,
+				"score_rtx3060": 78
+			}
+		},
+		{
+			"id": "gemma-4-e2b-it",
+			"name": "Gemma 4 E2B IT",
+			"category": "chat",
+			"size_gb": 5.6,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Gemma 4 for devices (about 2B effective parameters), multimodal.",
+				"pt-BR": "Gemma 4 para dispositivos (cerca de 2B efetivos), multimodal.",
+				"es": "Gemma 4 para dispositivos (unos 2B efectivos), multimodal."
+			},
+			"use_for": {
+				"en": "Light assistant with images",
+				"pt-BR": "Assistente leve com imagem",
+				"es": "Asistente ligero con imágenes"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 45,
+				"score_rtx3060": 73
+			}
+		},
+		{
+			"id": "gemma-3-12b",
+			"name": "Gemma 3 12B",
+			"category": "chat",
+			"size_gb": 6.6,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Mid-size Gemma, multimodal and very good in Portuguese and other languages.",
+				"pt-BR": "Gemma de porte médio, multimodal e muito bom em português.",
+				"es": "Gemma de tamaño medio, multimodal y muy bueno en español, portugués y otros idiomas."
+			},
+			"use_for": {
+				"en": "Writing, summaries, image analysis",
+				"pt-BR": "Escrita, resumo, análise de imagens",
+				"es": "Redacción, resúmenes, análisis de imágenes"
+			},
+			"unsure": false,
+			"ollama": "gemma3:12b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 38,
+				"score_rtx3060": 68
+			}
+		},
+		{
+			"id": "mistral-nemo-12b",
+			"name": "Mistral Nemo 12B",
+			"category": "chat",
+			"size_gb": 6.6,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Made by Mistral with NVIDIA, 128K-token context.",
+				"pt-BR": "Feito pela Mistral com a NVIDIA, contexto de 128 mil tokens.",
+				"es": "Hecho por Mistral con NVIDIA, contexto de 128 mil tokens."
+			},
+			"use_for": {
+				"en": "Creative writing, roleplay, chat",
+				"pt-BR": "Escrita criativa, roleplay, chat",
+				"es": "Escritura creativa, roleplay, chat"
+			},
+			"unsure": false,
+			"ollama": "mistral-nemo:12b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 38,
+				"score_rtx3060": 68
+			}
+		},
+		{
+			"id": "gemma-4-12b-it",
+			"name": "Gemma 4 12B IT",
+			"category": "chat",
+			"size_gb": 6.6,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Mid-size Gemma 4, tuned to follow instructions.",
+				"pt-BR": "Gemma 4 de porte médio, ajustado para seguir instruções.",
+				"es": "Gemma 4 de tamaño medio, ajustado para seguir instrucciones."
+			},
+			"use_for": {
+				"en": "General assistant",
+				"pt-BR": "Assistente geral",
+				"es": "Asistente general"
+			},
+			"unsure": true,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 38,
+				"score_rtx3060": 68
+			}
+		},
+		{
+			"id": "phi-4-14b",
+			"name": "Phi-4 14B",
+			"category": "chat",
+			"size_gb": 7.7,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Microsoft model that is strong at math and reasoning for its size.",
+				"pt-BR": "Modelo da Microsoft forte em matemática e raciocínio para o tamanho.",
+				"es": "Modelo de Microsoft fuerte en matemáticas y razonamiento para su tamaño."
+			},
+			"use_for": {
+				"en": "Reasoning, STEM, study",
+				"pt-BR": "Raciocínio, STEM, estudo",
+				"es": "Razonamiento, STEM, estudio"
+			},
+			"unsure": false,
+			"ollama": "phi4:14b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 33,
+				"score_rtx3060": 61
+			}
+		},
+		{
+			"id": "qwen-3-14b",
+			"name": "Qwen 3 14B",
+			"category": "chat",
+			"size_gb": 7.7,
+			"active_ratio": 1.0,
+			"reasoning": true,
+			"description": {
+				"en": "Mid-size Qwen 3: much better overall quality than the smaller versions.",
+				"pt-BR": "Qwen 3 de porte médio: qualidade geral bem melhor que as versões menores.",
+				"es": "Qwen 3 de tamaño medio: calidad general mucho mejor que las versiones pequeñas."
+			},
+			"use_for": {
+				"en": "High-quality general assistant, agents",
+				"pt-BR": "Assistente geral de qualidade, agentes",
+				"es": "Asistente general de calidad, agentes"
+			},
+			"unsure": false,
+			"ollama": "qwen3:14b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 33,
+				"score_rtx3060": 61
+			}
+		},
+		{
+			"id": "deepseek-r1-distill-14b",
+			"name": "DeepSeek R1 Distill 14B",
+			"category": "chat",
+			"size_gb": 7.7,
+			"active_ratio": 1.0,
+			"reasoning": true,
+			"description": {
+				"en": "14B distillation of R1; much more solid reasoning than the 7B.",
+				"pt-BR": "Destilado do R1 em 14B; raciocínio bem mais sólido que o 7B.",
+				"es": "Destilado de R1 en 14B; razonamiento mucho más sólido que el de 7B."
+			},
+			"use_for": {
+				"en": "Logic, math, planning",
+				"pt-BR": "Lógica, matemática, planejamento",
+				"es": "Lógica, matemáticas, planificación"
+			},
+			"unsure": false,
+			"ollama": "deepseek-r1:14b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 33,
+				"score_rtx3060": 61
+			}
+		},
+		{
+			"id": "ministral-3-14b",
+			"name": "Ministral 3 14B",
+			"category": "chat",
+			"size_gb": 7.7,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Largest model of the Ministral 3 line, with image support.",
+				"pt-BR": "Maior modelo da linha Ministral 3, com suporte a imagens.",
+				"es": "El modelo más grande de la línea Ministral 3, con soporte de imágenes."
+			},
+			"use_for": {
+				"en": "Chat, documents, images",
+				"pt-BR": "Chat, documentos, imagens",
+				"es": "Chat, documentos, imágenes"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 33,
+				"score_rtx3060": 61
+			}
+		},
+		{
+			"id": "gemma-4-e4b-it",
+			"name": "Gemma 4 E4B IT",
+			"category": "chat",
+			"size_gb": 8.7,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Gemma 4 for devices (about 4B effective parameters), multimodal.",
+				"pt-BR": "Gemma 4 para dispositivos (cerca de 4B efetivos), multimodal.",
+				"es": "Gemma 4 para dispositivos (unos 4B efectivos), multimodal."
+			},
+			"use_for": {
+				"en": "On-device assistant with images",
+				"pt-BR": "Assistente com imagem no dispositivo",
+				"es": "Asistente con imágenes en el dispositivo"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 29,
+				"score_rtx3060": 53
+			}
+		},
+		{
+			"id": "gpt-oss-20b",
+			"name": "GPT-OSS 20B",
+			"category": "chat",
+			"size_gb": 11.3,
+			"active_ratio": 0.171,
+			"reasoning": true,
+			"description": {
+				"en": "OpenAI's open MoE model: only a fraction of the parameters works on each token, which makes it very fast.",
+				"pt-BR": "Modelo aberto da OpenAI em MoE: só uma fração dos parâmetros trabalha por token, por isso é tão rápido.",
+				"es": "Modelo abierto de OpenAI en MoE: solo una fracción de los parámetros trabaja por token, por eso es tan rápido."
+			},
+			"use_for": {
+				"en": "Reasoning, tools, general assistant",
+				"pt-BR": "Raciocínio, ferramentas, assistente geral",
+				"es": "Razonamiento, herramientas, asistente general"
+			},
+			"unsure": false,
+			"ollama": "gpt-oss:20b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 130,
+				"score_rtx3060": 50
+			}
+		},
+		{
+			"id": "qwen-3-5-9b",
+			"name": "Qwen 3.5 9B",
+			"category": "chat",
+			"size_gb": 9.7,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "General-purpose model of the Qwen 3.5 family, balancing quality and size.",
+				"pt-BR": "Generalista da família Qwen 3.5, equilibrando qualidade e tamanho.",
+				"es": "Generalista de la familia Qwen 3.5, que equilibra calidad y tamaño."
+			},
+			"use_for": {
+				"en": "Chat, summaries, agents",
+				"pt-BR": "Chat, resumo, agentes",
+				"es": "Chat, resúmenes, agentes"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 26,
+				"score_rtx3060": 48
+			}
+		},
+		{
+			"id": "lfm2-24b",
+			"name": "LFM2 24B",
+			"category": "chat",
+			"size_gb": 12.8,
+			"active_ratio": 0.096,
+			"reasoning": false,
+			"description": {
+				"en": "Liquid AI MoE model with few active parameters, hence its high speed.",
+				"pt-BR": "Modelo da Liquid AI em MoE com poucos parâmetros ativos, daí a velocidade alta.",
+				"es": "Modelo de Liquid AI en MoE con pocos parámetros activos, de ahí su alta velocidad."
+			},
+			"use_for": {
+				"en": "Fast chat, extraction, light agents",
+				"pt-BR": "Chat rápido, extração, agentes leves",
+				"es": "Chat rápido, extracción, agentes ligeros"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 126,
+				"score_rtx3060": 48
+			}
+		},
+		{
+			"id": "diffusiongemma-26b-a4b-it",
+			"name": "DiffusionGemma 26B-A4B IT",
+			"category": "chat",
+			"size_gb": 13.8,
+			"active_ratio": 0.154,
+			"reasoning": false,
+			"description": {
+				"en": "Gemma variant (MoE, ~4B active) that seems to generate text by diffusion instead of token by token.",
+				"pt-BR": "Variante do Gemma (MoE, ~4B ativos) que parece gerar texto por difusão em vez de token a token.",
+				"es": "Variante de Gemma (MoE, ~4B activos) que parece generar texto por difusión en lugar de token a token."
+			},
+			"use_for": {
+				"en": "Experiments",
+				"pt-BR": "Experimentos",
+				"es": "Experimentos"
+			},
+			"unsure": true,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 59,
+				"score_rtx3060": 35
+			}
+		},
+		{
+			"id": "qwen3-vl-30b-a3b",
+			"name": "Qwen3-VL 30B-A3B",
+			"category": "vis",
+			"size_gb": 16.4,
+			"active_ratio": 0.1,
+			"reasoning": false,
+			"description": {
+				"en": "Larger MoE version of Qwen3-VL (3B active): more precise vision and still fast.",
+				"pt-BR": "Versão MoE maior do Qwen3-VL (3B ativos): visão mais precisa e ainda rápida.",
+				"es": "Versión MoE más grande de Qwen3-VL (3B activos): visión más precisa y aún rápida."
+			},
+			"use_for": {
+				"en": "Complex documents, charts, OCR",
+				"pt-BR": "Documentos complexos, gráficos, OCR",
+				"es": "Documentos complejos, gráficos, OCR"
+			},
+			"unsure": false,
+			"ollama": "qwen3-vl:30b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 51,
+				"score_rtx3060": 34
+			}
+		},
+		{
+			"id": "nemotron-3-nano-30b",
+			"name": "Nemotron 3 Nano 30B",
+			"category": "chat",
+			"size_gb": 15.9,
+			"active_ratio": 0.111,
+			"reasoning": false,
+			"description": {
+				"en": "NVIDIA MoE with few active parameters; stays fast even when part of it goes to system RAM.",
+				"pt-BR": "MoE da NVIDIA com poucos parâmetros ativos; continua rápido mesmo quando parte vai para a RAM.",
+				"es": "MoE de NVIDIA con pocos parámetros activos; sigue siendo rápido aunque parte pase a la RAM."
+			},
+			"use_for": {
+				"en": "Agents, reasoning, long context",
+				"pt-BR": "Agentes, raciocínio, contexto longo",
+				"es": "Agentes, razonamiento, contexto largo"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 53,
+				"score_rtx3060": 34
+			}
+		},
+		{
+			"id": "north-mini-code",
+			"name": "North Mini Code",
+			"category": "code",
+			"size_gb": 15.9,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Compact code model.",
+				"pt-BR": "Modelo de código compacto.",
+				"es": "Modelo de código compacto."
+			},
+			"use_for": {
+				"en": "Programming",
+				"pt-BR": "Programação",
+				"es": "Programación"
+			},
+			"unsure": true,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 53,
+				"score_rtx3060": 34
+			}
+		},
+		{
+			"id": "agents-a1-35b-a3b",
+			"name": "Agents-A1 35B-A3B",
+			"category": "chat",
+			"size_gb": 18.4,
+			"active_ratio": 0.086,
+			"reasoning": false,
+			"description": {
+				"en": "35B MoE with ~3B active; the name suggests a focus on agent workflows.",
+				"pt-BR": "MoE de 35B com ~3B ativos; o nome indica foco em fluxos de agente.",
+				"es": "MoE de 35B con ~3B activos; el nombre indica un enfoque en flujos de agentes."
+			},
+			"use_for": {
+				"en": "Agents, tool use",
+				"pt-BR": "Agentes, uso de ferramentas",
+				"es": "Agentes, uso de herramientas"
+			},
+			"unsure": true,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 43,
+				"score_rtx3060": 33
+			}
+		},
+		{
+			"id": "ornith-1-0-35b-a3b",
+			"name": "Ornith 1.0 35B-A3B",
+			"category": "chat",
+			"size_gb": 18.4,
+			"active_ratio": 0.086,
+			"reasoning": false,
+			"description": {
+				"en": "35B MoE with ~3B active, from the Ornith family.",
+				"pt-BR": "MoE de 35B com ~3B ativos da família Ornith.",
+				"es": "MoE de 35B con ~3B activos de la familia Ornith."
+			},
+			"use_for": {
+				"en": "General chat",
+				"pt-BR": "Chat geral",
+				"es": "Chat general"
+			},
+			"unsure": true,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 43,
+				"score_rtx3060": 33
+			}
+		},
+		{
+			"id": "qwen-3-6-35b-a3b",
+			"name": "Qwen 3.6 35B-A3B",
+			"category": "chat",
+			"size_gb": 18.9,
+			"active_ratio": 0.086,
+			"reasoning": false,
+			"description": {
+				"en": "35B Qwen MoE with ~3B active, the newest generation of the family.",
+				"pt-BR": "Qwen MoE de 35B com ~3B ativos, geração mais nova da família.",
+				"es": "Qwen MoE de 35B con ~3B activos, la generación más nueva de la familia."
+			},
+			"use_for": {
+				"en": "Chat, code, agents",
+				"pt-BR": "Chat, código, agentes",
+				"es": "Chat, código, agentes"
+			},
+			"unsure": true,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 42,
+				"score_rtx3060": 33
+			}
+		},
+		{
+			"id": "qwen-3-next-80b-a3b",
+			"name": "Qwen 3 Next 80B-A3B",
+			"category": "chat",
+			"size_gb": 41.5,
+			"active_ratio": 0.037,
+			"reasoning": false,
+			"description": {
+				"en": "Experimental Qwen with hybrid attention and only 3B active: huge, but fast for its size.",
+				"pt-BR": "Qwen experimental com atenção híbrida e só 3B ativos: enorme, mas rápido para o tamanho.",
+				"es": "Qwen experimental con atención híbrida y solo 3B activos: enorme, pero rápido para su tamaño."
+			},
+			"use_for": {
+				"en": "Long context, general assistant",
+				"pt-BR": "Contexto longo, assistente geral",
+				"es": "Contexto largo, asistente general"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 25,
+				"score_rtx3060": 27
+			}
+		},
+		{
+			"id": "qwen-3-coder-next-80b-a3b",
+			"name": "Qwen 3 Coder Next 80B-A3B",
+			"category": "code",
+			"size_gb": 41.5,
+			"active_ratio": 0.037,
+			"reasoning": false,
+			"description": {
+				"en": "Code version of Qwen 3 Next, built for coding agents.",
+				"pt-BR": "Versão de código do Qwen 3 Next, feita para agentes de programação.",
+				"es": "Versión de código de Qwen 3 Next, hecha para agentes de programación."
+			},
+			"use_for": {
+				"en": "Coding agents, refactoring",
+				"pt-BR": "Agentes de código, refatoração",
+				"es": "Agentes de código, refactorización"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 25,
+				"score_rtx3060": 27
+			}
+		},
+		{
+			"id": "devstral-small-2-24b",
+			"name": "Devstral Small 2 24B",
+			"category": "code",
+			"size_gb": 12.8,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Mistral's coding agent, built to work on whole repositories.",
+				"pt-BR": "Agente de programação da Mistral, feito para trabalhar em repositórios inteiros.",
+				"es": "Agente de programación de Mistral, hecho para trabajar en repositorios completos."
+			},
+			"use_for": {
+				"en": "Coding agents (OpenHands, Cline)",
+				"pt-BR": "Agentes de código (OpenHands, Cline)",
+				"es": "Agentes de código (OpenHands, Cline)"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 12,
+				"score_rtx3060": 23
+			}
+		},
+		{
+			"id": "mistral-small-3-1-24b",
+			"name": "Mistral Small 3.1 24B",
+			"category": "chat",
+			"size_gb": 12.8,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Mistral's multimodal general-purpose model.",
+				"pt-BR": "Generalista multimodal da Mistral.",
+				"es": "Generalista multimodal de Mistral."
+			},
+			"use_for": {
+				"en": "Chat, documents, images",
+				"pt-BR": "Chat, documentos, imagens",
+				"es": "Chat, documentos, imágenes"
+			},
+			"unsure": false,
+			"ollama": "mistral-small3.1:24b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 12,
+				"score_rtx3060": 23
+			}
+		},
+		{
+			"id": "qwen-3-5-35b-a3b",
+			"name": "Qwen 3.5 35B-A3B",
+			"category": "chat",
+			"size_gb": 36.4,
+			"active_ratio": 0.086,
+			"reasoning": false,
+			"description": {
+				"en": "Qwen 3.5 MoE with ~3B active, in a larger quantization (36 GB).",
+				"pt-BR": "MoE do Qwen 3.5 com ~3B ativos, numa quantização maior (36 GB).",
+				"es": "MoE de Qwen 3.5 con ~3B activos, en una cuantización mayor (36 GB)."
+			},
+			"use_for": {
+				"en": "High-quality general assistant",
+				"pt-BR": "Assistente geral de qualidade",
+				"es": "Asistente general de calidad"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 13,
+				"score_rtx3060": 20
+			}
+		},
+		{
+			"id": "gemma-4-26b-a4b-it",
+			"name": "Gemma 4 26B-A4B IT",
+			"category": "chat",
+			"size_gb": 28.2,
+			"active_ratio": 0.154,
+			"reasoning": false,
+			"description": {
+				"en": "Google's multimodal MoE (~4B active).",
+				"pt-BR": "MoE multimodal do Google (~4B ativos).",
+				"es": "MoE multimodal de Google (~4B activos)."
+			},
+			"use_for": {
+				"en": "Chat, images, documents",
+				"pt-BR": "Chat, imagens, documentos",
+				"es": "Chat, imágenes, documentos"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 11,
+				"score_rtx3060": 18
+			}
+		},
+		{
+			"id": "mixtral-8x7b",
+			"name": "Mixtral 8x7B",
+			"category": "chat",
+			"size_gb": 24.6,
+			"active_ratio": 0.276,
+			"reasoning": false,
+			"description": {
+				"en": "Mistral's pioneering MoE (2023), now outperformed by smaller models.",
+				"pt-BR": "MoE pioneiro da Mistral (2023), hoje superado por modelos menores.",
+				"es": "MoE pionero de Mistral (2023), hoy superado por modelos más pequeños."
+			},
+			"use_for": {
+				"en": "Legacy use",
+				"pt-BR": "Uso legado",
+				"es": "Uso heredado"
+			},
+			"unsure": false,
+			"ollama": "mixtral:8x7b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 8,
+				"score_rtx3060": 16
+			}
+		},
+		{
+			"id": "hunyuanimage-3-0-instruct",
+			"name": "HunyuanImage 3.0 Instruct",
+			"category": "img",
+			"size_gb": 45.4,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Large image generator from Tencent, with instruction-based editing.",
+				"pt-BR": "Gerador de imagens de grande porte da Tencent, com edição por instrução.",
+				"es": "Generador de imágenes de gran tamaño de Tencent, con edición por instrucciones."
+			},
+			"use_for": {
+				"en": "Text-to-image, editing",
+				"pt-BR": "Imagens a partir de texto, edição",
+				"es": "Imágenes a partir de texto, edición"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 14
+			}
+		},
+		{
+			"id": "hunyuanimage-3-0",
+			"name": "HunyuanImage 3.0",
+			"category": "img",
+			"size_gb": 45.4,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Large image generator from Tencent.",
+				"pt-BR": "Gerador de imagens de grande porte da Tencent.",
+				"es": "Generador de imágenes de gran tamaño de Tencent."
+			},
+			"use_for": {
+				"en": "Text-to-image",
+				"pt-BR": "Imagens a partir de texto",
+				"es": "Imágenes a partir de texto"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 14
+			}
+		},
+		{
+			"id": "qwen-3-8-27b",
+			"name": "Qwen 3.8 27B",
+			"category": "chat",
+			"size_gb": 14.3,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Dense 27B Qwen: every parameter works on each token, so it is slower than a MoE of the same size.",
+				"pt-BR": "Qwen denso de 27B: todos os parâmetros trabalham em cada token, por isso é mais lento que um MoE do mesmo tamanho.",
+				"es": "Qwen denso de 27B: todos los parámetros trabajan en cada token, por eso es más lento que un MoE del mismo tamaño."
+			},
+			"use_for": {
+				"en": "General assistant",
+				"pt-BR": "Assistente geral",
+				"es": "Asistente general"
+			},
+			"unsure": true,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 7,
+				"score_rtx3060": 13
+			}
+		},
+		{
+			"id": "minimax-h3",
+			"name": "MiniMax H3",
+			"category": "vid",
+			"size_gb": 31.7,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Video generator from MiniMax.",
+				"pt-BR": "Gerador de vídeo da MiniMax.",
+				"es": "Generador de video de MiniMax."
+			},
+			"use_for": {
+				"en": "Short videos",
+				"pt-BR": "Vídeos curtos",
+				"es": "Videos cortos"
+			},
+			"unsure": true,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 13
+			}
+		},
+		{
+			"id": "glm-4-5-air",
+			"name": "GLM-4.5 Air",
+			"category": "chat",
+			"size_gb": 54.8,
+			"active_ratio": 0.113,
+			"reasoning": false,
+			"description": {
+				"en": "Zhipu MoE, good at code and agents.",
+				"pt-BR": "MoE da Zhipu, bom em código e agentes.",
+				"es": "MoE de Zhipu, bueno en código y agentes."
+			},
+			"use_for": {
+				"en": "Code, agents",
+				"pt-BR": "Código, agentes",
+				"es": "Código, agentes"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 6,
+				"score_rtx3060": 13
+			}
+		},
+		{
+			"id": "ltx-2-3",
+			"name": "LTX 2.3",
+			"category": "vid",
+			"size_gb": 14.1,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Video generator from Lightricks, fast and with audio.",
+				"pt-BR": "Gerador de vídeo da Lightricks, rápido e com áudio.",
+				"es": "Generador de video de Lightricks, rápido y con audio."
+			},
+			"use_for": {
+				"en": "Short clips, text or image to video",
+				"pt-BR": "Clipes curtos, texto ou imagem para vídeo",
+				"es": "Clips cortos, texto o imagen a video"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 12
+			}
+		},
+		{
+			"id": "qwen-image-2512",
+			"name": "Qwen Image 2512",
+			"category": "img",
+			"size_gb": 31.5,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Image generator from Qwen, strong at readable text inside the image.",
+				"pt-BR": "Gerador de imagens da Qwen, forte em texto legível dentro da imagem.",
+				"es": "Generador de imágenes de Qwen, fuerte en texto legible dentro de la imagen."
+			},
+			"use_for": {
+				"en": "Posters, banners, images with text",
+				"pt-BR": "Pôsteres, banners, imagens com texto",
+				"es": "Pósteres, banners, imágenes con texto"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 12
+			}
+		},
+		{
+			"id": "wan-2-2-t2v-a14b",
+			"name": "Wan 2.2 T2V A14B",
+			"category": "vid",
+			"size_gb": 30.1,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Text-to-video from Alibaba (MoE), with a cinematic look.",
+				"pt-BR": "Texto para vídeo da Alibaba (MoE), com visual cinematográfico.",
+				"es": "Texto a video de Alibaba (MoE), con aspecto cinematográfico."
+			},
+			"use_for": {
+				"en": "Short videos from text",
+				"pt-BR": "Vídeos curtos a partir de texto",
+				"es": "Videos cortos a partir de texto"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 12
+			}
+		},
+		{
+			"id": "muse-glimmer-30b",
+			"name": "Muse Glimmer 30B",
+			"category": "chat",
+			"size_gb": 15.9,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Dense 30B model.",
+				"pt-BR": "Modelo denso de 30B.",
+				"es": "Modelo denso de 30B."
+			},
+			"use_for": {
+				"en": "General chat",
+				"pt-BR": "Chat geral",
+				"es": "Chat general"
+			},
+			"unsure": true,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 5,
+				"score_rtx3060": 11
+			}
+		},
+		{
+			"id": "llama-4-scout-17b",
+			"name": "Llama 4 Scout 17B",
+			"category": "chat",
+			"size_gb": 56.3,
+			"active_ratio": 0.156,
+			"reasoning": false,
+			"description": {
+				"en": "Meta's multimodal MoE (17B active, 109B total), with a very long context.",
+				"pt-BR": "MoE multimodal da Meta (17B ativos, 109B no total), com contexto muito longo.",
+				"es": "MoE multimodal de Meta (17B activos, 109B en total), con contexto muy largo."
+			},
+			"use_for": {
+				"en": "Huge documents, images",
+				"pt-BR": "Documentos enormes, imagens",
+				"es": "Documentos enormes, imágenes"
+			},
+			"unsure": false,
+			"ollama": "llama4:scout",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 4,
+				"score_rtx3060": 11
+			}
+		},
+		{
+			"id": "flux-2-klein-9b",
+			"name": "FLUX.2 Klein 9B",
+			"category": "img",
+			"size_gb": 25.6,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Compact 9B version of FLUX.2, from Black Forest Labs.",
+				"pt-BR": "Versão compacta de 9B do FLUX.2, da Black Forest Labs.",
+				"es": "Versión compacta de 9B de FLUX.2, de Black Forest Labs."
+			},
+			"use_for": {
+				"en": "Generating and editing images",
+				"pt-BR": "Gerar e editar imagens",
+				"es": "Generar y editar imágenes"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 11
+			}
+		},
+		{
+			"id": "granite-4-1-30b",
+			"name": "Granite 4.1 30B",
+			"category": "chat",
+			"size_gb": 15.9,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "IBM's largest Granite 4.1; dense, so every parameter works on each token.",
+				"pt-BR": "Maior Granite 4.1 da IBM; denso, então todos os parâmetros trabalham em cada token.",
+				"es": "El Granite 4.1 más grande de IBM; denso, así que todos los parámetros trabajan en cada token."
+			},
+			"use_for": {
+				"en": "Business RAG, summaries",
+				"pt-BR": "RAG corporativo, resumos",
+				"es": "RAG empresarial, resúmenes"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 5,
+				"score_rtx3060": 11
+			}
+		},
+		{
+			"id": "qwen-3-32b",
+			"name": "Qwen 3 32B",
+			"category": "chat",
+			"size_gb": 16.9,
+			"active_ratio": 1.0,
+			"reasoning": true,
+			"description": {
+				"en": "Dense 32B Qwen 3: high quality, but slower than the MoE models.",
+				"pt-BR": "Qwen 3 denso de 32B: qualidade alta, mas mais lento que os MoE.",
+				"es": "Qwen 3 denso de 32B: alta calidad, pero más lento que los MoE."
+			},
+			"use_for": {
+				"en": "Quality answers without hurry",
+				"pt-BR": "Respostas de qualidade sem pressa",
+				"es": "Respuestas de calidad sin prisa"
+			},
+			"unsure": false,
+			"ollama": "qwen3:32b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 5,
+				"score_rtx3060": 11
+			}
+		},
+		{
+			"id": "deepseek-r1-distill-32b",
+			"name": "DeepSeek R1 Distill 32B",
+			"category": "chat",
+			"size_gb": 16.9,
+			"active_ratio": 1.0,
+			"reasoning": true,
+			"description": {
+				"en": "The best R1 distillation; strong reasoning, but heavy.",
+				"pt-BR": "Melhor destilado do R1; raciocínio forte, mas pesado.",
+				"es": "El mejor destilado de R1; razonamiento fuerte, pero pesado."
+			},
+			"use_for": {
+				"en": "Heavy reasoning",
+				"pt-BR": "Raciocínio pesado",
+				"es": "Razonamiento exigente"
+			},
+			"unsure": false,
+			"ollama": "deepseek-r1:32b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 5,
+				"score_rtx3060": 11
+			}
+		},
+		{
+			"id": "olmo-2-32b",
+			"name": "OLMo 2 32B",
+			"category": "chat",
+			"size_gb": 16.9,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "100% open model from the Allen Institute (weights, data and code).",
+				"pt-BR": "Modelo 100% aberto do Allen Institute (pesos, dados e código).",
+				"es": "Modelo 100 % abierto del Allen Institute (pesos, datos y código)."
+			},
+			"use_for": {
+				"en": "Research, studying LLMs",
+				"pt-BR": "Pesquisa, estudo de LLMs",
+				"es": "Investigación, estudio de LLM"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 5,
+				"score_rtx3060": 11
+			}
+		},
+		{
+			"id": "wan-2-2-ti2v-5b",
+			"name": "Wan 2.2 TI2V 5B",
+			"category": "vid",
+			"size_gb": 21.2,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Compact version of Wan 2.2: text or image to video.",
+				"pt-BR": "Versão compacta do Wan 2.2: texto ou imagem para vídeo.",
+				"es": "Versión compacta de Wan 2.2: texto o imagen a video."
+			},
+			"use_for": {
+				"en": "Animating images, short clips",
+				"pt-BR": "Animar imagens, clipes curtos",
+				"es": "Animar imágenes, clips cortos"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 10
+			}
+		},
+		{
+			"id": "z-image-turbo",
+			"name": "Z-Image Turbo",
+			"category": "img",
+			"size_gb": 15.7,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Fast image generator (few steps), focused on photorealism.",
+				"pt-BR": "Gerador de imagens rápido (poucos passos), focado em fotorrealismo.",
+				"es": "Generador de imágenes rápido (pocos pasos), enfocado en fotorrealismo."
+			},
+			"use_for": {
+				"en": "Realistic photos, quick iterations",
+				"pt-BR": "Fotos realistas, iterações rápidas",
+				"es": "Fotos realistas, iteraciones rápidas"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 10
+			}
+		},
+		{
+			"id": "hunyuanvideo-1-5",
+			"name": "HunyuanVideo 1.5",
+			"category": "vid",
+			"size_gb": 13.7,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Lighter version of Tencent's video generator.",
+				"pt-BR": "Gerador de vídeo da Tencent em versão mais leve.",
+				"es": "Versión más ligera del generador de video de Tencent."
+			},
+			"use_for": {
+				"en": "Text or image to video",
+				"pt-BR": "Texto ou imagem para vídeo",
+				"es": "Texto o imagen a video"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 10
+			}
+		},
+		{
+			"id": "gemma-4-31b",
+			"name": "Gemma 4 31B",
+			"category": "chat",
+			"size_gb": 17.4,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "The largest dense Gemma 4.",
+				"pt-BR": "Maior Gemma 4 denso.",
+				"es": "El Gemma 4 denso más grande."
+			},
+			"use_for": {
+				"en": "High-quality general assistant",
+				"pt-BR": "Assistente geral de qualidade",
+				"es": "Asistente general de calidad"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 4,
+				"score_rtx3060": 10
+			}
+		},
+		{
+			"id": "command-r-35b",
+			"name": "Command R 35B",
+			"category": "chat",
+			"size_gb": 18.4,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Cohere model built for RAG with citations.",
+				"pt-BR": "Modelo da Cohere feito para RAG com citações.",
+				"es": "Modelo de Cohere hecho para RAG con citas."
+			},
+			"use_for": {
+				"en": "Searching and answering from documents",
+				"pt-BR": "Buscar e responder em documentos",
+				"es": "Buscar y responder en documentos"
+			},
+			"unsure": false,
+			"ollama": "command-r:35b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 4,
+				"score_rtx3060": 10
+			}
+		},
+		{
+			"id": "flux-2-klein-4b",
+			"name": "FLUX.2 Klein 4B",
+			"category": "img",
+			"size_gb": 14.6,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Small version of FLUX.2 to generate and edit images quickly.",
+				"pt-BR": "Versão pequena do FLUX.2 para gerar e editar imagens rápido.",
+				"es": "Versión pequeña de FLUX.2 para generar y editar imágenes rápido."
+			},
+			"use_for": {
+				"en": "Quick images, editing",
+				"pt-BR": "Imagens rápidas, edição",
+				"es": "Imágenes rápidas, edición"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 9
+			}
+		},
+		{
+			"id": "wan-2-1-t2v-1-3b",
+			"name": "Wan 2.1 T2V 1.3B",
+			"category": "vid",
+			"size_gb": 17.0,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Light version of Wan 2.1 for text-to-video.",
+				"pt-BR": "Versão leve do Wan 2.1 para texto para vídeo.",
+				"es": "Versión ligera de Wan 2.1 para texto a video."
+			},
+			"use_for": {
+				"en": "Short low-resolution videos",
+				"pt-BR": "Vídeos curtos em baixa resolução",
+				"es": "Videos cortos en baja resolución"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 8
+			}
+		},
+		{
+			"id": "qwen-3-5-27b",
+			"name": "Qwen 3.5 27B",
+			"category": "chat",
+			"size_gb": 29.0,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Dense 27B Qwen 3.5, in a larger quantization.",
+				"pt-BR": "Qwen 3.5 denso de 27B, numa quantização maior.",
+				"es": "Qwen 3.5 denso de 27B, en una cuantización mayor."
+			},
+			"use_for": {
+				"en": "General assistant",
+				"pt-BR": "Assistente geral",
+				"es": "Asistente general"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 2,
+				"score_rtx3060": 8
+			}
+		},
+		{
+			"id": "llama-3-3-70b",
+			"name": "Llama 3.3 70B",
+			"category": "chat",
+			"size_gb": 36.4,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "70B Llama: very good, but it needs a lot of memory to run well.",
+				"pt-BR": "Llama de 70B: muito bom, mas precisa de muita memória para rodar bem.",
+				"es": "Llama de 70B: muy bueno, pero necesita mucha memoria para funcionar bien."
+			},
+			"use_for": {
+				"en": "High quality, without hurry",
+				"pt-BR": "Qualidade alta, sem pressa",
+				"es": "Alta calidad, sin prisa"
+			},
+			"unsure": false,
+			"ollama": "llama3.3:70b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 1,
+				"score_rtx3060": 8
+			}
+		},
+		{
+			"id": "gemma-4-31b-it",
+			"name": "Gemma 4 31B IT",
+			"category": "chat",
+			"size_gb": 34.3,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Instruction-tuned Gemma 4 31B, in a larger quantization.",
+				"pt-BR": "Gemma 4 31B ajustado para instruções, em quantização maior.",
+				"es": "Gemma 4 31B ajustado para instrucciones, en una cuantización mayor."
+			},
+			"use_for": {
+				"en": "General assistant",
+				"pt-BR": "Assistente geral",
+				"es": "Asistente general"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 1,
+				"score_rtx3060": 7
+			}
+		},
+		{
+			"id": "flux-2-dev",
+			"name": "FLUX.2 Dev",
+			"category": "img",
+			"size_gb": 69.1,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Black Forest Labs' top-of-the-line image model.",
+				"pt-BR": "Modelo de imagem topo de linha da Black Forest Labs.",
+				"es": "Modelo de imagen de gama alta de Black Forest Labs."
+			},
+			"use_for": {
+				"en": "High-quality images",
+				"pt-BR": "Imagens de alta qualidade",
+				"es": "Imágenes de alta calidad"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 0
+			}
+		},
+		{
+			"id": "gpt-oss-120b",
+			"name": "GPT-OSS 120B",
+			"category": "chat",
+			"size_gb": 60.4,
+			"active_ratio": 0.044,
+			"reasoning": true,
+			"description": {
+				"en": "The bigger sibling of GPT-OSS; needs about 60 GB.",
+				"pt-BR": "Irmão maior do GPT-OSS; exige cerca de 60 GB.",
+				"es": "El hermano mayor de GPT-OSS; requiere unos 60 GB."
+			},
+			"use_for": {
+				"en": "Advanced reasoning",
+				"pt-BR": "Raciocínio avançado",
+				"es": "Razonamiento avanzado"
+			},
+			"unsure": false,
+			"ollama": "gpt-oss:120b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 0
+			}
+		},
+		{
+			"id": "mistral-small-4-119b",
+			"name": "Mistral Small 4 119B",
+			"category": "chat",
+			"size_gb": 61.5,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Mistral's 119B MoE model.",
+				"pt-BR": "Modelo MoE de 119B da Mistral.",
+				"es": "Modelo MoE de 119B de Mistral."
+			},
+			"use_for": {
+				"en": "Advanced assistant",
+				"pt-BR": "Assistente avançado",
+				"es": "Asistente avanzado"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 0
+			}
+		},
+		{
+			"id": "qwen-3-vl-235b-a22b",
+			"name": "Qwen 3 VL 235B-A22B",
+			"category": "vis",
+			"size_gb": 120.9,
+			"active_ratio": 0.094,
+			"reasoning": false,
+			"description": {
+				"en": "The largest Qwen3-VL; state-of-the-art vision, for servers.",
+				"pt-BR": "Maior Qwen3-VL; visão de ponta, para servidores.",
+				"es": "El Qwen3-VL más grande; visión de vanguardia, para servidores."
+			},
+			"use_for": {
+				"en": "Advanced vision",
+				"pt-BR": "Visão avançada",
+				"es": "Visión avanzada"
+			},
+			"unsure": false,
+			"ollama": "qwen3-vl:235b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 0
+			}
+		},
+		{
+			"id": "hy3",
+			"name": "Hy3",
+			"category": "chat",
+			"size_gb": 151.6,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Large model from Tencent Hunyuan.",
+				"pt-BR": "Modelo grande da Tencent Hunyuan.",
+				"es": "Modelo grande de Tencent Hunyuan."
+			},
+			"use_for": {
+				"en": "Server use",
+				"pt-BR": "Uso em servidor",
+				"es": "Uso en servidor"
+			},
+			"unsure": true,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 0
+			}
+		},
+		{
+			"id": "minimax-m3",
+			"name": "MiniMax M3",
+			"category": "chat",
+			"size_gb": 219.7,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Large model from MiniMax.",
+				"pt-BR": "Modelo grande da MiniMax.",
+				"es": "Modelo grande de MiniMax."
+			},
+			"use_for": {
+				"en": "Server use",
+				"pt-BR": "Uso em servidor",
+				"es": "Uso en servidor"
+			},
+			"unsure": true,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 0
+			}
+		},
+		{
+			"id": "glm-5-3",
+			"name": "GLM-5.3",
+			"category": "chat",
+			"size_gb": 386.2,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Frontier model from Z.ai (Zhipu).",
+				"pt-BR": "Modelo de fronteira da Z.ai (Zhipu).",
+				"es": "Modelo de frontera de Z.ai (Zhipu)."
+			},
+			"use_for": {
+				"en": "Server use",
+				"pt-BR": "Uso em servidor",
+				"es": "Uso en servidor"
+			},
+			"unsure": true,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 0
+			}
+		},
+		{
+			"id": "longcat-2-0",
+			"name": "LongCat 2.0",
+			"category": "chat",
+			"size_gb": 820.1,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Giant model from Meituan.",
+				"pt-BR": "Modelo gigante da Meituan.",
+				"es": "Modelo gigante de Meituan."
+			},
+			"use_for": {
+				"en": "Server use",
+				"pt-BR": "Uso em servidor",
+				"es": "Uso en servidor"
+			},
+			"unsure": true,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 0
+			}
+		},
+		{
+			"id": "deepseek-v4-pro",
+			"name": "DeepSeek V4 Pro",
+			"category": "chat",
+			"size_gb": 820.1,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Top of the DeepSeek V4 line; made for clusters.",
+				"pt-BR": "Topo da linha DeepSeek V4; feito para clusters.",
+				"es": "Lo más alto de la línea DeepSeek V4; hecho para clústeres."
+			},
+			"use_for": {
+				"en": "Server use",
+				"pt-BR": "Uso em servidor",
+				"es": "Uso en servidor"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 0
+			}
+		},
+		{
+			"id": "qwen-3-8-2-4t-a95b",
+			"name": "Qwen 3.8 2.4T-A95B",
+			"category": "chat",
+			"size_gb": 1229.8,
+			"active_ratio": 0.04,
+			"reasoning": false,
+			"description": {
+				"en": "2.4-trillion-parameter MoE (95B active).",
+				"pt-BR": "MoE de 2,4 trilhões de parâmetros (95B ativos).",
+				"es": "MoE de 2,4 billones de parámetros (95B activos)."
+			},
+			"use_for": {
+				"en": "Server use",
+				"pt-BR": "Uso em servidor",
+				"es": "Uso en servidor"
+			},
+			"unsure": true,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 0
+			}
+		},
+		{
+			"id": "kimi-k3",
+			"name": "Kimi K3",
+			"category": "chat",
+			"size_gb": 1424.5,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Giant model from Moonshot AI.",
+				"pt-BR": "Modelo gigante da Moonshot AI.",
+				"es": "Modelo gigante de Moonshot AI."
+			},
+			"use_for": {
+				"en": "Server use",
+				"pt-BR": "Uso em servidor",
+				"es": "Uso en servidor"
+			},
+			"unsure": true,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 0
+			}
+		},
+		{
+			"id": "qwen-3-5-122b-a10b",
+			"name": "Qwen 3.5 122B-A10B",
+			"category": "chat",
+			"size_gb": 125.5,
+			"active_ratio": 0.082,
+			"reasoning": false,
+			"description": {
+				"en": "Qwen 3.5 MoE with 10B active.",
+				"pt-BR": "MoE do Qwen 3.5 com 10B ativos.",
+				"es": "MoE de Qwen 3.5 con 10B activos."
+			},
+			"use_for": {
+				"en": "Server use",
+				"pt-BR": "Uso em servidor",
+				"es": "Uso en servidor"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 0
+			}
+		},
+		{
+			"id": "deepseek-v4-flash",
+			"name": "DeepSeek V4 Flash",
+			"category": "chat",
+			"size_gb": 81.4,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Faster, lighter version of DeepSeek V4.",
+				"pt-BR": "Versão mais rápida e leve do DeepSeek V4.",
+				"es": "Versión más rápida y ligera de DeepSeek V4."
+			},
+			"use_for": {
+				"en": "Server use",
+				"pt-BR": "Uso em servidor",
+				"es": "Uso en servidor"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 0
+			}
+		},
+		{
+			"id": "qwen-3-235b-a22b",
+			"name": "Qwen 3 235B-A22B",
+			"category": "chat",
+			"size_gb": 120.9,
+			"active_ratio": 0.094,
+			"reasoning": true,
+			"description": {
+				"en": "The largest Qwen 3 MoE (22B active).",
+				"pt-BR": "Maior Qwen 3 MoE (22B ativos).",
+				"es": "El Qwen 3 MoE más grande (22B activos)."
+			},
+			"use_for": {
+				"en": "Server use",
+				"pt-BR": "Uso em servidor",
+				"es": "Uso en servidor"
+			},
+			"unsure": false,
+			"ollama": "qwen3:235b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 0
+			}
+		},
+		{
+			"id": "glm-4-6",
+			"name": "GLM-4.6",
+			"category": "chat",
+			"size_gb": 183.4,
+			"active_ratio": 0.09,
+			"reasoning": false,
+			"description": {
+				"en": "Zhipu model that is strong at code and agents.",
+				"pt-BR": "Modelo da Zhipu forte em código e agentes.",
+				"es": "Modelo de Zhipu fuerte en código y agentes."
+			},
+			"use_for": {
+				"en": "Server use",
+				"pt-BR": "Uso em servidor",
+				"es": "Uso en servidor"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 0
+			}
+		},
+		{
+			"id": "qwen-3-5-397b-a17b",
+			"name": "Qwen 3.5 397B-A17B",
+			"category": "chat",
+			"size_gb": 203.9,
+			"active_ratio": 0.043,
+			"reasoning": false,
+			"description": {
+				"en": "Top of the Qwen 3.5 line.",
+				"pt-BR": "Topo da linha Qwen 3.5.",
+				"es": "Lo más alto de la línea Qwen 3.5."
+			},
+			"use_for": {
+				"en": "Server use",
+				"pt-BR": "Uso em servidor",
+				"es": "Uso en servidor"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 0
+			}
+		},
+		{
+			"id": "llama-4-maverick-17b-128e",
+			"name": "Llama 4 Maverick 17B-128E",
+			"category": "chat",
+			"size_gb": 205.4,
+			"active_ratio": 0.043,
+			"reasoning": false,
+			"description": {
+				"en": "Meta MoE with 128 experts (~400B total).",
+				"pt-BR": "MoE da Meta com 128 especialistas (~400B no total).",
+				"es": "MoE de Meta con 128 expertos (~400B en total)."
+			},
+			"use_for": {
+				"en": "Server use",
+				"pt-BR": "Uso em servidor",
+				"es": "Uso en servidor"
+			},
+			"unsure": false,
+			"ollama": "llama4:maverick",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 0
+			}
+		},
+		{
+			"id": "qwen-3-coder-480b",
+			"name": "Qwen 3 Coder 480B",
+			"category": "code",
+			"size_gb": 246.4,
+			"active_ratio": 0.073,
+			"reasoning": false,
+			"description": {
+				"en": "The largest Qwen for code, on par with commercial tools.",
+				"pt-BR": "Maior Qwen de código, no nível de ferramentas comerciais.",
+				"es": "El Qwen de código más grande, al nivel de herramientas comerciales."
+			},
+			"use_for": {
+				"en": "Coding agents on servers",
+				"pt-BR": "Agentes de código em servidor",
+				"es": "Agentes de código en servidor"
+			},
+			"unsure": false,
+			"ollama": "qwen3-coder:480b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 0
+			}
+		},
+		{
+			"id": "deepseek-r1",
+			"name": "DeepSeek R1",
+			"category": "chat",
+			"size_gb": 344.2,
+			"active_ratio": 0.055,
+			"reasoning": true,
+			"description": {
+				"en": "The original 671B R1, which made reasoning models popular.",
+				"pt-BR": "O R1 original de 671B, que popularizou os modelos de raciocínio.",
+				"es": "El R1 original de 671B, que popularizó los modelos de razonamiento."
+			},
+			"use_for": {
+				"en": "Server use",
+				"pt-BR": "Uso em servidor",
+				"es": "Uso en servidor"
+			},
+			"unsure": false,
+			"ollama": "deepseek-r1:671b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 0
+			}
+		},
+		{
+			"id": "deepseek-v3-2",
+			"name": "DeepSeek V3.2",
+			"category": "chat",
+			"size_gb": 351.4,
+			"active_ratio": 0.055,
+			"reasoning": false,
+			"description": {
+				"en": "DeepSeek general-purpose model with sparse attention.",
+				"pt-BR": "Generalista da DeepSeek com atenção esparsa.",
+				"es": "Generalista de DeepSeek con atención dispersa."
+			},
+			"use_for": {
+				"en": "Server use",
+				"pt-BR": "Uso em servidor",
+				"es": "Uso en servidor"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 0
+			}
+		},
+		{
+			"id": "whisper-large-v3-turbo",
+			"name": "Whisper Large v3 Turbo",
+			"category": "stt",
+			"size_gb": 1.6,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "OpenAI transcription, a faster version of Large v3: almost the same accuracy, much faster. Very good in Portuguese and Spanish.",
+				"pt-BR": "Transcrição da OpenAI, versão acelerada do Large v3: quase a mesma precisão, bem mais rápida. Muito boa em português.",
+				"es": "Transcripción de OpenAI, versión acelerada de Large v3: casi la misma precisión, mucho más rápida. Muy buena en español y portugués."
+			},
+			"use_for": {
+				"en": "Transcribing meetings, videos, subtitles",
+				"pt-BR": "Transcrever reuniões, vídeos, legendas",
+				"es": "Transcribir reuniones, videos, subtítulos"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": "turbo",
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 85
+			}
+		},
+		{
+			"id": "whisper-large-v3",
+			"name": "Whisper Large v3",
+			"category": "stt",
+			"size_gb": 3.1,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "The most accurate Whisper, supporting about 100 languages.",
+				"pt-BR": "O Whisper mais preciso, com suporte a cerca de 100 idiomas.",
+				"es": "El Whisper más preciso, compatible con unos 100 idiomas."
+			},
+			"use_for": {
+				"en": "High-accuracy transcription, translation to English",
+				"pt-BR": "Transcrição de alta precisão, tradução para inglês",
+				"es": "Transcripción de alta precisión, traducción al inglés"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": "large-v3",
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 85
+			}
+		},
+		{
+			"id": "whisper-small",
+			"name": "Whisper Small",
+			"category": "stt",
+			"size_gb": 0.5,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Light Whisper, good for dictation and real-time transcription.",
+				"pt-BR": "Whisper leve, bom para ditado e transcrição em tempo real.",
+				"es": "Whisper ligero, bueno para dictado y transcripción en tiempo real."
+			},
+			"use_for": {
+				"en": "Dictation, quick transcription",
+				"pt-BR": "Ditado, transcrição rápida",
+				"es": "Dictado, transcripción rápida"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": "small",
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 85
+			}
+		},
+		{
+			"id": "kokoro-82m",
+			"name": "Kokoro 82M",
+			"category": "tts",
+			"size_gb": 0.3,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Tiny, high-quality synthetic voice, with Brazilian Portuguese voices.",
+				"pt-BR": "Voz sintética minúscula e de ótima qualidade, com vozes em português do Brasil.",
+				"es": "Voz sintética diminuta y de gran calidad, con voces en portugués de Brasil y español."
+			},
+			"use_for": {
+				"en": "Narration, reading texts, voice assistants",
+				"pt-BR": "Narração, leitura de textos, assistentes de voz",
+				"es": "Narración, lectura de textos, asistentes de voz"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 85
+			}
+		},
+		{
+			"id": "piper",
+			"name": "Piper",
+			"category": "tts",
+			"size_gb": 0.1,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Ultralight synthetic voice that runs even without a GPU, with voices in many languages.",
+				"pt-BR": "Voz sintética ultraleve que roda até sem GPU, com vozes em pt-BR.",
+				"es": "Voz sintética ultraligera que funciona incluso sin GPU, con voces en español y otros idiomas."
+			},
+			"use_for": {
+				"en": "Voice assistants, home automation",
+				"pt-BR": "Assistentes de voz, automação residencial",
+				"es": "Asistentes de voz, domótica"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 85
+			}
+		},
+		{
+			"id": "xtts-v2",
+			"name": "XTTS v2",
+			"category": "tts",
+			"size_gb": 1.9,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Coqui voice model that clones a voice from a few seconds of audio; license for non-commercial use only.",
+				"pt-BR": "Voz da Coqui que clona uma voz a partir de poucos segundos de áudio; licença só para uso não comercial.",
+				"es": "Voz de Coqui que clona una voz a partir de pocos segundos de audio; licencia solo para uso no comercial."
+			},
+			"use_for": {
+				"en": "Voice cloning, dubbing",
+				"pt-BR": "Clonar voz, dublagem",
+				"es": "Clonar voz, doblaje"
+			},
+			"unsure": false,
+			"ollama": null,
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 85
+			}
+		},
+		{
+			"id": "bge-m3",
+			"name": "BGE-M3",
+			"category": "emb",
+			"size_gb": 1.1,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Multilingual embeddings from BAAI, for texts up to 8K tokens.",
+				"pt-BR": "Embeddings multilíngues da BAAI, bons em português, para textos de até 8 mil tokens.",
+				"es": "Embeddings multilingües de BAAI, buenos en español, para textos de hasta 8 mil tokens."
+			},
+			"use_for": {
+				"en": "Document search, RAG",
+				"pt-BR": "Busca em documentos, RAG",
+				"es": "Búsqueda en documentos, RAG"
+			},
+			"unsure": false,
+			"ollama": "bge-m3",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 85
+			}
+		},
+		{
+			"id": "qwen3-embedding-0-6b",
+			"name": "Qwen3-Embedding 0.6B",
+			"category": "emb",
+			"size_gb": 1.2,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Light, multilingual embeddings from Qwen.",
+				"pt-BR": "Embeddings leves e multilíngues da Qwen.",
+				"es": "Embeddings ligeros y multilingües de Qwen."
+			},
+			"use_for": {
+				"en": "RAG, semantic search",
+				"pt-BR": "RAG, busca semântica",
+				"es": "RAG, búsqueda semántica"
+			},
+			"unsure": false,
+			"ollama": "qwen3-embedding:0.6b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 85
+			}
+		},
+		{
+			"id": "qwen3-embedding-8b",
+			"name": "Qwen3-Embedding 8B",
+			"category": "emb",
+			"size_gb": 4.7,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Large version of Qwen's embeddings, among the best multilingual ones (in Q4).",
+				"pt-BR": "Versão grande dos embeddings da Qwen, entre os melhores multilíngues (em Q4).",
+				"es": "Versión grande de los embeddings de Qwen, entre los mejores multilingües (en Q4)."
+			},
+			"use_for": {
+				"en": "High-quality RAG",
+				"pt-BR": "RAG de alta qualidade",
+				"es": "RAG de alta calidad"
+			},
+			"unsure": false,
+			"ollama": "qwen3-embedding:8b",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 85
+			}
+		},
+		{
+			"id": "nomic-embed-text-v1-5",
+			"name": "nomic-embed-text v1.5",
+			"category": "emb",
+			"size_gb": 0.3,
+			"active_ratio": 1.0,
+			"reasoning": false,
+			"description": {
+				"en": "Small embeddings, popular in Ollama; best in English.",
+				"pt-BR": "Embeddings pequenos e populares no Ollama; melhores em inglês.",
+				"es": "Embeddings pequeños y populares en Ollama; mejores en inglés."
+			},
+			"use_for": {
+				"en": "Light RAG, semantic search",
+				"pt-BR": "RAG leve, busca semântica",
+				"es": "RAG ligero, búsqueda semántica"
+			},
+			"unsure": false,
+			"ollama": "nomic-embed-text",
+			"whisper": null,
+			"reference": {
+				"tps_rtx3060": 0,
+				"score_rtx3060": 85
+			}
+		}
+	]
 }
