@@ -12,6 +12,7 @@ Local AI for your own server: [Open WebUI](https://github.com/open-webui/open-we
 | --------------- | --------------------------------------------- | ----------------------------------------------------- | --------------------------------------------------- |
 | Installation    | [INSTALL](docs/en/INSTALL.md)                 | [Instalação](docs/pt-BR/INSTALL.md)                   | [Instalación](docs/es/INSTALL.md)                   |
 | Troubleshooting | [TROUBLESHOOTING](docs/en/TROUBLESHOOTING.md) | [Solução de problemas](docs/pt-BR/TROUBLESHOOTING.md) | [Solución de problemas](docs/es/TROUBLESHOOTING.md) |
+| Versions        | [CHANGELOG](CHANGELOG.md)                     | [Histórico de versões](CHANGELOG.pt-BR.md)            | [Historial de versiones](CHANGELOG.es.md)           |
 
 ## Installers
 
