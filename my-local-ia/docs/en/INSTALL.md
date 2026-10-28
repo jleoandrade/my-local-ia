@@ -232,15 +232,62 @@ The installation has 11 numbered steps. Everything that changes the system is sh
 
 Run the installer again whenever you need one of these options. It remembers your previous answers.
 
-| Option                          | What it does                                                                                                                                                                                                         |
-| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **1) Install**                  | Installs, or recreates the container keeping all data.                                                                                                                                                               |
-| **2) Update or switch version** | Downloads the newest image (same version, official or my-local-ia), offers a **backup**, replaces the container and tests it. If the new version does not start, it **goes back to the previous one automatically**. |
-| **3) Verify**                   | Diagnostics only: checks everything and saves a **report** file to send when asking for help. Changes nothing.                                                                                                       |
-| **4) Back up data now**         | Saves users, chats, settings and uploaded files to a `.tar.gz` file. my-local-ia stops for a few seconds. The 5 newest backups are kept.                                                                             |
-| **5) Restore a backup**         | Lists the backups and restores the one you choose (replaces the current data, after confirmation).                                                                                                                   |
-| **6) Reset a user's password**  | Sets a new password for any user, including the administrator.                                                                                                                                                       |
-| **7) Uninstall**                | Removes the container and the firewall rule. Data is deleted only if you confirm and type `DELETE`, and a backup is offered first. Docker, Ollama and your models are never removed.                                 |
+| Option                             | What it does                                                                                                                                                                                                         |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1) Install**                     | Installs, or recreates the container keeping all data.                                                                                                                                                               |
+| **2) Update or switch version**    | Downloads the newest image (same version, official or my-local-ia), offers a **backup**, replaces the container and tests it. If the new version does not start, it **goes back to the previous one automatically**. |
+| **3) Verify**                      | Diagnostics only: checks everything and saves a **report** file to send when asking for help. Changes nothing.                                                                                                       |
+| **4) Back up data now**            | Saves users, chats, settings and uploaded files to a `.tar.gz` file. my-local-ia stops for a few seconds. The 5 newest backups are kept.                                                                             |
+| **5) Restore a backup**            | Lists the backups and restores the one you choose (replaces the current data, after confirmation).                                                                                                                   |
+| **6) Reset a user's password**     | Sets a new password for any user, including the administrator.                                                                                                                                                       |
+| **7) Uninstall**                   | Removes the container and the firewall rule. Data is deleted only if you confirm and type `DELETE`, and a backup is offered first. Docker, Ollama and your models are never removed.                                 |
+| **8) Optimize Ollama**             | Turns on flash attention and the compressed context (`q8_0`) in the Ollama service: a conversation takes about half the GPU memory. Run it again to undo. See below.                                                 |
+| **9) Unlock the GPU tensor cores** | Installs gpu-unlock (GeForce RTX 20/30/40) and turns it on at boot. Advanced; run it again to see its state or undo it. See below.                                                                                   |
+
+### Optional improvements (options 8 and 9, Linux only)
+
+#### 8) Optimize Ollama
+
+Turns on two settings in the Ollama service, in a file of its own (`/etc/systemd/system/ollama.service.d/my-local-ia.conf`):
+
+- `OLLAMA_FLASH_ATTENTION=1`: a more economical way to compute attention.
+- `OLLAMA_KV_CACHE_TYPE=q8_0`: keeps the conversation memory (context) compressed.
+
+Together they make the context take about half the GPU memory: longer chats fit and more of each model stays on the GPU. Answers stay the same. The installer restarts Ollama (answers in progress are interrupted) and checks that it is back. To undo, run option 8 again and choose **Undo**. Your own `sudo systemctl edit ollama` still applies and takes priority.
+
+#### 9) Unlock the GPU tensor cores (gpu-unlock)
+
+GeForce RTX 20, 30 and 40 cards run FP16/BF16/TF32 tensor math at half speed. [gpu-unlock](https://github.com/Zagitta/gpu-unlock), a third-party kernel module, restores the full rate at every boot, before the NVIDIA driver loads. Driver and VBIOS do not change and results are identical.
+
+| Use                                                     | Expected gain |
+| ------------------------------------------------------- | ------------- |
+| PyTorch FP16/BF16: image generation, fine-tuning        | 25 to 55%     |
+| Ollama reading long prompts                             | 0 to 15%      |
+| Ollama generating tokens, INT8/INT4 models, FP32, games | none          |
+
+What option 9 does:
+
+1. Checks that the GPU shows up as **PCI Express** and supports the **FLR** reset. If not, it stops and explains (see Proxmox below).
+2. Installs `git`, `build-essential` and the kernel headers, downloads gpu-unlock into `/opt/gpu-unlock` and runs `make install` (it builds the `gpu-unlock-dkms` and `gpu-unlock-firmware` packages). It needs internet: it downloads NVIDIA files to generate the firmware. It takes 5 to 15 minutes.
+3. Adds `gpu_unlock.targets=all` to `GRUB_CMDLINE_LINUX_DEFAULT` (keeping a copy in `/etc/default/grub.my-local-ia.bak`) and runs `update-grub`.
+4. Offers to restart. Then run the installer and choose **3) Verify**: "Optional improvements" shows whether the GPU was unlocked (or run `journalctl -k -b | grep gpu_unlock`; the last line must end in `unlocked`).
+
+**In a Proxmox VM**, the GPU must reach the VM as PCIe. Without that, the unlock fails with error `-95`. On the host:
+
+```bash
+qm config <VMID> | grep -E "machine|hostpci"   # needs machine: q35
+qm shutdown <VMID>
+qm set <VMID> --hostpci0 <GPU address on the host>,pcie=1
+qm start <VMID>
+```
+
+Install gpu-unlock **inside the VM** (on the host the GPU is held by `vfio-pci`, and the module skips cards that already have a driver).
+
+**Maintenance:** it is applied again at every boot and after suspend; hibernation is not covered. Updating the NVIDIA driver does not affect it. When the kernel is updated, the module is rebuilt if the headers come along (`sudo apt install -y linux-headers-generic`).
+
+**To undo:** run option 9 again and choose **Undo** (removes it from the boot and, if you want, uninstalls the packages). **If the server does not boot:** in the GRUB menu (in Proxmox, from the VM console) press `e`, delete `gpu_unlock.targets=all` from the `linux` line and boot with `Ctrl+X`. Then undo it with option 9.
+
+> gpu-unlock is third-party software, and the firmware it generates derives from NVIDIA material under its own terms (see `firmware/NOTICE.md` in its repository). According to the author the risk is low: the GPU may run slightly warmer, but temperature and power limits stay in place.
 
 ---
 

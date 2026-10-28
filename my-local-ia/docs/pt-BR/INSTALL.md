@@ -232,15 +232,62 @@ A instalação tem 11 etapas numeradas. Tudo o que muda o sistema é mostrado (l
 
 Rode o instalador de novo sempre que precisar de uma destas opções. Ele lembra das suas respostas anteriores.
 
-| Opção                                  | O que faz                                                                                                                                                                                  |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **1) Instalar**                        | Instala, ou recria o contêiner mantendo todos os dados.                                                                                                                                    |
-| **2) Atualizar ou trocar de versão**   | Baixa a imagem mais nova (mesma versão, oficial ou my-local-ia), oferece um **backup**, troca o contêiner e testa. Se a versão nova não iniciar, **volta sozinho para a anterior**.        |
-| **3) Verificar**                       | Só diagnóstico: confere tudo e salva um arquivo de **relatório** para mandar ao pedir ajuda. Não muda nada.                                                                                |
-| **4) Fazer backup dos dados agora**    | Salva usuários, conversas, configurações e arquivos enviados em um arquivo `.tar.gz`. O my-local-ia para por alguns segundos. Ficam os 5 backups mais recentes.                            |
-| **5) Restaurar um backup**             | Lista os backups e restaura o que você escolher (substitui os dados atuais, depois de confirmar).                                                                                          |
-| **6) Redefinir a senha de um usuário** | Define uma senha nova para qualquer usuário, inclusive o administrador.                                                                                                                    |
-| **7) Desinstalar**                     | Remove o contêiner e a regra de firewall. Os dados só são apagados se você confirmar e digitar `DELETE`, e um backup é oferecido antes. Docker, Ollama e seus modelos nunca são removidos. |
+| Opção                                       | O que faz                                                                                                                                                                                  |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **1) Instalar**                             | Instala, ou recria o contêiner mantendo todos os dados.                                                                                                                                    |
+| **2) Atualizar ou trocar de versão**        | Baixa a imagem mais nova (mesma versão, oficial ou my-local-ia), oferece um **backup**, troca o contêiner e testa. Se a versão nova não iniciar, **volta sozinho para a anterior**.        |
+| **3) Verificar**                            | Só diagnóstico: confere tudo e salva um arquivo de **relatório** para mandar ao pedir ajuda. Não muda nada.                                                                                |
+| **4) Fazer backup dos dados agora**         | Salva usuários, conversas, configurações e arquivos enviados em um arquivo `.tar.gz`. O my-local-ia para por alguns segundos. Ficam os 5 backups mais recentes.                            |
+| **5) Restaurar um backup**                  | Lista os backups e restaura o que você escolher (substitui os dados atuais, depois de confirmar).                                                                                          |
+| **6) Redefinir a senha de um usuário**      | Define uma senha nova para qualquer usuário, inclusive o administrador.                                                                                                                    |
+| **7) Desinstalar**                          | Remove o contêiner e a regra de firewall. Os dados só são apagados se você confirmar e digitar `DELETE`, e um backup é oferecido antes. Docker, Ollama e seus modelos nunca são removidos. |
+| **8) Otimizar o Ollama**                    | Liga o flash attention e o contexto comprimido (`q8_0`) no serviço do Ollama: a conversa ocupa cerca de metade da memória da placa. Rodando de novo, oferece desfazer. Veja abaixo.        |
+| **9) Desbloquear os tensor cores da placa** | Instala o gpu-unlock (GeForce RTX 20/30/40) e o liga na inicialização. Avançado; rodando de novo, mostra o estado e oferece desfazer. Veja abaixo.                                         |
+
+### Melhorias opcionais (opções 8 e 9, só Linux)
+
+#### 8) Otimizar o Ollama
+
+Liga dois ajustes no serviço do Ollama, num arquivo próprio (`/etc/systemd/system/ollama.service.d/my-local-ia.conf`):
+
+- `OLLAMA_FLASH_ATTENTION=1`: um jeito mais econômico de calcular a atenção.
+- `OLLAMA_KV_CACHE_TYPE=q8_0`: guarda a memória da conversa (contexto) comprimida.
+
+Juntos, fazem o contexto ocupar cerca de metade da memória da placa: cabem conversas mais longas e mais de cada modelo fica na GPU. As respostas continuam as mesmas. O instalador reinicia o Ollama (respostas em andamento são interrompidas) e confere se ele voltou. Para desfazer, rode a opção 8 de novo e escolha **Desfazer**. Um `sudo systemctl edit ollama` seu continua valendo e tem prioridade.
+
+#### 9) Desbloquear os tensor cores da placa (gpu-unlock)
+
+As GeForce RTX 20, 30 e 40 fazem as contas FP16/BF16/TF32 dos tensor cores na metade da velocidade. O [gpu-unlock](https://github.com/Zagitta/gpu-unlock), um módulo do kernel de terceiros, devolve a velocidade cheia a cada inicialização, antes do driver da NVIDIA. Driver e VBIOS não mudam e os resultados são idênticos.
+
+| Uso                                                   | Ganho esperado |
+| ----------------------------------------------------- | -------------- |
+| PyTorch FP16/BF16: geração de imagens, fine-tuning    | 25 a 55%       |
+| Ollama lendo prompts longos                           | 0 a 15%        |
+| Ollama gerando tokens, modelos INT8/INT4, FP32, jogos | nenhum         |
+
+O que a opção 9 faz:
+
+1. Confere se a placa aparece como **PCI Express** e suporta o reset **FLR**. Se não, para e explica (veja Proxmox abaixo).
+2. Instala `git`, `build-essential` e os headers do kernel, baixa o gpu-unlock em `/opt/gpu-unlock` e roda `make install` (gera os pacotes `gpu-unlock-dkms` e `gpu-unlock-firmware`). Precisa de internet: ele baixa arquivos da NVIDIA para gerar o firmware. Leva de 5 a 15 minutos.
+3. Acrescenta `gpu_unlock.targets=all` em `GRUB_CMDLINE_LINUX_DEFAULT` (guarda uma cópia em `/etc/default/grub.my-local-ia.bak`) e roda `update-grub`.
+4. Oferece reiniciar. Depois, rode o instalador e escolha **3) Verificar**: em "Melhorias opcionais" aparece se a placa foi desbloqueada (ou rode `journalctl -k -b | grep gpu_unlock`; a última linha deve terminar em `unlocked`).
+
+**Numa VM do Proxmox**, a placa precisa chegar à VM como PCIe. Sem isso, o desbloqueio falha com o erro `-95`. No host:
+
+```bash
+qm config <VMID> | grep -E "machine|hostpci"   # precisa de machine: q35
+qm shutdown <VMID>
+qm set <VMID> --hostpci0 <endereço da placa no host>,pcie=1
+qm start <VMID>
+```
+
+Instale o gpu-unlock **dentro da VM** (no host a placa fica presa ao `vfio-pci`, e o módulo ignora placas que já têm driver).
+
+**Manutenção:** ele se reaplica a cada inicialização e depois de suspender; hibernação não é coberta. Atualizar o driver da NVIDIA não afeta. Ao atualizar o kernel, o módulo é recompilado se os headers vierem junto (`sudo apt install -y linux-headers-generic`).
+
+**Para desfazer:** rode a opção 9 de novo e escolha **Desfazer** (tira da inicialização e, se você quiser, desinstala os pacotes). **Se o servidor não iniciar:** no menu do GRUB (no Proxmox, pelo console da VM) aperte `e`, apague `gpu_unlock.targets=all` da linha `linux` e inicie com `Ctrl+X`. Depois, desfaça pela opção 9.
+
+> O gpu-unlock é de terceiros, e o firmware que ele gera deriva de material da NVIDIA, que tem termos próprios (veja `firmware/NOTICE.md` no repositório dele). Segundo o autor, o risco é baixo: a placa pode esquentar um pouco mais, mas os limites de temperatura e energia continuam ativos.
 
 ---
 

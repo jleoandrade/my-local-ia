@@ -156,6 +156,19 @@ Most problems are identified by the first line marked ✖ in the Verify output. 
   2. Run `nvidia-smi` during an answer: the GPU usage must go up.
   3. If `ollama ps` shows `100% CPU` for a small model, Ollama itself is not seeing the GPU: restart it (`sudo systemctl restart ollama`) and check its log (`journalctl -u ollama --since "10 min ago"`).
 
+### Option 9 (gpu-unlock): "This GPU is not seen as a PCI Express device here" or error `-95`
+
+- **Cause:** the VM gets the GPU on an old PCI bus, without the FLR reset gpu-unlock needs. The log shows `unlock_transaction_claim ... error=-95` (operation not supported).
+- **Fix (Proxmox, on the host):** check with `qm config <VMID> | grep -E "machine|hostpci"` (it needs `machine: q35`), then `qm shutdown <VMID>`, `qm set <VMID> --hostpci0 <GPU address on the host>,pcie=1` and `qm start <VMID>`. Run option 9 again inside the VM. The GPU's address in the VM changes (for example from `06:10.0` to `01:00.0`); gpu-unlock finds it at any address.
+
+### Option 9 (gpu-unlock): "turned on, but this boot did not unlock the GPU"
+
+- **See why:** `journalctl -k -b | grep gpu_unlock`.
+- **Common causes:**
+  - The kernel was updated without headers and the module was not built for it: `sudo apt install -y linux-headers-generic linux-headers-$(uname -r)`, then `sudo dpkg-reconfigure gpu-unlock-dkms` and restart.
+  - **Secure Boot** blocks unsigned modules: check with `mokutil --sb-state`. Turn Secure Boot off in the VM/BIOS or sign the DKMS module.
+  - The GPU was powered down or already had a driver when the module ran (the log says `skipped`): fully power the machine off and on.
+
 ---
 
 ## 3. Docker
@@ -254,6 +267,11 @@ Most problems are identified by the first line marked ✖ in the Verify output. 
   1. `ollama list` on the server must show models. If it is empty, download one, for example `ollama pull llama3.2`.
   2. **Admin Panel → Settings → Connections:** the Ollama connection must be enabled, with the right address. Click the verify/refresh icon next to it.
   3. Reload the page (F5).
+
+### Option 8: Ollama did not come back after optimizing
+
+- **See why:** `systemctl status ollama` and `journalctl -u ollama --since "10 min ago"`.
+- **Fix:** old Ollama versions do not know these settings; update Ollama (`curl -fsSL https://ollama.com/install.sh | sh`). To go back right away: `sudo rm /etc/systemd/system/ollama.service.d/my-local-ia.conf && sudo systemctl daemon-reload && sudo systemctl restart ollama` (or option 8 → **Undo**).
 
 ---
 

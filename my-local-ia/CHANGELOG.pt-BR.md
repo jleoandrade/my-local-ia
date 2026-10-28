@@ -6,6 +6,7 @@ Também em [English](CHANGELOG.md) e [Español](CHANGELOG.es.md).
 
 | Versão | Data       | Destaque                                                | Imagem fixa (GPU)                                                                   |
 | ------ | ---------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| 3.3    | 28/10/2026 | Instalador: otimizar o Ollama e desbloquear a placa     | `ghcr.io/jleoandrade/my-local-ia:cuda` (atual)                                      |
 | 3.2    | 25/10/2026 | Catálogo balanceado entre as notas                      | `ghcr.io/jleoandrade/my-local-ia:git-278c83b45ec47bb703c8329d9261e25c04d183b2-cuda` |
 | 3.1    | 25/10/2026 | Leitura da biblioteca do Ollama corrigida               | `ghcr.io/jleoandrade/my-local-ia:git-957b2b26c7c5bc3c71fba902cb4c4a84d69f7733-cuda` |
 | 3.0    | 25/10/2026 | Biblioteca do Ollama, downloads em segundo plano, Ajuda | `ghcr.io/jleoandrade/my-local-ia:git-153c03666fd4e687524cca1dcd0eab07a7f0a54d-cuda` |
@@ -14,6 +15,13 @@ Também em [English](CHANGELOG.md) e [Español](CHANGELOG.es.md).
 | 2.0    | 25/10/2026 | Todas as telas do my-local-ia                           | — (sem imagem própria)                                                              |
 | 1.1    | 25/10/2026 | Imagem gerada pelo GitHub Actions                       | —                                                                                   |
 | 1.0    | 24/10/2026 | Instaladores, documentação e base do catálogo           | — (instalava o Open WebUI oficial)                                                  |
+
+## 3.3 — Otimizar o Ollama e desbloquear a placa
+
+- Instalador para Linux, opção **8) Otimizar o Ollama**: liga `OLLAMA_FLASH_ATTENTION=1` e `OLLAMA_KV_CACHE_TYPE=q8_0` num arquivo próprio do serviço; a conversa ocupa cerca de metade da memória da placa. Rodando de novo, desfaz.
+- Opção **9) Desbloquear os tensor cores da placa**: instala o gpu-unlock (GeForce RTX 20/30/40), liga no GRUB com cópia do arquivo anterior e explica o ajuste `pcie=1` do Proxmox quando a placa não chega como PCIe. Rodando de novo, mostra o estado e desfaz.
+- **3) Verificar** e o relatório mostram o estado das duas melhorias.
+- Guias de instalação e solução de problemas, página de Ajuda e manual atualizados.
 
 ## 3.2 — Catálogo balanceado
 

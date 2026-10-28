@@ -28,6 +28,12 @@ readonly CUSTOM_IMAGE_NAME="my-local-ia"  # published as ghcr.io/<github user>/m
 readonly LOCAL_IMAGE_NAME="my-local-ia"   # built on this server as my-local-ia:local-<cuda|main>
 readonly SOURCE_DIR="/opt/my-local-ia/src"
 readonly MIN_BUILD_FREE_GB=25
+# Menu 8: Ollama settings that save GPU memory, in a drop-in the installer owns.
+readonly OLLAMA_DROPIN="/etc/systemd/system/ollama.service.d/my-local-ia.conf"
+# Menu 9: full-rate tensor cores on GeForce RTX 20/30/40 (https://github.com/Zagitta/gpu-unlock).
+readonly GPU_UNLOCK_REPO="https://github.com/Zagitta/gpu-unlock"
+readonly GPU_UNLOCK_DIR="/opt/gpu-unlock"
+readonly GPU_UNLOCK_PARAM="gpu_unlock.targets=all"
 readonly HEALTH_TIMEOUT=900                # first start can take minutes (it downloads models)
 readonly MIN_FREE_GB=30
 readonly KEEP_BACKUPS=5
@@ -80,6 +86,51 @@ MSG_en=(
   [menu_reset_pw]="Reset a user's password"
   [menu_uninstall]="Uninstall"
   [menu_exit]="Exit"
+  [menu_tune]="Optimize Ollama (less GPU memory per conversation)"
+  [menu_unlock]="Unlock the GPU tensor cores (gpu-unlock, advanced)"
+  [tune_title]="Ollama memory settings"
+  [tune_no_service]="Ollama is not installed as a systemd service (ollama.service) on this server."
+  [tune_current]="Current Ollama settings: %s"
+  [tune_explain]="Turns on OLLAMA_FLASH_ATTENTION=1 and OLLAMA_KV_CACHE_TYPE=q8_0: the conversation memory (context) takes about half the GPU memory, so longer chats fit and more of each model stays on the GPU. Answers stay the same."
+  [tune_active]="Already applied (%s)."
+  [q_tune_action]="What do you want to do?"
+  [tune_keep]="Keep it as it is"
+  [tune_undo]="Undo (back to Ollama's defaults)"
+  [tune_apply_q]="Apply and restart Ollama now? Answers being written at this moment are interrupted."
+  [tune_undo_q]="Remove the settings and restart Ollama now?"
+  [tune_restart]="Restarting Ollama"
+  [tune_ok]="Ollama restarted with flash attention and the compressed context (q8_0)."
+  [tune_removed]="Settings removed: Ollama is back to its defaults."
+  [tune_wait_fail]="Ollama did not answer after the restart. Check with: systemctl status ollama"
+  [unlock_title]="GPU tensor core unlock (gpu-unlock)"
+  [unlock_no_gpu]="No NVIDIA GPU found on this server (lspci)."
+  [unlock_card]="GPU: %s"
+  [unlock_status_ok]="Unlocked: %s"
+  [unlock_status_fail]="Turned on, but the last boot did not unlock the GPU: %s"
+  [unlock_pending]="Installed and turned on; it takes effect at the next restart."
+  [q_unlock_action]="What do you want to do?"
+  [unlock_keep]="Keep it as it is"
+  [unlock_undo]="Undo (remove it from the boot and uninstall)"
+  [unlock_not_pcie]="This GPU is not seen as a PCI Express device here, and the unlock needs the PCIe reset (FLR)."
+  [unlock_proxmox_hint]="In a Proxmox VM, on the host: qm shutdown <VMID>; qm set <VMID> --hostpci0 <GPU address on the host>,pcie=1; qm start <VMID> (the VM must use the q35 machine type)."
+  [unlock_no_flr]="This GPU does not support the PCIe reset (FLR) the unlock needs."
+  [unlock_explain]="GeForce RTX 20/30/40 cards run FP16/BF16/TF32 tensor math at half speed. gpu-unlock (a third-party kernel module) restores the full rate at every boot, before the NVIDIA driver loads; driver and VBIOS are not changed. Gain: up to 2x in PyTorch, image generation and fine-tuning; 0-15%% in Ollama prompt reading; none in token generation. It needs internet and takes 5-15 minutes."
+  [unlock_install_q]="Install gpu-unlock and turn it on at boot?"
+  [step_unlock_install]="Installing gpu-unlock"
+  [step_unlock_boot]="Turning it on at boot"
+  [unlock_install_fail]="gpu-unlock could not be installed. Nothing was changed in the boot. The log shows the step that failed."
+  [unlock_grub_done]="Added %s to the kernel command line (copy of the old file: %s)."
+  [unlock_reboot_info]="It takes effect after a restart. Then run this script again and choose Verify: it shows whether the GPU was unlocked."
+  [unlock_reboot_q]="Restart the server now?"
+  [unlock_removed]="Removed from the boot. The GPU goes back to the stock speed at the next restart."
+  [unlock_remove_pkgs_q]="Also uninstall the gpu-unlock packages?"
+  [unlock_emergency]="If the server ever fails to boot: in the GRUB menu press e, delete %s from the linux line and boot with Ctrl+X."
+  [extras_title]="Optional improvements"
+  [extras_tune_on]="Ollama memory settings: on"
+  [extras_tune_off]="Ollama memory settings: off (menu option 8)"
+  [extras_unlock_ok]="GPU unlock: unlocked at this boot"
+  [extras_unlock_fail]="GPU unlock: turned on, but this boot did not unlock the GPU (journalctl -k -b | grep gpu_unlock)"
+  [extras_unlock_off]="GPU unlock: not installed (menu option 9)"
   [menu_prompt]="Option"
   [invalid_option]="Invalid option."
   [yes_default]="Y/n"
@@ -275,6 +326,51 @@ MSG_pt=(
   [menu_reset_pw]="Redefinir a senha de um usuário"
   [menu_uninstall]="Desinstalar"
   [menu_exit]="Sair"
+  [menu_tune]="Otimizar o Ollama (menos memória da placa por conversa)"
+  [menu_unlock]="Desbloquear os tensor cores da placa (gpu-unlock, avançado)"
+  [tune_title]="Ajustes de memória do Ollama"
+  [tune_no_service]="O Ollama não está instalado como serviço do systemd (ollama.service) neste servidor."
+  [tune_current]="Ajustes atuais do Ollama: %s"
+  [tune_explain]="Liga OLLAMA_FLASH_ATTENTION=1 e OLLAMA_KV_CACHE_TYPE=q8_0: a memória da conversa (contexto) passa a ocupar cerca de metade na placa de vídeo, então cabem conversas mais longas e mais de cada modelo fica na GPU. As respostas continuam as mesmas."
+  [tune_active]="Já aplicado (%s)."
+  [q_tune_action]="O que você quer fazer?"
+  [tune_keep]="Manter como está"
+  [tune_undo]="Desfazer (voltar aos padrões do Ollama)"
+  [tune_apply_q]="Aplicar e reiniciar o Ollama agora? Respostas sendo escritas neste momento são interrompidas."
+  [tune_undo_q]="Remover os ajustes e reiniciar o Ollama agora?"
+  [tune_restart]="Reiniciando o Ollama"
+  [tune_ok]="Ollama reiniciado com flash attention e o contexto comprimido (q8_0)."
+  [tune_removed]="Ajustes removidos: o Ollama voltou aos padrões."
+  [tune_wait_fail]="O Ollama não respondeu depois de reiniciar. Confira com: systemctl status ollama"
+  [unlock_title]="Desbloqueio dos tensor cores da placa (gpu-unlock)"
+  [unlock_no_gpu]="Nenhuma placa NVIDIA encontrada neste servidor (lspci)."
+  [unlock_card]="Placa: %s"
+  [unlock_status_ok]="Desbloqueada: %s"
+  [unlock_status_fail]="Ligado, mas a última inicialização não desbloqueou a placa: %s"
+  [unlock_pending]="Instalado e ligado; passa a valer na próxima reinicialização."
+  [q_unlock_action]="O que você quer fazer?"
+  [unlock_keep]="Manter como está"
+  [unlock_undo]="Desfazer (tirar da inicialização e desinstalar)"
+  [unlock_not_pcie]="A placa não aparece aqui como PCI Express, e o desbloqueio precisa do reset PCIe (FLR)."
+  [unlock_proxmox_hint]="Numa VM do Proxmox, no host: qm shutdown <VMID>; qm set <VMID> --hostpci0 <endereço da placa no host>,pcie=1; qm start <VMID> (a VM precisa usar a máquina q35)."
+  [unlock_no_flr]="Esta placa não suporta o reset PCIe (FLR) que o desbloqueio precisa."
+  [unlock_explain]="As GeForce RTX 20/30/40 fazem as contas FP16/BF16/TF32 dos tensor cores na metade da velocidade. O gpu-unlock (módulo do kernel de terceiros) devolve a velocidade cheia a cada inicialização, antes do driver da NVIDIA; driver e VBIOS não mudam. Ganho: até 2x em PyTorch, geração de imagens e fine-tuning; 0-15%% na leitura de prompts no Ollama; nenhum na geração de tokens. Precisa de internet e leva de 5 a 15 minutos."
+  [unlock_install_q]="Instalar o gpu-unlock e ligar na inicialização?"
+  [step_unlock_install]="Instalando o gpu-unlock"
+  [step_unlock_boot]="Ligando na inicialização"
+  [unlock_install_fail]="Não foi possível instalar o gpu-unlock. Nada foi mudado na inicialização. O log mostra a etapa que falhou."
+  [unlock_grub_done]="Adicionado %s à linha de comando do kernel (cópia do arquivo anterior: %s)."
+  [unlock_reboot_info]="Passa a valer depois de reiniciar. Depois, rode este script de novo e escolha Verificar: ele mostra se a placa foi desbloqueada."
+  [unlock_reboot_q]="Reiniciar o servidor agora?"
+  [unlock_removed]="Removido da inicialização. A placa volta à velocidade original na próxima reinicialização."
+  [unlock_remove_pkgs_q]="Desinstalar também os pacotes do gpu-unlock?"
+  [unlock_emergency]="Se o servidor algum dia não iniciar: no menu do GRUB aperte e, apague %s da linha linux e inicie com Ctrl+X."
+  [extras_title]="Melhorias opcionais"
+  [extras_tune_on]="Ajustes de memória do Ollama: ligados"
+  [extras_tune_off]="Ajustes de memória do Ollama: desligados (opção 8 do menu)"
+  [extras_unlock_ok]="Desbloqueio da placa: desbloqueada nesta inicialização"
+  [extras_unlock_fail]="Desbloqueio da placa: ligado, mas esta inicialização não desbloqueou a placa (journalctl -k -b | grep gpu_unlock)"
+  [extras_unlock_off]="Desbloqueio da placa: não instalado (opção 9 do menu)"
   [menu_prompt]="Opção"
   [invalid_option]="Opção inválida."
   [yes_default]="S/n"
@@ -470,6 +566,51 @@ MSG_es=(
   [menu_reset_pw]="Restablecer la contraseña de un usuario"
   [menu_uninstall]="Desinstalar"
   [menu_exit]="Salir"
+  [menu_tune]="Optimizar Ollama (menos memoria de la GPU por conversación)"
+  [menu_unlock]="Desbloquear los tensor cores de la GPU (gpu-unlock, avanzado)"
+  [tune_title]="Ajustes de memoria de Ollama"
+  [tune_no_service]="Ollama no está instalado como servicio de systemd (ollama.service) en este servidor."
+  [tune_current]="Ajustes actuales de Ollama: %s"
+  [tune_explain]="Activa OLLAMA_FLASH_ATTENTION=1 y OLLAMA_KV_CACHE_TYPE=q8_0: la memoria de la conversación (contexto) ocupa cerca de la mitad en la GPU, así que caben conversaciones más largas y más de cada modelo queda en la GPU. Las respuestas siguen siendo las mismas."
+  [tune_active]="Ya aplicado (%s)."
+  [q_tune_action]="¿Qué quieres hacer?"
+  [tune_keep]="Dejarlo como está"
+  [tune_undo]="Deshacer (volver a los valores de Ollama)"
+  [tune_apply_q]="¿Aplicar y reiniciar Ollama ahora? Las respuestas que se estén escribiendo se interrumpen."
+  [tune_undo_q]="¿Quitar los ajustes y reiniciar Ollama ahora?"
+  [tune_restart]="Reiniciando Ollama"
+  [tune_ok]="Ollama reiniciado con flash attention y el contexto comprimido (q8_0)."
+  [tune_removed]="Ajustes quitados: Ollama volvió a sus valores por defecto."
+  [tune_wait_fail]="Ollama no respondió después de reiniciar. Revisa con: systemctl status ollama"
+  [unlock_title]="Desbloqueo de los tensor cores de la GPU (gpu-unlock)"
+  [unlock_no_gpu]="No se encontró ninguna GPU NVIDIA en este servidor (lspci)."
+  [unlock_card]="GPU: %s"
+  [unlock_status_ok]="Desbloqueada: %s"
+  [unlock_status_fail]="Activado, pero el último inicio no desbloqueó la GPU: %s"
+  [unlock_pending]="Instalado y activado; vale a partir del próximo reinicio."
+  [q_unlock_action]="¿Qué quieres hacer?"
+  [unlock_keep]="Dejarlo como está"
+  [unlock_undo]="Deshacer (quitarlo del inicio y desinstalar)"
+  [unlock_not_pcie]="La GPU no aparece aquí como PCI Express, y el desbloqueo necesita el reinicio PCIe (FLR)."
+  [unlock_proxmox_hint]="En una VM de Proxmox, en el host: qm shutdown <VMID>; qm set <VMID> --hostpci0 <dirección de la GPU en el host>,pcie=1; qm start <VMID> (la VM debe usar la máquina q35)."
+  [unlock_no_flr]="Esta GPU no admite el reinicio PCIe (FLR) que necesita el desbloqueo."
+  [unlock_explain]="Las GeForce RTX 20/30/40 hacen los cálculos FP16/BF16/TF32 de los tensor cores a la mitad de velocidad. gpu-unlock (módulo del kernel de terceros) devuelve la velocidad completa en cada inicio, antes del driver de NVIDIA; el driver y la VBIOS no cambian. Ganancia: hasta 2x en PyTorch, generación de imágenes y fine-tuning; 0-15%% en la lectura de prompts en Ollama; ninguna en la generación de tokens. Necesita internet y tarda de 5 a 15 minutos."
+  [unlock_install_q]="¿Instalar gpu-unlock y activarlo en el inicio?"
+  [step_unlock_install]="Instalando gpu-unlock"
+  [step_unlock_boot]="Activándolo en el inicio"
+  [unlock_install_fail]="No se pudo instalar gpu-unlock. No se cambió nada en el inicio. El registro muestra el paso que falló."
+  [unlock_grub_done]="Se agregó %s a la línea de comandos del kernel (copia del archivo anterior: %s)."
+  [unlock_reboot_info]="Vale después de reiniciar. Luego ejecuta este script de nuevo y elige Verificar: muestra si la GPU se desbloqueó."
+  [unlock_reboot_q]="¿Reiniciar el servidor ahora?"
+  [unlock_removed]="Quitado del inicio. La GPU vuelve a la velocidad original en el próximo reinicio."
+  [unlock_remove_pkgs_q]="¿Desinstalar también los paquetes de gpu-unlock?"
+  [unlock_emergency]="Si alguna vez el servidor no arranca: en el menú de GRUB pulsa e, borra %s de la línea linux y arranca con Ctrl+X."
+  [extras_title]="Mejoras opcionales"
+  [extras_tune_on]="Ajustes de memoria de Ollama: activados"
+  [extras_tune_off]="Ajustes de memoria de Ollama: desactivados (opción 8 del menú)"
+  [extras_unlock_ok]="Desbloqueo de la GPU: desbloqueada en este inicio"
+  [extras_unlock_fail]="Desbloqueo de la GPU: activado, pero este inicio no desbloqueó la GPU (journalctl -k -b | grep gpu_unlock)"
+  [extras_unlock_off]="Desbloqueo de la GPU: no instalado (opción 9 del menú)"
   [menu_prompt]="Opción"
   [invalid_option]="Opción no válida."
   [yes_default]="S/n"
@@ -1737,6 +1878,7 @@ action_verify() {
     warn "$(t not_installed)"
     PROBLEMS=$((before + 1))
   fi
+  report_extras
 
   local report
   report="/var/log/my-local-ia-report-$(date +%Y%m%d-%H%M%S).txt"
@@ -1751,6 +1893,8 @@ action_verify() {
       echo "--- container log (last 100 lines)"; docker logs --tail 100 "$CONTAINER" 2>&1 || true
       echo "--- disk"; df -h 2>&1 || true
       echo "--- listening ports"; ss -ltn 2>&1 || true
+      echo "--- ollama service environment"; systemctl show ollama -p Environment 2>&1 || true
+      echo "--- gpu_unlock"; grep -o 'gpu_unlock[^ ]*' /proc/cmdline 2>&1 || true; journalctl -k -b 2>/dev/null | grep gpu_unlock | tail -5 || true
     } >"$report" 2>&1
     chmod 600 "$report"
     info "$(t report_saved "$report")"
@@ -1833,6 +1977,165 @@ action_uninstall() {
 }
 
 ############################################
+# Optional improvements (menu 8 and 9)
+############################################
+
+ollama_answers() { curl -s --max-time 3 "$DEFAULT_OLLAMA_URL" 2>/dev/null | grep -q 'Ollama is running'; }
+
+action_tune_ollama() {
+  STEP_TOTAL=3
+  step "$(t step_checks)"
+  if ! systemctl cat ollama >/dev/null 2>&1; then
+    die "$(t tune_no_service)"
+  fi
+  info "$(t tune_current "$(systemctl show ollama -p Environment --value 2>/dev/null || true)")"
+
+  step "$(t tune_title)"
+  info "$(t tune_explain)"
+  local choice
+  if [[ -f $OLLAMA_DROPIN ]]; then
+    ok "$(t tune_active "$OLLAMA_DROPIN")"
+    choose choice "$(t q_tune_action)" "$(t tune_keep)" "$(t tune_undo)"
+    ((choice == 2)) || return 0
+    confirm_or_stop "$(t tune_undo_q)"
+    run rm -f "$OLLAMA_DROPIN"
+  else
+    confirm_or_stop "$(t tune_apply_q)"
+    run install -d -m 755 "${OLLAMA_DROPIN%/*}"
+    # Its own drop-in, so "systemctl edit ollama" (override.conf, read later) can still change anything.
+    write_file "$OLLAMA_DROPIN" '# Written by the my-local-ia installer (menu: Optimize Ollama). Delete this file to undo.
+# Flash attention and a q8_0 KV cache: the context takes about half the GPU memory.
+[Service]
+Environment="OLLAMA_FLASH_ATTENTION=1"
+Environment="OLLAMA_KV_CACHE_TYPE=q8_0"' 644
+  fi
+
+  step "$(t tune_restart)"
+  run systemctl daemon-reload
+  run systemctl restart ollama
+  ((DRY_RUN)) && return 0
+  local i
+  for i in $(seq 1 30); do
+    ollama_answers && break
+    sleep 1
+  done
+  ollama_answers || die "$(t tune_wait_fail)"
+  if [[ -f $OLLAMA_DROPIN ]]; then ok "$(t tune_ok)"; else ok "$(t tune_removed)"; fi
+  info "$(t tune_current "$(systemctl show ollama -p Environment --value 2>/dev/null || true)")"
+}
+
+nvidia_gpu_address() {
+  lspci -D -nn 2>/dev/null | grep -iE 'nvidia' | grep -iE 'vga|3d controller' | head -1 | cut -d' ' -f1 || true
+}
+
+unlock_in_grub() { grep -qs "$GPU_UNLOCK_PARAM" /etc/default/grub || grep -qs "$GPU_UNLOCK_PARAM" /proc/cmdline; }
+
+unlock_last_log() { journalctl -k -b 2>/dev/null | grep 'gpu_unlock' | tail -1 || true; }
+
+unlock_undo() {
+  if [[ $PKG == dnf ]]; then
+    run grubby --update-kernel=ALL --remove-args="$GPU_UNLOCK_PARAM"
+  else
+    run cp -a /etc/default/grub /etc/default/grub.my-local-ia.bak
+    run sed -i "s/ *$GPU_UNLOCK_PARAM//" /etc/default/grub
+    run update-grub
+  fi
+  ok "$(t unlock_removed)"
+  if confirm "$(t unlock_remove_pkgs_q)"; then
+    if [[ $PKG == dnf ]]; then
+      run dnf remove -y gpu-unlock-dkms gpu-unlock-firmware || true
+    else
+      run apt-get remove -y gpu-unlock-dkms gpu-unlock-firmware || true
+    fi
+  fi
+  if confirm "$(t unlock_reboot_q)" N; then run systemctl reboot; fi
+}
+
+action_gpu_unlock() {
+  STEP_TOTAL=4
+  step "$(t step_checks)"
+  detect_os
+  [[ $PKG == apt || $PKG == dnf ]] || die "$(t os_unsupported "$OS_NAME")"
+  if ! command -v lspci >/dev/null; then install_packages pciutils || true; fi
+  local addr
+  addr=$(nvidia_gpu_address)
+  [[ -n $addr ]] || die "$(t unlock_no_gpu)"
+  info "$(t unlock_card "$(lspci -nn -s "$addr" 2>/dev/null | cut -d' ' -f2- || true)")"
+
+  local choice last
+  if unlock_in_grub; then
+    last=$(unlock_last_log)
+    if grep -qs "$GPU_UNLOCK_PARAM" /proc/cmdline && [[ $last == *unlocked* ]]; then
+      ok "$(t unlock_status_ok "$last")"
+    elif grep -qs "$GPU_UNLOCK_PARAM" /proc/cmdline; then
+      warn "$(t unlock_status_fail "${last:-—}")"
+    else
+      info "$(t unlock_pending)"
+    fi
+    choose choice "$(t q_unlock_action)" "$(t unlock_keep)" "$(t unlock_undo)"
+    ((choice == 2)) || return 0
+    unlock_undo
+    return 0
+  fi
+
+  # The module resets the card (PCIe FLR) before the NVIDIA driver binds it.
+  local caps
+  caps=$(lspci -vv -s "$addr" 2>/dev/null || true)
+  if ! grep -q 'Express' <<<"$caps"; then
+    fail "$(t unlock_not_pcie)"
+    if systemd-detect-virt -q 2>/dev/null; then info "$(t unlock_proxmox_hint)"; fi
+    info "$(t see_docs "$(docs_lang)")"
+    exit 1
+  fi
+  if grep -q 'FLReset-' <<<"$caps"; then
+    die "$(t unlock_no_flr)"
+  fi
+
+  step "$(t unlock_title)"
+  info "$(t unlock_explain)"
+  confirm_or_stop "$(t unlock_install_q)" N
+
+  step "$(t step_unlock_install)"
+  if [[ $PKG == dnf ]]; then
+    install_packages git make gcc "kernel-devel-$(uname -r)" || die "$(t unlock_install_fail)"
+  else
+    install_packages git build-essential "linux-headers-$(uname -r)" || die "$(t unlock_install_fail)"
+  fi
+  if [[ -d $GPU_UNLOCK_DIR/.git ]]; then
+    run git -C "$GPU_UNLOCK_DIR" pull --ff-only || die "$(t unlock_install_fail)"
+  else
+    run git clone --depth 1 "$GPU_UNLOCK_REPO" "$GPU_UNLOCK_DIR" || die "$(t unlock_install_fail)"
+  fi
+  # Builds and installs the distribution packages (DKMS module, firmware, initramfs hook).
+  run make -C "$GPU_UNLOCK_DIR" install || die "$(t unlock_install_fail)"
+
+  step "$(t step_unlock_boot)"
+  if [[ $PKG == dnf ]]; then
+    run grubby --update-kernel=ALL --args="$GPU_UNLOCK_PARAM"
+    ok "$(t unlock_grub_done "$GPU_UNLOCK_PARAM" "—")"
+  else
+    run cp -a /etc/default/grub /etc/default/grub.my-local-ia.bak
+    run sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=\"\(.*\)\"/GRUB_CMDLINE_LINUX_DEFAULT=\"\1 $GPU_UNLOCK_PARAM\"/" /etc/default/grub
+    run update-grub
+    ok "$(t unlock_grub_done "$GPU_UNLOCK_PARAM" /etc/default/grub.my-local-ia.bak)"
+  fi
+  info "$(t unlock_emergency "$GPU_UNLOCK_PARAM")"
+  info "$(t unlock_reboot_info)"
+  if confirm "$(t unlock_reboot_q)" N; then run systemctl reboot; fi
+}
+
+# Shown by Verify: the state of the optional improvements (they never count as problems).
+report_extras() {
+  info "$(t extras_title)"
+  if [[ -f $OLLAMA_DROPIN ]]; then ok "$(t extras_tune_on)"; else info "  $(t extras_tune_off)"; fi
+  if grep -qs "$GPU_UNLOCK_PARAM" /proc/cmdline; then
+    if [[ $(unlock_last_log) == *unlocked* ]]; then ok "$(t extras_unlock_ok)"; else warn "$(t extras_unlock_fail)"; fi
+  else
+    info "  $(t extras_unlock_off)"
+  fi
+}
+
+############################################
 # Main
 ############################################
 
@@ -1912,6 +2215,8 @@ main() {
     info "  5) $(t menu_restore)"
     info "  6) $(t menu_reset_pw)"
     info "  7) $(t menu_uninstall)"
+    info "  8) $(t menu_tune)"
+    info "  9) $(t menu_unlock)"
     info "  0) $(t menu_exit)"
     read_line option "  $(t menu_prompt): "
     log_plain "  menu -> $option"
@@ -1923,6 +2228,8 @@ main() {
       5) action_restore; break ;;
       6) action_reset_password; break ;;
       7) action_uninstall; break ;;
+      8) action_tune_ollama; break ;;
+      9) action_gpu_unlock; break ;;
       0 | q) exit 0 ;;
       *) warn "$(t invalid_option)" ;;
     esac

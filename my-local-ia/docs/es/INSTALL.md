@@ -241,6 +241,53 @@ Ejecuta el instalador de nuevo cada vez que necesites una de estas opciones. Rec
 | **5) Restaurar una copia de seguridad**        | Lista las copias y restaura la que elijas (reemplaza los datos actuales, después de confirmar).                                                                                                               |
 | **6) Restablecer la contraseña de un usuario** | Define una contraseña nueva para cualquier usuario, incluido el administrador.                                                                                                                                |
 | **7) Desinstalar**                             | Quita el contenedor y la regla de firewall. Los datos solo se borran si lo confirmas y escribes `DELETE`, y antes se ofrece una copia de seguridad. Docker, Ollama y tus modelos nunca se eliminan.           |
+| **8) Optimizar Ollama**                        | Activa flash attention y el contexto comprimido (`q8_0`) en el servicio de Ollama: una conversación ocupa cerca de la mitad de la memoria de la GPU. Al ejecutarlo de nuevo, ofrece deshacer. Ver abajo.      |
+| **9) Desbloquear los tensor cores de la GPU**  | Instala gpu-unlock (GeForce RTX 20/30/40) y lo activa en el inicio. Avanzado; al ejecutarlo de nuevo, muestra su estado y ofrece deshacer. Ver abajo.                                                         |
+
+### Mejoras opcionales (opciones 8 y 9, solo Linux)
+
+#### 8) Optimizar Ollama
+
+Activa dos ajustes en el servicio de Ollama, en un archivo propio (`/etc/systemd/system/ollama.service.d/my-local-ia.conf`):
+
+- `OLLAMA_FLASH_ATTENTION=1`: una forma más económica de calcular la atención.
+- `OLLAMA_KV_CACHE_TYPE=q8_0`: guarda la memoria de la conversación (contexto) comprimida.
+
+Juntos hacen que el contexto ocupe cerca de la mitad de la memoria de la GPU: caben conversaciones más largas y más de cada modelo queda en la GPU. Las respuestas siguen siendo las mismas. El instalador reinicia Ollama (las respuestas en curso se interrumpen) y comprueba que vuelva. Para deshacer, ejecuta la opción 8 de nuevo y elige **Deshacer**. Tu propio `sudo systemctl edit ollama` sigue valiendo y tiene prioridad.
+
+#### 9) Desbloquear los tensor cores de la GPU (gpu-unlock)
+
+Las GeForce RTX 20, 30 y 40 hacen los cálculos FP16/BF16/TF32 de los tensor cores a la mitad de velocidad. [gpu-unlock](https://github.com/Zagitta/gpu-unlock), un módulo del kernel de terceros, devuelve la velocidad completa en cada inicio, antes del driver de NVIDIA. El driver y la VBIOS no cambian y los resultados son idénticos.
+
+| Uso                                                      | Ganancia esperada |
+| -------------------------------------------------------- | ----------------- |
+| PyTorch FP16/BF16: generación de imágenes, fine-tuning   | 25 a 55%          |
+| Ollama leyendo prompts largos                            | 0 a 15%           |
+| Ollama generando tokens, modelos INT8/INT4, FP32, juegos | ninguna           |
+
+Qué hace la opción 9:
+
+1. Comprueba que la GPU aparezca como **PCI Express** y admita el reinicio **FLR**. Si no, se detiene y lo explica (ver Proxmox abajo).
+2. Instala `git`, `build-essential` y los headers del kernel, descarga gpu-unlock en `/opt/gpu-unlock` y ejecuta `make install` (genera los paquetes `gpu-unlock-dkms` y `gpu-unlock-firmware`). Necesita internet: descarga archivos de NVIDIA para generar el firmware. Tarda de 5 a 15 minutos.
+3. Agrega `gpu_unlock.targets=all` a `GRUB_CMDLINE_LINUX_DEFAULT` (guarda una copia en `/etc/default/grub.my-local-ia.bak`) y ejecuta `update-grub`.
+4. Ofrece reiniciar. Después, ejecuta el instalador y elige **3) Verificar**: en "Mejoras opcionales" aparece si la GPU se desbloqueó (o ejecuta `journalctl -k -b | grep gpu_unlock`; la última línea debe terminar en `unlocked`).
+
+**En una VM de Proxmox**, la GPU tiene que llegar a la VM como PCIe. Sin eso, el desbloqueo falla con el error `-95`. En el host:
+
+```bash
+qm config <VMID> | grep -E "machine|hostpci"   # necesita machine: q35
+qm shutdown <VMID>
+qm set <VMID> --hostpci0 <dirección de la GPU en el host>,pcie=1
+qm start <VMID>
+```
+
+Instala gpu-unlock **dentro de la VM** (en el host la GPU queda tomada por `vfio-pci`, y el módulo ignora las tarjetas que ya tienen driver).
+
+**Mantenimiento:** se vuelve a aplicar en cada inicio y después de suspender; la hibernación no está cubierta. Actualizar el driver de NVIDIA no lo afecta. Al actualizar el kernel, el módulo se recompila si los headers vienen incluidos (`sudo apt install -y linux-headers-generic`).
+
+**Para deshacer:** ejecuta la opción 9 de nuevo y elige **Deshacer** (lo quita del inicio y, si quieres, desinstala los paquetes). **Si el servidor no arranca:** en el menú de GRUB (en Proxmox, desde la consola de la VM) pulsa `e`, borra `gpu_unlock.targets=all` de la línea `linux` y arranca con `Ctrl+X`. Después, deshazlo con la opción 9.
+
+> gpu-unlock es de terceros, y el firmware que genera deriva de material de NVIDIA con sus propios términos (ver `firmware/NOTICE.md` en su repositorio). Según el autor el riesgo es bajo: la GPU puede calentarse un poco más, pero los límites de temperatura y energía siguen activos.
 
 ---
 

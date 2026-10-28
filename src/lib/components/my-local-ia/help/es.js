@@ -407,11 +407,33 @@ export default {
 				],
 				[
 					'tip',
+					'El instalador aplica por ti los dos ajustes que más memoria ahorran: ejecuta `sudo bash install-my-local-ia.sh` y elige **8) Optimizar Ollama** (flash attention y el contexto comprimido `q8_0`). Al ejecutarlo de nuevo, puedes deshacerlo.'
+				],
+				[
+					'tip',
 					'En una GPU de 12 GB, un modelo de 7–8B con contexto de 8 mil tokens cabe entero en la GPU. Los de 14B caben con menos contexto; de 20B para arriba, una parte va a la RAM.'
 				],
 				[
 					'note',
 					'La primera respuesta después de un rato tarda más: Ollama está cargando el modelo del disco a la memoria.'
+				],
+				['h', 'Desbloqueo de la GPU (gpu-unlock)'],
+				[
+					'p',
+					'Las GeForce RTX 20, 30 y 40 hacen los cálculos FP16/BF16/TF32 de los tensor cores a la mitad de velocidad. La opción **9) Desbloquear los tensor cores de la GPU** del instalador instala gpu-unlock, que devuelve la velocidad completa en cada inicio sin cambiar el driver.'
+				],
+				[
+					'table',
+					['Uso', 'Ganancia'],
+					[
+						['Generación de imágenes, fine-tuning, PyTorch FP16/BF16', '25 a 55%'],
+						['Ollama leyendo prompts largos', '0 a 15%'],
+						['Ollama generando tokens', 'ninguna']
+					]
+				],
+				[
+					'warn',
+					'En una VM de Proxmox, la GPU tiene que llegar como PCIe: en el host, `qm set <VMID> --hostpci0 <dirección>,pcie=1`. Para el chat la ganancia es pequeña; vale más para imágenes y PyTorch. Detalles en la guía de instalación.'
 				]
 			]
 		},
